@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Otaconskeep: Build Your Own Keep</title>
+<meta name="description" content="Otaconskeep builds local-first AI systems: Otacon, a persistent AI agent ecosystem, and AI9, a GPU-accelerated manga colorizer. Designed and engineered by Antonio G. Garcia.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="filebar">
+  <div class="wrap">
+    <span>OTACONSKEEP // PUBLIC INDEX</span>
+    <span>STATUS // ACTIVE<span class="blink"></span></span>
+  </div>
+</div>
+
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="/">Otaconskeep</a>
+    <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+    <div class="navlinks">
+      <a href="/" aria-current="page">Home</a>
+      <a href="/otacon/">Otacon</a>
+      <a href="/ai9/">AI9</a>
+      <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+      <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <section class="hero flush">
+    <p class="eyebrow">Field Dossier // Public Index</p>
+    <h1 class="display">Build your own Keep.</h1>
+    <p class="lede">Otacon is a local-first AI ecosystem for running persistent AI agents on hardware you control. Give agents identities, memories, voices, rooms, and capabilities, then connect them to local models, media, automation, compute nodes, and the rest of your homelab.</p>
+    <p class="lede" style="font-weight: 600; color: var(--cream); margin-top: 10px;">Your agents. Your hardware. Your data. Your Keep.</p>
+    <p class="meta" style="margin-top: 26px; letter-spacing: 0.1em;">AGENTS // MEMORY // VOICE // ROOMS // LOCAL AI<br>MEDIA // AUTOMATION // GPU NODES // HOMELAB</p>
+    <p class="meta">CREATED BY: <strong>Antonio G. Garcia</strong> · Built for the Keep.</p>
+    <div class="btn-row" style="margin-top: 26px;">
+      <a class="btn btn-primary" href="#today">▾ What You Get Today</a>
+      <a class="btn btn-ghost" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">💬 Discord</a>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="today">
+    <p class="tag">00 // Right Now</p>
+    <h2>Otacon Core Today</h2>
+    <p class="intro">Before the bigger picture: here's exactly what installing Otacon gives you the moment it finishes, no roadmap items included.</p>
+
+    <div class="today-panel">
+      <p class="kicker">✓ Available the moment install finishes</p>
+      <ul class="today-list">
+        <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command</li>
+        <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
+        <li><span class="ok">✓</span> Create and manage persistent agents</li>
+        <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
+        <li><span class="ok">✓</span> Configure agent identities and voice profiles</li>
+        <li><span class="ok">✓</span> Automatic hardware detection selects a recommended local model tier for your GPU</li>
+        <li><span class="ok">✓</span> Provider-neutral capability routing: swap LLM/TTS/STT backends without touching agent identity</li>
+      </ul>
+      <div class="warn-note" style="margin-top: 22px;">Otacon does <strong>not</strong> install or configure an LLM for you. To actually chat with an agent, install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> separately and pull the model tier Otacon recommended for your hardware. Otacon's default provider talks to Ollama automatically once it's running. Real-time voice synthesis, speech-to-text, and image/video generation work the same way: the architecture and routing exist today, but each needs its own provider connected, and real-provider validation is still in progress (see the <a href="/otacon/#status">status table</a>).</div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="the-keep">
+    <p class="tag">01 // The Keep</p>
+    <h2>More than a chatbot</h2>
+    <p class="intro">A Keep is a private AI environment built around you. Instead of one generic assistant, Otacon is designed around persistent agents with their own identities, conversations, memories, voices, and capabilities: agents that can live in their own rooms and interact with services running across your own machines. Start with a local AI assistant. Grow it into a system that coordinates models, GPUs, media services, smart-home systems, search, voice, and automation.</p>
+
+    <div class="treebox" aria-label="The Keep architecture diagram">                         YOUR KEEP
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+          <strong>AI AGENTS</strong>                   <strong>SERVICES</strong>
+              │                           │
+      ┌───────┼───────┐          ┌────────┼────────┐
+      │       │       │          │        │        │
+   Agent A  Agent B  Agent C    Media    Home    Search
+      │       │       │          │        │        │
+   Memory  Memory   Memory      Plex      HA    SearXNG
+   Voice   Voice    Voice       *arr
+   Room    Room     Room
+      │       │       │
+      └───────┴───────┘
+              │
+       <strong>CAPABILITY ROUTER</strong>
+              │
+     ┌────────┼──────────┐
+     │        │          │
+  Local     GPU        Remote
+  Models   Workers      Nodes</div>
+    <p class="diagram-caption">Agent names above are illustrative: this is the architecture shape, not a specific deployment.</p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <p class="tag">02 // Proof</p>
+    <div class="reference-block">
+      <h2 class="display">Not a concept. A working reference environment.</h2>
+      <p class="lede2">The public project is derived from Antonio G. Garcia's working self-hosted environment, where AI agents coexist with local models, dedicated GPUs, voice systems, media automation, containers, search, smart-home infrastructure, and automated operations.</p>
+      <span class="reference-tag">Reference Keep: not all components are included in Otacon Core</span>
+      <ul>
+        <li>Persistent character/agent rooms with independent identity, memory, and voice</li>
+        <li>Local LLM inference with hardware-aware model selection</li>
+        <li>Dedicated GPU compute and remote worker nodes</li>
+        <li>Image and video generation pipelines</li>
+        <li>Voice synthesis and voice satellites</li>
+        <li>Containerized services with health monitoring and automated recovery</li>
+        <li>Media automation (download/library automation, Plex/Jellyfin, request systems)</li>
+        <li>Search/research services</li>
+        <li>Home Assistant and physical-device integrations</li>
+        <li>Discord and external messaging interfaces</li>
+        <li>Resource arbitration and GPU reclamation across machines</li>
+      </ul>
+      <p style="margin-top: 26px; font-weight: 700; color: var(--cream); font-size: 1.05rem;">Otacon Core installs the foundation. The Keep Blueprint shows what that foundation can become.</p>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <p class="tag">03 // Growth Path</p>
+    <h2>Where the foundation leads</h2>
+    <div class="progression">
+      <div class="step core">Install Otacon</div>
+      <div class="arrow-down">↓</div>
+      <div class="step core">Local AI</div>
+      <div class="arrow-down">↓</div>
+      <div class="step core">Persistent Agents</div>
+      <div class="arrow-down">↓</div>
+      <div class="step core">Memory + Voices</div>
+      <div class="arrow-down">↓</div>
+      <div class="step keep">Agent Rooms</div>
+      <div class="arrow-down">↓</div>
+      <div class="step keep">Tools + Capabilities</div>
+      <div class="arrow-down">↓</div>
+      <div class="step keep">Media + Automation</div>
+      <div class="arrow-down">↓</div>
+      <div class="step keep">GPU / Remote Nodes</div>
+      <div class="arrow-down">↓</div>
+      <div class="step keep">Your Own Keep</div>
+    </div>
+    <p class="progression-caption">Otacon Core installs the foundation. Each additional layer shows how that foundation can grow toward a full Keep.</p>
+    <div class="legend" style="justify-content: center; margin-top: 18px; margin-bottom: 0;">
+      <span><span class="dot available"></span> Otacon Core, today</span>
+      <span><span class="dot keep-ref"></span> Keep Blueprint direction</span>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <p class="tag">04 // How to Get It</p>
+    <h2>Three ways in</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tier</th><th>What it is</th><th>Status</th><th>Price</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Otacon Core</strong></td><td>Free · open source · self-hosted</td><td>Install today</td><td>Free</td></tr>
+          <tr><td><strong>Keep Blueprint</strong></td><td>The broader ecosystem architecture demonstrated by the real Keep</td><td>Direction, not yet a public installer</td><td>Not offered publicly yet</td></tr>
+          <tr><td><strong>Otaconskeep Services</strong></td><td>Architecture · deployment · support</td><td>Available now</td><td>Contact for scope/pricing</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="btn-row" style="margin-top: 20px;">
+      <a class="btn btn-ghost" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">💬 Ask in Discord</a>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="projects">
+    <p class="tag">05 // The Umbrella</p>
+    <h2>Otaconskeep → Otacon + AI9</h2>
+    <p class="intro">Otacon is the agent/orchestration side of Otaconskeep. AI9 is the GPU/local-compute side: the same discipline (detect real hardware, fail loudly when it isn't there, no silent cloud fallback) applied to a standalone pipeline. Future projects live under the same roof.</p>
+
+    <div class="treebox" style="margin-bottom: 32px;">OTACONSKEEP
+    │
+    ├── <strong>OTACON</strong>: agents · memory · identity ·
+    │       orchestration · capabilities
+    │
+    └── <strong>AI9</strong>: GPU workloads · local inference ·
+            manga colorization · AI compute</div>
+
+    <div class="projects">
+
+      <article class="project-card">
+        <span class="kicker">Project 01 · Agent Platform</span>
+        <h3>Otacon<span>AI Ecosystem</span></h3>
+        <p style="color: var(--cream-dim); margin: 0;">Persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="#today">what you get today</a>.</p>
+
+        <details class="install-toggle">
+          <summary>Install Otacon</summary>
+          <div class="install-box">
+            <h4>Requires Ubuntu or Debian Linux</h4>
+            <div class="codebox">
+              <code id="otacon-cmd">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+              <button class="copy-btn" data-copy-target="otacon-cmd">Copy</button>
+            </div>
+            <p class="info-note">Asks for your password once (sudo, for system packages). Ends with a local web UI at <span class="mono">http://127.0.0.1:5757</span>. An LLM provider (Ollama) still needs to be connected separately, see above.</p>
+          </div>
+        </details>
+
+        <div class="btn-row">
+          <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
+          <a class="btn btn-ghost" href="/otacon/">Learn More</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <span class="kicker">Project 02 · GPU Pipeline</span>
+        <h3>AI9<span>Manga Colorizer</span></h3>
+        <p style="color: var(--cream-dim); margin: 0;">Hardware-aware local manga colorization built around real GPU inference, automatic CUDA/PyTorch runtime selection, and a Firefox reading extension. No cloud API in the loop.</p>
+        <ul>
+          <li>RTX 30 / 40 / 50-series (Blackwell) support</li>
+          <li>Automatic GPU detection &amp; PyTorch/CUDA wheel selection</li>
+          <li>Local-only processing, content-hash caching</li>
+        </ul>
+
+        <details class="install-toggle">
+          <summary>Install AI9</summary>
+          <div class="install-box">
+            <h4>Windows 10/11 + Git Bash (not a Linux curl one-liner)</h4>
+            <p style="margin: 0 0 12px; font-size: 0.9rem; color: var(--cream-dim);">Download this repo, then double-click the installer. No terminal required:</p>
+            <div class="codebox">
+              <code id="ai9-cmd">install_ai9.bat</code>
+              <button class="copy-btn" data-copy-target="ai9-cmd">Copy</button>
+            </div>
+            <p class="info-note">Prefer a terminal? Open Git Bash in the extracted folder and run <span class="mono">./install_ai9.sh</span> instead. Same installer either way.</p>
+          </div>
+        </details>
+
+        <div class="btn-row">
+          <a class="btn btn-ghost" href="https://github.com/Otaconskeep/AI9" target="_blank" rel="noopener">View on GitHub</a>
+          <a class="btn btn-ghost" href="/ai9/">Learn More</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Otaconskeep · Designed &amp; Engineered by Antonio G. Garcia. Built for the Keep.</span>
+    <span><a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">github.com/Otaconskeep</a> · <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
