@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Otacon AI Ecosystem: Otaconskeep</title>
+<meta name="description" content="Otacon: a local-first AI ecosystem for persistent agents on hardware you control. What's available today, the architecture, and how it connects to the broader Keep.">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="filebar">
+  <div class="wrap">
+    <span>FILE // OTACON-AI-ECOSYSTEM</span>
+    <span>TIER // OTACON CORE</span>
+  </div>
+</div>
+
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="/">Otaconskeep</a>
+    <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+    <div class="navlinks">
+      <a href="/">Home</a>
+      <a href="/otacon/" aria-current="page">Otacon</a>
+      <a href="/ai9/">AI9</a>
+      <a href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">GitHub</a>
+      <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <section class="hero flush">
+    <div class="stamp">Otacon Core<small>free · full source</small></div>
+    <p class="eyebrow" style="margin-top: 18px;">Project 01 // Agent Platform</p>
+    <h1 class="display" style="font-size: clamp(2.6rem, 7vw, 4.5rem);">Otacon AI Ecosystem</h1>
+    <p class="lede">The foundation of a Keep: persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="/#the-keep">what a Keep is</a> for where this is headed.</p>
+    <div class="btn-row" style="margin-top: 26px;">
+      <a class="btn btn-primary" href="#install">▾ Install Otacon</a>
+      <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="today">
+    <p class="tag">Right Now</p>
+    <h2>Otacon Core today</h2>
+    <p class="intro">Exactly what installing Otacon gives you the moment it finishes. No roadmap items included.</p>
+
+    <div class="today-panel">
+      <p class="kicker">✓ Available the moment install finishes</p>
+      <ul class="today-list">
+        <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command</li>
+        <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
+        <li><span class="ok">✓</span> Create and manage persistent agents</li>
+        <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
+        <li><span class="ok">✓</span> Configure agent identities and voice profiles</li>
+        <li><span class="ok">✓</span> Automatic hardware detection selects a recommended local model tier for your GPU</li>
+        <li><span class="ok">✓</span> Provider-neutral capability routing: swap LLM/TTS/STT backends without touching agent identity</li>
+      </ul>
+      <div class="warn-note" style="margin-top: 22px;">Otacon does <strong>not</strong> install or configure an LLM for you. To chat with an agent, install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> separately and pull the model tier Otacon recommended. Its default provider talks to Ollama automatically once it's running. Voice synthesis, speech-to-text, and image/video generation follow the same pattern: the routing exists, but each needs its own provider connected (see <a href="#status">status</a> below).</div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <p class="tag">Architecture</p>
+    <h2>Built on a resource arbiter, not a script</h2>
+    <div class="flow">
+      <span class="node">User</span><span class="arrow">→</span>
+      <span class="node">Agent (identity · memory · voice)</span><span class="arrow">→</span>
+      <span class="node">Capability Router</span><span class="arrow">→</span>
+      <span class="node">LLM / TTS / STT Providers</span>
+    </div>
+    <p class="intro" style="margin-top: 22px;">A provider-neutral resource arbiter sits beneath capability routing: workloads request logical CPU/RAM/GPU/VRAM and receive leases that respect placement, priority, and health, rather than agents hardcoding device indexes. Idle model residency can be reclaimed gracefully while active work is protected. Per-voice synthesis settings are configured individually rather than one global profile applied to every voice. This is the same architecture that, at full scale in the private Keep, extends to media, home, and multi-node GPU orchestration. See <a href="/#the-keep">The Keep</a>.</p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="install">
+    <p class="tag">Install</p>
+    <h2>One command, no experience required</h2>
+    <p class="intro">This is the exact command from <span class="mono">install_otacon.sh</span>, committed at the root of the repository. It's safe to run more than once: every step skips whatever's already done.</p>
+
+    <ol class="checklist">
+      <li><div class="step-body">
+        <h4>Open a terminal on an Ubuntu or Debian Linux machine</h4>
+        <p>Ubuntu Desktop: press the Super key, type <span class="mono">terminal</span>, press Enter. Already SSH'd in? You're already there.</p>
+      </div></li>
+      <li><div class="step-body">
+        <h4>Paste the install command</h4>
+        <div class="codebox">
+          <code id="otacon-cmd-full">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+          <button class="copy-btn" data-copy-target="otacon-cmd-full">Copy</button>
+        </div>
+      </div></li>
+      <li><div class="step-body">
+        <h4>Press Enter and wait</h4>
+        <p>First run takes 10–30 minutes: installs Python, Rust, and Otacon itself; builds a native <span class="mono">.deb</span> package; runs the self-test suite. It asks for your password once, for <span class="mono">sudo</span>.</p>
+      </div></li>
+      <li><div class="step-body">
+        <h4>Open Otacon</h4>
+        <p>It prints and tries to auto-open a local web address, and detects your LAN IP too:</p>
+        <div class="tablewrap" style="margin-top: 8px; max-width: 420px;">
+          <table>
+            <tr><th>Local</th><td class="mono">http://127.0.0.1:5757</td></tr>
+            <tr><th>LAN</th><td class="mono">http://&lt;your-lan-ip&gt;:5757</td></tr>
+          </table>
+        </div>
+      </div></li>
+      <li><div class="step-body">
+        <h4>Connect an LLM to actually chat</h4>
+        <p>Install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> and pull the model tier Otacon recommended during install. Otacon's default provider looks for Ollama at <span class="mono">127.0.0.1:11434</span> automatically. No config file editing required for the default setup.</p>
+      </div></li>
+    </ol>
+
+    <div class="warn-note">Requires <span class="mono">sudo</span> to install a handful of system packages (build tools, Python, WebKit libs). This is what triggers the one password prompt. The script explicitly refuses to run as the <span class="mono">root</span> user itself.</div>
+    <div class="info-note">Also detects your GPU (if NVIDIA), recommends <span class="mono">qwen2.5:7b</span> at 8GB+ VRAM or <span class="mono">qwen2.5:1.5b</span> otherwise, and falls back to CPU cleanly if no GPU is present.</div>
+
+    <details class="install-toggle" style="margin-top: 22px;">
+      <summary>Optional environment variables</summary>
+      <div class="install-box">
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Variable</th><th>Default</th><th>What it changes</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">OTACON_INSTALL_DIR</td><td class="mono">~/otacon-ai-ecosystem</td><td>Where Otacon gets installed</td></tr>
+              <tr><td class="mono">OTACON_BUILD_NATIVE</td><td class="mono">1</td><td>Set to 0 to skip building the native .deb app</td></tr>
+              <tr><td class="mono">OTACON_INSTALL_DEB</td><td class="mono">0</td><td>Set to 1 to also install the built .deb automatically</td></tr>
+              <tr><td class="mono">OTACON_LAUNCH_WIZARD</td><td class="mono">1</td><td>Set to 0 to skip auto-launching the web UI</td></tr>
+              <tr><td class="mono">OTACON_INSTALL_STT</td><td class="mono">0</td><td>Set to 1 to install optional Faster-Whisper speech-to-text</td></tr>
+              <tr><td class="mono">OTACON_RUN_TESTS</td><td class="mono">1</td><td>Set to 0 to skip the self-test suite (faster, less safe)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <p style="margin-top: 20px; font-size: 0.92rem;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem#readme" target="_blank" rel="noopener">Full install documentation on GitHub →</a></p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="status">
+    <p class="tag">Status</p>
+    <h2>What's real, what needs a provider, what's Keep-only</h2>
+    <p class="intro">Straight from the repository's own status table. "Requires provider" means the routing and architecture exist and are testable today, you connect the backend. "Keep Reference" means it exists only in Antonio's private environment, not in this public repo at any maturity level yet.</p>
+
+    <div class="legend">
+      <span><span class="dot available"></span> Available now</span>
+      <span><span class="dot provider"></span> Requires provider</span>
+      <span><span class="dot keep-ref"></span> Keep reference</span>
+      <span><span class="dot planned"></span> Planned</span>
+    </div>
+
+    <div class="loadout">
+      <div class="item"><h4>Persistent conversations</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Long-term memory</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Agent identity &amp; voice profile config</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Native installer &amp; hardware planning</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Backup / restore / safe uninstall</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Agent chat (via Ollama)</h4><span class="badge pending">Requires provider</span></div>
+      <div class="item"><h4>Voice synthesis (Piper)</h4><span class="badge pending">Requires provider</span></div>
+      <div class="item"><h4>Speech-to-text</h4><span class="badge pending">Requires provider</span></div>
+      <div class="item"><h4>Image / video generation</h4><span class="badge pending">Requires provider</span></div>
+      <div class="item"><h4>Single remote compute node</h4><span class="badge pending">Requires provider</span></div>
+      <div class="item"><h4>Agent rooms</h4><span class="badge keep-ref">Keep reference</span></div>
+      <div class="item"><h4>Media automation, Home Assistant, search</h4><span class="badge keep-ref">Keep reference</span></div>
+      <div class="item"><h4>Multi-node GPU orchestration</h4><span class="badge keep-ref">Keep reference</span></div>
+      <div class="item"><h4>Discord / messaging integrations</h4><span class="badge planned">Planned</span></div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <p class="tag">Three Tiers</p>
+    <h2>Otacon Core, the Keep Blueprint, and Otaconskeep Services</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tier</th><th>What it is</th><th>Status</th><th>Price</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Otacon Core</strong></td><td>Free · open source · self-hosted</td><td>Install today</td><td>Free</td></tr>
+          <tr><td><strong>Keep Blueprint</strong></td><td>The broader ecosystem architecture demonstrated by the real Keep</td><td>Direction, not yet a public installer</td><td>Not offered publicly yet</td></tr>
+          <tr><td><strong>Otaconskeep Services</strong></td><td>Architecture · deployment · support</td><td>Available now</td><td>Contact for scope/pricing</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="intro" style="margin-top: 18px;">There's no license key or artificial limit in Otacon Core. It's the real, complete public platform as it stands today. <strong>Otacon Core installs the foundation. The Keep Blueprint shows what that foundation can become.</strong></p>
+    <div class="btn-row">
+      <a class="btn btn-ghost" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">💬 Ask in Discord</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Otacon AI Ecosystem · Designed &amp; Engineered by Antonio G. Garcia. Apache-2.0.</span>
+    <span><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">github.com/Otaconskeep/otacons-ai-ecosystem</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>
