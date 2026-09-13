@@ -846,6 +846,220 @@ td.num { font-variant-numeric: tabular-nums; font-family: 'IBM Plex Mono', monos
 }
 .tour-copy p { color: var(--cream-dim); margin-top: 12px; font-size: 0.95rem; }
 
+/* ---------------- hear the keep (codec voice archive) ---------------- */
+.codec-unit {
+  border: 1px solid var(--line-bright);
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.codec-unit-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream-faint);
+}
+.codec-unit-head .status-live {
+  color: var(--signal);
+}
+.codec-unit-head .status-live::before {
+  content: '●';
+  margin-right: 6px;
+  animation: blink 1.4s steps(1) infinite;
+}
+
+.codec-screen {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  background: #05060a;
+  overflow: hidden;
+}
+.codec-screen .frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+}
+.codec-screen .frame.active { opacity: 1; }
+.codec-screen .frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  filter: saturate(0.55) brightness(0.42);
+}
+.codec-screen .scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+  pointer-events: none;
+}
+.codec-screen .screen-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+.codec-screen .transmit-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--signal);
+  margin-bottom: 10px;
+  min-height: 1.2em;
+}
+.codec-screen .transmit-label.idle { color: var(--cream-faint); }
+.codec-screen .speaker-name {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  color: var(--cream);
+  text-transform: uppercase;
+  text-shadow: 0 0 24px rgba(0,0,0,0.7);
+}
+.codec-screen .speaker-role {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--orange-bright);
+  margin-top: 6px;
+}
+
+.codec-agents {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+@media (max-width: 700px) { .codec-agents { grid-template-columns: repeat(2, 1fr); } }
+.codec-agent {
+  background: var(--bg-elevated);
+  padding: 16px 10px;
+  text-align: center;
+  opacity: 0.4;
+  transition: opacity 0.5s ease, background 0.5s ease;
+}
+.codec-agent.active {
+  opacity: 1;
+  background: var(--surface-2);
+}
+.codec-agent img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--line-bright);
+  margin: 0 auto 10px;
+  display: block;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+.codec-agent.active img {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 4px rgba(221, 138, 60, 0.15);
+}
+.codec-agent .a-name {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 800;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+.codec-agent .a-role {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  color: var(--cream-faint);
+  margin-top: 4px;
+}
+
+.codec-controls {
+  padding: 20px 22px 22px;
+  border-top: 1px solid var(--line);
+}
+.codec-play-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.codec-play-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--orange);
+  color: #1a1206;
+  border: none;
+  border-radius: 5px;
+  padding: 14px 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.codec-play-btn:hover { background: var(--orange-bright); }
+.codec-restart-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  background: transparent;
+  border: 1px solid var(--line-bright);
+  color: var(--cream-dim);
+  border-radius: 5px;
+  padding: 10px 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.codec-restart-btn:hover { border-color: var(--orange); color: var(--orange-bright); }
+.codec-progress-wrap {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.codec-progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.codec-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--orange-dim), var(--orange-bright));
+}
+.codec-time {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--cream-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.codec-foot {
+  margin-top: 18px;
+  font-size: 0.88rem;
+  color: var(--cream-dim);
+}
+.codec-foot .voice-tag {
+  display: block;
+  margin-top: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--keep-ref);
+}
+
 /* ---------------- footer ---------------- */
 footer {
   border-top: 1px solid var(--line);
