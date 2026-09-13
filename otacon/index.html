@@ -42,8 +42,7 @@
     <p class="lede">The foundation of a Keep: persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="/#the-keep">what a Keep is</a> for where this is headed.</p>
     <div class="btn-row" style="margin-top: 26px;">
       <a class="btn btn-primary btn-install" href="#install">Install Otacon</a>
-      <a class="btn btn-primary btn-install" href="#install-default-model">Install + Default Model</a>
-      <a class="btn btn-primary btn-install" href="#voice-trainer">Install Voice Trainer</a>
+      <a class="btn btn-ghost" href="/#install-ai9">Install AI9 Manga Colorizer</a>
       <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </section>
@@ -59,15 +58,15 @@
       <p class="kicker">✓ Available the moment install finishes</p>
       <ul class="today-list">
         <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command, and it starts itself from then on</li>
-        <li><span class="ok">✓</span> Optional one-click Default Model: Ollama + a chat model sized to your GPU VRAM</li>
-        <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
+        <li><span class="ok">✓</span> Default Model included: Ollama + a chat model sized to your GPU VRAM</li>
+        <li><span class="ok">✓</span> Genome Voice Trainer included for custom Piper agent voices</li>
+        <li><span class="ok">✓</span> Open your own local Otacon web interface and chat with an agent</li>
         <li><span class="ok">✓</span> Create and manage persistent agents</li>
         <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
         <li><span class="ok">✓</span> Configure agent identities and voice profiles</li>
-        <li><span class="ok">✓</span> Automatic hardware detection recommends a local model tier for your GPU</li>
         <li><span class="ok">✓</span> Provider-neutral capability routing: swap LLM/TTS/STT backends without touching agent identity</li>
       </ul>
-      <div class="info-note" style="margin-top: 22px;">Core does not force a chat model. Want agents that talk immediately? Use optional <a href="#install-default-model">Default Model</a> (Ollama + VRAM-tier model). Voice / STT / image still need their own providers when you want those (see <a href="#status">status</a>).</div>
+      <div class="info-note" style="margin-top: 22px;">Normal Otacon install = Core + Default Model + Voice Trainer. Speech-to-text and image/video still need their own providers when you want those (see <a href="#status">status</a>).</div>
     </div>
   </section>
 </div>
@@ -90,13 +89,14 @@
   <section id="install">
     <p class="tag">Install // One Click</p>
     <h2>Install Otacon</h2>
-    <p class="intro">Pick Windows or Linux for Core. Add optional Default Model in one click if you want Ollama chat ready at the end.</p>
+    <p class="intro">One command. Includes Default Model (Ollama chat) and Genome Voice Trainer. Pick Windows or Linux.</p>
 
-    <div class="install-panel" style="margin-bottom: 18px;">
+    <div class="install-panel" style="margin-bottom: 28px;">
       <div class="install-panel-head">
-        <h3 class="install-panel-title">Otacon Core</h3>
-        <span class="one-click-badge">One click · Core</span>
+        <h3 class="install-panel-title">Otacon</h3>
+        <span class="one-click-badge">One click</span>
       </div>
+      <p class="install-panel-lead">Core + chat model by VRAM + Voice Trainer. Under 6GB → <span class="mono">qwen2.5:1.5b</span> · ≥6 → <span class="mono">3b</span> · ≥8 → <span class="mono">7b</span> · ≥16 → <span class="mono">14b</span>.</p>
       <div class="os-grid">
         <div class="os-card">
           <p class="os-label">Windows</p>
@@ -109,30 +109,7 @@
             <code id="otacon-cmd-full">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
             <button class="copy-btn" data-copy-target="otacon-cmd-full">Copy</button>
           </div>
-          <p class="os-hint">First run takes 10–30 minutes and asks for sudo once. Registers a systemd service that survives reboots.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="install-panel" id="install-default-model" style="margin-bottom: 28px;">
-      <div class="install-panel-head">
-        <h3 class="install-panel-title">Optional · Default Model</h3>
-        <span class="one-click-badge">One click · Chat</span>
-      </div>
-      <p class="install-panel-lead">Adds Ollama and pulls a VRAM-sized chat model in the same Core install so agents can talk when it finishes.</p>
-      <div class="os-grid">
-        <div class="os-card">
-          <p class="os-label">Windows</p>
-          <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon_with_default_model.bat" download>Download Windows + Default Model</a>
-          <p class="os-hint">Same as Core, with Default Model enabled.</p>
-        </div>
-        <div class="os-card">
-          <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
-          <div class="codebox">
-            <code id="otacon-model-cmd-full">OTACON_INSTALL_DEFAULT_MODEL=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
-            <button class="copy-btn" data-copy-target="otacon-model-cmd-full">Copy</button>
-          </div>
-          <p class="os-hint">Under 6GB → <span class="mono">qwen2.5:1.5b</span> · ≥6 → <span class="mono">3b</span> · ≥8 → <span class="mono">7b</span> · ≥16 → <span class="mono">14b</span>. Override: <span class="mono">OTACON_LLM_MODEL=...</span></p>
+          <p class="os-hint">First run takes a while and asks for sudo once. Registers a systemd service that survives reboots.</p>
         </div>
       </div>
     </div>
@@ -141,7 +118,7 @@
       <p class="kicker" style="color: var(--orange-bright);">✓ When it's done</p>
       <p style="margin: 14px 0 0; font-size: 1.05rem;">Otacon is ready. Open it any time at:</p>
       <p style="margin: 10px 0 0;"><a class="btn btn-primary" href="http://localhost:5757" target="_blank" rel="noopener">Open Otacon &rarr;</a></p>
-      <p class="info-note" style="margin-top: 16px;">Used Default Model? Chat talks to Ollama at <span class="mono">127.0.0.1:11434</span>. Core-only install? Add Default Model later with the same one-click flag.</p>
+      <p class="info-note" style="margin-top: 16px;">Chat talks to Ollama at <span class="mono">127.0.0.1:11434</span>. Voice Trainer status UI (when GPU path succeeded): <span class="mono">http://127.0.0.1:8765</span>.</p>
     </div>
 
     <details class="install-toggle" style="margin-top: 22px;">
@@ -167,8 +144,8 @@
               <tr><td class="mono">OTACON_LAUNCH_WIZARD</td><td class="mono">1</td><td>Set to 0 to skip auto-launching the service at the end</td></tr>
               <tr><td class="mono">OTACON_INSTALL_STT</td><td class="mono">0</td><td>Set to 1 to install optional Faster-Whisper speech-to-text</td></tr>
               <tr><td class="mono">OTACON_RUN_TESTS</td><td class="mono">1</td><td>Set to 0 to skip the self-test suite (faster, less safe)</td></tr>
-              <tr><td class="mono">OTACON_INSTALL_VOICE_TRAINER</td><td class="mono">0</td><td>Set to 1 to also install Genome Voice Trainer (GPU Piper) in the same run</td></tr>
-              <tr><td class="mono">OTACON_INSTALL_DEFAULT_MODEL</td><td class="mono">0</td><td>Set to 1 to install Ollama + VRAM-sized default chat model (optional)</td></tr>
+              <tr><td class="mono">OTACON_INSTALL_VOICE_TRAINER</td><td class="mono">1</td><td>Set to 0 to skip Genome Voice Trainer</td></tr>
+              <tr><td class="mono">OTACON_INSTALL_DEFAULT_MODEL</td><td class="mono">1</td><td>Set to 0 to skip Ollama + default chat model</td></tr>
               <tr><td class="mono">OTACON_LLM_MODEL</td><td class="mono">(auto)</td><td>Override the VRAM-picked Ollama model tag (e.g. qwen2.5:7b)</td></tr>
             </tbody>
           </table>
@@ -177,7 +154,7 @@
     </details>
 
     <div class="warn-note" style="margin-top: 18px;">Requires <span class="mono">sudo</span> to install a handful of system packages (build tools, Python, WebKit libs) and to register the systemd service. The script explicitly refuses to run as the <span class="mono">root</span> user itself.</div>
-    <div class="info-note">Optional Default Model (<span class="mono">OTACON_INSTALL_DEFAULT_MODEL=1</span>) installs Ollama with a VRAM-tier chat model: <span class="mono">qwen2.5:1.5b</span> (CPU/&lt;6GB), <span class="mono">3b</span> (≥6GB), <span class="mono">7b</span> (≥8GB), <span class="mono">14b</span> (≥16GB).</div>
+    <div class="info-note">Default Model (included) installs Ollama with a VRAM-tier chat model: <span class="mono">qwen2.5:1.5b</span> (CPU/&lt;6GB), <span class="mono">3b</span> (≥6GB), <span class="mono">7b</span> (≥8GB), <span class="mono">14b</span> (≥16GB). Skip with <span class="mono">OTACON_INSTALL_DEFAULT_MODEL=0</span> / <span class="mono">OTACON_INSTALL_VOICE_TRAINER=0</span>.</div>
 
     <p style="margin-top: 20px; font-size: 0.92rem;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem#readme" target="_blank" rel="noopener">Full install documentation on GitHub →</a></p>
   </section>
@@ -185,47 +162,29 @@
 
 <div class="wrap">
   <section id="voice-trainer">
-    <p class="tag">Voice Training // One Click</p>
-    <h2>Install Voice Trainer</h2>
-    <p class="intro">Genome Voice Trainer — GPU-only Piper cloning for Otacon agent voices. Handles Python, Docker, WSL, GPU lookup, NVIDIA Container Toolkit, the CUDA image, and a local status UI.</p>
+    <p class="tag">Voice Training</p>
+    <h2>Genome Voice Trainer — included with Otacon</h2>
+    <p class="intro">Custom Piper voices for your agents. The normal Otacon install runs this for you. Standalone only if you skipped it or need to repair.</p>
 
-    <div class="install-panel">
-      <div class="install-panel-head">
-        <h3 class="install-panel-title">Genome Voice Trainer</h3>
-        <span class="one-click-badge">One click · GPU</span>
-      </div>
-      <div class="os-grid">
-        <div class="os-card">
-          <p class="os-label">Windows</p>
-          <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.bat" download>Download Windows Installer</a>
-          <p class="os-hint">Double-click. Bootstraps WSL if needed, then hands off to the Linux installer.</p>
-        </div>
-        <div class="os-card">
-          <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
-          <div class="codebox">
-            <code id="voice-cmd-standalone">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.sh | bash</code>
-            <button class="copy-btn" data-copy-target="voice-cmd-standalone">Copy</button>
+    <details class="install-toggle">
+      <summary>Standalone Voice Trainer (advanced)</summary>
+      <div class="install-box">
+        <div class="os-grid">
+          <div class="os-card">
+            <p class="os-label">Windows</p>
+            <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.bat" download>Download Windows Installer</a>
           </div>
-          <p class="os-hint">Builds <span class="mono">piper-voice-trainer:gpu</span>, verifies CUDA, opens status UI at <span class="mono">http://127.0.0.1:8765</span>.</p>
+          <div class="os-card">
+            <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
+            <div class="codebox">
+              <code id="voice-cmd-standalone">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.sh | bash</code>
+              <button class="copy-btn" data-copy-target="voice-cmd-standalone">Copy</button>
+            </div>
+          </div>
         </div>
+        <p class="info-note" style="margin-top: 12px;">Write-up: <a href="https://github.com/Otaconskeep/otacon-voice-trainer/blob/main/docs/WRITEUP.md" target="_blank" rel="noopener">docs/WRITEUP.md</a></p>
       </div>
-      <div class="os-card">
-        <p class="os-label">Both together · Otacon Core + Voice Trainer</p>
-        <div class="codebox">
-          <code id="voice-cmd-core">OTACON_INSTALL_VOICE_TRAINER=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
-          <button class="copy-btn" data-copy-target="voice-cmd-core">Copy</button>
-        </div>
-        <p class="os-hint">Linux / WSL one-shot: install Otacon Core and Genome Voice Trainer in the same run.</p>
-      </div>
-    </div>
-
-    <div class="warn-note" style="margin-top: 18px;">Requires an NVIDIA GPU with working drivers. The pipeline refuses CPU training so you do not burn hours on a silent dead-end.</div>
-    <div class="info-note">Write-up (what broke, why <span class="mono">:gpu</span> exists, how Genome uses it): <a href="https://github.com/Otaconskeep/otacon-voice-trainer/blob/main/docs/WRITEUP.md" target="_blank" rel="noopener">docs/WRITEUP.md on GitHub</a>.</div>
-
-    <div class="btn-row" style="margin-top: 20px;">
-      <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacon-voice-trainer" target="_blank" rel="noopener">Voice Trainer on GitHub</a>
-      <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacon-voice-trainer/blob/main/docs/WRITEUP.md" target="_blank" rel="noopener">Read the write-up</a>
-    </div>
+    </details>
   </section>
 </div>
 
@@ -248,9 +207,9 @@
       <div class="item"><h4>Agent identity &amp; voice profile config</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Native installer &amp; hardware planning</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Backup / restore / safe uninstall</h4><span class="badge validated">Available now</span></div>
-      <div class="item"><h4>Agent chat (optional Default Model / Ollama)</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Agent chat (Default Model / Ollama)</h4><span class="badge validated">Included with Otacon</span></div>
       <div class="item"><h4>Voice synthesis (Piper)</h4><span class="badge pending">Requires provider</span></div>
-      <div class="item"><h4>Genome Voice Trainer (GPU Piper)</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Genome Voice Trainer (GPU Piper)</h4><span class="badge validated">Included with Otacon</span></div>
       <div class="item"><h4>Speech-to-text</h4><span class="badge pending">Requires provider</span></div>
       <div class="item"><h4>Image / video generation</h4><span class="badge pending">Requires provider</span></div>
       <div class="item"><h4>Single remote compute node</h4><span class="badge pending">Requires provider</span></div>
