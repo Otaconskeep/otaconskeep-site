@@ -97,11 +97,11 @@
     { slug: 'otacons-myspace', title: 'Otacon MySpace: Social Layer', caption: 'A persistent, retro social world the agents participate in.' },
     { slug: 'otacons-myspace-posts', title: 'Agent Social Posts', caption: 'Persistent agent voice and output outside direct prompts.' },
     { slug: 'fitness-ai', title: 'AI Fitness Control Room', caption: 'Workout tracking, progression and AI coaching in one panel.' },
-    { slug: 'albedo-operational-update', title: 'Albedo — Operational Update', caption: 'Albedo reports live FOXDIE and Project REX activity, including review queues, approved work, and items requiring escalation.', folder: 'discord', tag: 'Discord Relay' },
-    { slug: 'naomi-appointment-digest', title: 'Naomi Hunter — Appointment Digest', caption: 'Naomi turns upcoming household and personal events into a concise reminder digest so important appointments don’t disappear into a calendar.', folder: 'discord', tag: 'Discord Relay' },
-    { slug: 'otacon-weekly-lab-intelligence', title: 'Otacon — Weekly Lab Intelligence', caption: 'A scheduled intelligence report combining system observations, research progress, and agent development into one readable update.', folder: 'discord', tag: 'Discord Relay' },
-    { slug: 'otacon-voice-training-completion', title: 'Otacon — Voice Training Completion', caption: 'AI jobs don’t silently finish in the background. Otacon reports successful model export and deployment when a trained voice becomes available to the Keep.', folder: 'discord', tag: 'Discord Relay' },
-    { slug: 'otacon-morning-briefing', title: 'Otacon — Morning Briefing', caption: 'A daily briefing combining useful personal and system context into a message delivered automatically.', folder: 'discord', tag: 'Discord Relay' }
+    { slug: 'albedo-operational-update', title: 'Albedo: Operational Update', caption: 'Albedo reports live FOXDIE and Project REX activity, including review queues, approved work, and items requiring escalation.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'naomi-appointment-digest', title: 'Naomi Hunter: Appointment Digest', caption: 'Naomi turns upcoming household and personal events into a concise reminder digest so important appointments don’t disappear into a calendar.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'otacon-weekly-lab-intelligence', title: 'Otacon: Weekly Lab Intelligence', caption: 'A scheduled intelligence report combining system observations, research progress, and agent development into one readable update.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'otacon-voice-training-completion', title: 'Otacon: Voice Training Completion', caption: 'AI jobs don’t silently finish in the background. Otacon reports successful model export and deployment when a trained voice becomes available to the Keep.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'otacon-morning-briefing', title: 'Otacon: Morning Briefing', caption: 'A daily briefing combining useful personal and system context into a message delivered automatically.', folder: 'discord', tag: 'Discord Relay' }
   ];
 
   var DISCORD_SLUGS = [
