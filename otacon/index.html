@@ -42,6 +42,7 @@
     <p class="lede">The foundation of a Keep: persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="/#the-keep">what a Keep is</a> for where this is headed.</p>
     <div class="btn-row" style="margin-top: 26px;">
       <a class="btn btn-primary" href="#install">▾ Install Otacon</a>
+      <a class="btn btn-ghost" href="#voice-trainer">Voice Training</a>
       <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </section>
@@ -135,6 +136,7 @@
               <tr><td class="mono">OTACON_LAUNCH_WIZARD</td><td class="mono">1</td><td>Set to 0 to skip auto-launching the service at the end</td></tr>
               <tr><td class="mono">OTACON_INSTALL_STT</td><td class="mono">0</td><td>Set to 1 to install optional Faster-Whisper speech-to-text</td></tr>
               <tr><td class="mono">OTACON_RUN_TESTS</td><td class="mono">1</td><td>Set to 0 to skip the self-test suite (faster, less safe)</td></tr>
+              <tr><td class="mono">OTACON_INSTALL_VOICE_TRAINER</td><td class="mono">0</td><td>Set to 1 to also install Genome Voice Trainer (GPU Piper) in the same run</td></tr>
             </tbody>
           </table>
         </div>
@@ -145,6 +147,54 @@
     <div class="info-note">Also detects your GPU (if NVIDIA), recommends <span class="mono">qwen2.5:7b</span> at 8GB+ VRAM or <span class="mono">qwen2.5:1.5b</span> otherwise, and falls back to CPU cleanly if no GPU is present.</div>
 
     <p style="margin-top: 20px; font-size: 0.92rem;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem#readme" target="_blank" rel="noopener">Full install documentation on GitHub →</a></p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="voice-trainer">
+    <p class="tag">Voice Training</p>
+    <h2>Genome Voice Trainer — one-click GPU Piper cloning</h2>
+    <p class="intro">Train a custom Piper voice on your NVIDIA GPU, then plug it into Otacon agent voice profiles. The installer handles Python, Docker, WSL on Windows, GPU lookup, the NVIDIA Container Toolkit, the CUDA training image, and a simple local status UI. Training is GPU-only on purpose: CPU torch was the silent failure mode we closed.</p>
+
+    <div class="today-panel">
+      <p class="kicker">✓ One click, forget it</p>
+      <ul class="today-list">
+        <li><span class="ok">✓</span> ASCII Otacon-style installer with interactive menu</li>
+        <li><span class="ok">✓</span> Detects NVIDIA GPU via <span class="mono">nvidia-smi</span> and refuses to pretend CPU is fine</li>
+        <li><span class="ok">✓</span> Builds <span class="mono">piper-voice-trainer:gpu</span> and verifies CUDA inside the container</li>
+        <li><span class="ok">✓</span> Local status UI at <span class="mono">http://127.0.0.1:8765</span></li>
+        <li><span class="ok">✓</span> Hooks into Otacon Core: <span class="mono">OTACON_INSTALL_VOICE_TRAINER=1</span></li>
+      </ul>
+    </div>
+
+    <ol class="checklist" style="margin-top: 22px;">
+      <li><div class="step-body">
+        <h4>Standalone (voice trainer only)</h4>
+        <div class="codebox">
+          <code id="voice-cmd-standalone">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.sh | bash</code>
+          <button class="copy-btn" data-copy-target="voice-cmd-standalone">Copy</button>
+        </div>
+      </div></li>
+      <li><div class="step-body">
+        <h4>With Otacon Core in one shot</h4>
+        <div class="codebox">
+          <code id="voice-cmd-core">OTACON_INSTALL_VOICE_TRAINER=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+          <button class="copy-btn" data-copy-target="voice-cmd-core">Copy</button>
+        </div>
+      </div></li>
+      <li><div class="step-body">
+        <h4>Windows</h4>
+        <p>Use <span class="mono">install_voice_trainer.bat</span> from the repo — it bootstraps WSL and hands off to the Linux installer.</p>
+      </div></li>
+    </ol>
+
+    <div class="warn-note">Requires an NVIDIA GPU with working drivers. The pipeline refuses CPU training so you do not burn hours on a silent dead-end.</div>
+    <div class="info-note">Write-up (what broke, why <span class="mono">:gpu</span> exists, how Genome uses it): <a href="https://github.com/Otaconskeep/otacon-voice-trainer/blob/main/docs/WRITEUP.md" target="_blank" rel="noopener">docs/WRITEUP.md on GitHub</a>.</div>
+
+    <div class="btn-row" style="margin-top: 20px;">
+      <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacon-voice-trainer" target="_blank" rel="noopener">Voice Trainer on GitHub</a>
+      <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacon-voice-trainer/blob/main/docs/WRITEUP.md" target="_blank" rel="noopener">Read the write-up</a>
+    </div>
   </section>
 </div>
 
@@ -169,6 +219,7 @@
       <div class="item"><h4>Backup / restore / safe uninstall</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Agent chat (via Ollama)</h4><span class="badge pending">Requires provider</span></div>
       <div class="item"><h4>Voice synthesis (Piper)</h4><span class="badge pending">Requires provider</span></div>
+      <div class="item"><h4>Genome Voice Trainer (GPU Piper)</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Speech-to-text</h4><span class="badge pending">Requires provider</span></div>
       <div class="item"><h4>Image / video generation</h4><span class="badge pending">Requires provider</span></div>
       <div class="item"><h4>Single remote compute node</h4><span class="badge pending">Requires provider</span></div>
