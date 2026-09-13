@@ -133,6 +133,75 @@
 </div>
 
 <div class="wrap">
+  <section id="hear-the-keep">
+    <p class="tag">Hear the Keep</p>
+    <h2>Real voices trained for the agents that live here</h2>
+    <p class="intro">Four agents, four trained voices, one welcome. Press play when you're ready. Nothing here plays on its own.</p>
+
+    <div class="codec-unit">
+      <div class="codec-unit-head">
+        <span>Chnl Codec &middot; Ghost Pastel &middot; Personnel Voice Archive</span>
+        <span id="codec-live-tag">Standing By</span>
+      </div>
+
+      <div class="codec-screen" id="codec-screen">
+        <div class="frame active" data-slot="0"><img src="assets/img/keep/loading-room.webp" alt=""></div>
+        <div class="frame" data-slot="1"><img src="assets/img/keep/foxdie.webp" alt=""></div>
+        <div class="frame" data-slot="2"><img src="assets/img/keep/relationships-1.webp" alt=""></div>
+        <div class="frame" data-slot="3"><img src="assets/img/keep/project-rex-board.webp" alt=""></div>
+        <div class="scanlines"></div>
+        <div class="screen-overlay">
+          <p class="transmit-label idle" id="codec-transmit-label">Voice Link Standby</p>
+          <p class="speaker-name" id="codec-speaker-name">Otaconskeep</p>
+          <p class="speaker-role" id="codec-speaker-role">Press play to begin</p>
+        </div>
+      </div>
+
+      <div class="codec-agents" id="codec-agents">
+        <div class="codec-agent" data-i="0">
+          <img src="assets/img/agents/otacon.webp" alt="Otacon">
+          <div class="a-name">Otacon</div>
+          <div class="a-role">Systems / Engineering</div>
+        </div>
+        <div class="codec-agent" data-i="1">
+          <img src="assets/img/agents/meiling.webp" alt="Mei Ling">
+          <div class="a-name">Mei Ling</div>
+          <div class="a-role">Operations / Records</div>
+        </div>
+        <div class="codec-agent" data-i="2">
+          <img src="assets/img/agents/naomi.webp" alt="Naomi Hunter">
+          <div class="a-name">Naomi Hunter</div>
+          <div class="a-role">Research / Continuity</div>
+        </div>
+        <div class="codec-agent" data-i="3">
+          <img src="assets/img/agents/halister.webp" alt="Halister Black Cloak">
+          <div class="a-name">Halister Black Cloak</div>
+          <div class="a-role">Project REX / Governance</div>
+        </div>
+      </div>
+
+      <div class="codec-controls">
+        <div class="codec-play-row">
+          <button type="button" class="codec-play-btn" id="codec-play-btn">&#9654; Play Keep Welcome</button>
+          <button type="button" class="codec-restart-btn" id="codec-restart-btn">&#8635; Restart</button>
+          <div class="codec-progress-wrap">
+            <span class="codec-time" id="codec-time-elapsed">0:00</span>
+            <div class="codec-progress-track" id="codec-progress-track">
+              <div class="codec-progress-fill" id="codec-progress-fill"></div>
+            </div>
+            <span class="codec-time" id="codec-time-total">0:00</span>
+          </div>
+        </div>
+        <p class="codec-foot">These are locally trained agent voices from the running Otaconskeep reference environment.
+          <span class="voice-tag">Voice Models // Local // Self-Hosted</span>
+        </p>
+        <audio id="codec-audio" preload="none" src="assets/audio/keep-welcome.mp3"></audio>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
   <section id="the-keep">
     <p class="tag">01 // The Keep</p>
     <h2>More than a chatbot</h2>
