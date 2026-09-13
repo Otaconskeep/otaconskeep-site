@@ -740,16 +740,21 @@ td.num { font-variant-numeric: tabular-nums; font-family: 'IBM Plex Mono', monos
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
+  margin: 0;
+  box-shadow: var(--shadow);
 }
 .shot-card img { display: block; width: 100%; height: auto; }
 .shot-card figcaption {
-  padding: 10px 14px;
+  padding: 12px 14px;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
-  color: var(--cream-faint);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--orange-bright);
   border-top: 1px solid var(--line);
+  background: var(--bg-elevated);
 }
+.project-demo { max-width: 100%; }
 .livecheck h4 {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.75rem;
