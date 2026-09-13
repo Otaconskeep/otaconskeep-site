@@ -45,6 +45,7 @@
     <div class="btn-row" style="margin-top: 26px;">
       <a class="btn btn-primary btn-install" href="#install-otacon">Install Otacon</a>
       <a class="btn btn-secondary-strong btn-install" href="#install-voice">Install Voice Trainer</a>
+      <a class="btn btn-secondary-strong btn-install" href="#install-ai9">Install AI9</a>
       <a class="btn btn-ghost" href="#today">What You Get Today</a>
     </div>
   </section>
@@ -329,8 +330,8 @@
 <div class="wrap">
   <section id="install">
     <p class="tag">Install // One Click</p>
-    <h2>Install Otacon. Install Voice Trainer.</h2>
-    <p class="intro">Pick Windows or Linux. One click either way. No scavenger hunt through docs.</p>
+    <h2>Install Otacon. Voice Trainer. AI9.</h2>
+    <p class="intro">Pick your project, pick Windows or Linux where it applies. One click either way.</p>
 
     <div class="install-stack">
 
@@ -388,6 +389,30 @@
         </div>
       </div>
 
+      <div class="install-panel" id="install-ai9">
+        <div class="install-panel-head">
+          <h3 class="install-panel-title">Install AI9 Manga Colorizer</h3>
+          <span class="one-click-badge">One click · Windows</span>
+        </div>
+        <p class="install-panel-lead">Local GPU manga colorization + Firefox reading extension. Windows Git Bash installer — not a Linux <span class="mono">curl | bash</span> one-liner, and not WSL.</p>
+        <div class="os-grid">
+          <div class="os-card">
+            <p class="os-label">Windows 10 / 11</p>
+            <a class="download-btn" href="https://github.com/Otaconskeep/AI9/archive/refs/heads/main.zip">Download AI9 ZIP</a>
+            <p class="os-hint">Extract the ZIP, then double-click <span class="mono">install_ai9.bat</span>. It installs Git Bash if needed and finishes the rest.</p>
+            <a class="btn btn-ghost" style="justify-content: center;" href="https://raw.githubusercontent.com/Otaconskeep/AI9/main/install_ai9.bat" download>Or grab install_ai9.bat</a>
+          </div>
+          <div class="os-card">
+            <p class="os-label">Already have Git Bash?</p>
+            <div class="codebox">
+              <code id="ai9-cmd">./install_ai9.sh</code>
+              <button class="copy-btn" data-copy-target="ai9-cmd">Copy</button>
+            </div>
+            <p class="os-hint">Run that inside the extracted AI9 folder. Same installer as the .bat path. Detects GPU, installs PyTorch, verifies weights, registers auto-start.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 </div>
@@ -439,14 +464,15 @@
             <h4>Windows 10/11 + Git Bash (not a Linux curl one-liner)</h4>
             <p style="margin: 0 0 12px; font-size: 0.9rem; color: var(--cream-dim);">Download this repo, then double-click the installer. No terminal required:</p>
             <div class="codebox">
-              <code id="ai9-cmd">install_ai9.bat</code>
-              <button class="copy-btn" data-copy-target="ai9-cmd">Copy</button>
+              <code id="ai9-cmd-card">install_ai9.bat</code>
+              <button class="copy-btn" data-copy-target="ai9-cmd-card">Copy</button>
             </div>
             <p class="info-note">Prefer a terminal? Open Git Bash in the extracted folder and run <span class="mono">./install_ai9.sh</span> instead. Same installer either way.</p>
           </div>
         </details>
 
         <div class="btn-row">
+          <a class="btn btn-primary btn-install" href="#install-ai9">Install AI9</a>
           <a class="btn btn-ghost" href="https://github.com/Otaconskeep/AI9" target="_blank" rel="noopener">View on GitHub</a>
           <a class="btn btn-ghost" href="/ai9/">Learn More</a>
         </div>
