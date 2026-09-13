@@ -344,7 +344,7 @@
       <article class="project-card">
         <span class="kicker">Project 01 · Agent Platform</span>
         <h3>Otacon<span>AI Ecosystem</span></h3>
-        <p style="color: var(--cream-dim); margin: 0;">Persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="#today">what you get today</a>.</p>
+        <p style="color: var(--cream-dim); margin: 0;">Persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="#today">what you get today</a>. Custom Piper voices: <a href="/otacon/#voice-trainer">Genome Voice Trainer</a>.</p>
 
         <details class="install-toggle">
           <summary>Install Otacon</summary>
@@ -363,14 +363,19 @@
                 <button class="copy-btn" data-copy-target="otacon-cmd">Copy</button>
               </div>
               <p class="info-note">Asks for your password once (sudo, for system packages). Installs itself as a systemd service that survives reboots. An LLM provider (Ollama) still needs to be connected separately, see above.</p>
+              <p class="os-label" style="margin-top: 14px;">Core + Genome Voice Trainer (GPU)</p>
+              <div class="codebox">
+                <code id="otacon-voice-cmd">OTACON_INSTALL_VOICE_TRAINER=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+                <button class="copy-btn" data-copy-target="otacon-voice-cmd">Copy</button>
+              </div>
             </div>
-
           </div>
         </details>
 
         <div class="btn-row">
           <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
           <a class="btn btn-ghost" href="/otacon/">Learn More</a>
+          <a class="btn btn-ghost" href="/otacon/#voice-trainer">Voice Training</a>
         </div>
       </article>
 
