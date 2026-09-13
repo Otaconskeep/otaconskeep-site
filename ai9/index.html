@@ -47,13 +47,13 @@
 </div>
 
 <div class="wrap">
-  <section>
+  <section id="demo">
     <p class="tag">Demo</p>
-    <h2>AI9 Manga Colorizer</h2>
-    <p class="intro">Real local inference running through AI9. Black-and-white manga in, colorized page out. This is a real capture of AI9 taking a black-and-white manga page through the local colorization workflow and producing the finished colored result.</p>
+    <h2>AI9 is the manga colorizer</h2>
+    <p class="intro">Real local inference. Black-and-white manga in, colorized page out. This GIF is a real capture of AI9 taking a B&amp;W page through the local GPU colorization workflow.</p>
     <figure class="shot-card" style="margin-top: 18px;">
       <img src="../assets/img/ai9-manga-colorizer-demo.gif" width="960" height="561" alt="AI9 Manga Colorizer demo: a black-and-white manga page running through local GPU colorization to the finished colored result.">
-      <figcaption>LOCAL GPU // HARDWARE-AWARE // SELF-HOSTED</figcaption>
+      <figcaption>AI9 Manga Colorizer // B&amp;W in → color out // LOCAL GPU // SELF-HOSTED</figcaption>
     </figure>
   </section>
 </div>
@@ -87,11 +87,14 @@ Manga Colorizer is Up and Running!</code>
     <div class="treebox" style="margin-bottom: 18px;">OTACONSKEEP
     │
     ├── <strong>OTACON</strong>: agents · memory · identity ·
-    │       orchestration · capabilities
+    │   │   orchestration · capabilities
+    │   │
+    │   └── <strong>VOICE TRAINER</strong>: GPU Piper cloning
+    │           (Genome · custom agent voices)
     │
-    └── <strong>AI9</strong>: GPU workloads · local inference ·
-            manga colorization · AI compute</div>
-    <p class="intro">Otacon is the agent/orchestration side of Otaconskeep. AI9 is proof of the same discipline applied to a standalone GPU pipeline: detect real hardware, select the exact runtime it needs, fail loudly and specifically when something's wrong. Never a silent cloud fallback. The Keep's dedicated GPU compute and remote worker nodes (see <a href="/#the-keep">The Keep</a>) are the direction this discipline scales toward.</p>
+    └── <strong>AI9 MANGA COLORIZER</strong>: local GPU
+            manga colorization · Firefox extension</div>
+    <p class="intro">Otacon is the agent platform. Genome Voice Trainer clones Piper voices for those agents on your GPU. <strong>AI9 is the manga colorizer</strong> — proof of the same discipline on a standalone GPU pipeline: detect real hardware, select the exact runtime, fail loudly when something's wrong, never a silent cloud fallback. See the <a href="#demo">demo GIF</a> above for B&amp;W → color on a real local install.</p>
   </section>
 </div>
 
