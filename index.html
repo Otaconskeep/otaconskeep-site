@@ -58,7 +58,7 @@
     <div class="today-panel">
       <p class="kicker">✓ Available the moment install finishes</p>
       <ul class="today-list">
-        <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command</li>
+        <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command, and it starts itself from then on</li>
         <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
         <li><span class="ok">✓</span> Create and manage persistent agents</li>
         <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
@@ -349,12 +349,22 @@
         <details class="install-toggle">
           <summary>Install Otacon</summary>
           <div class="install-box">
-            <h4>Requires Ubuntu or Debian Linux</h4>
-            <div class="codebox">
-              <code id="otacon-cmd">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
-              <button class="copy-btn" data-copy-target="otacon-cmd">Copy</button>
+
+            <div class="os-block">
+              <p class="os-label">🪟 Windows</p>
+              <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>⭳ Download Windows Installer</a>
+              <p class="info-note">Double-click it. Sets up WSL2/Ubuntu if needed and continues automatically; you don't need to know what either of those are. Install once: Otacon starts itself every time you turn your PC on, from then on.</p>
             </div>
-            <p class="info-note">Asks for your password once (sudo, for system packages). Ends with a local web UI at <span class="mono">http://127.0.0.1:5757</span>. An LLM provider (Ollama) still needs to be connected separately, see above.</p>
+
+            <div class="os-block">
+              <p class="os-label">🐧 Linux (Ubuntu/Debian, or already inside WSL)</p>
+              <div class="codebox">
+                <code id="otacon-cmd">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+                <button class="copy-btn" data-copy-target="otacon-cmd">Copy</button>
+              </div>
+              <p class="info-note">Asks for your password once (sudo, for system packages). Installs itself as a systemd service that survives reboots. An LLM provider (Ollama) still needs to be connected separately, see above.</p>
+            </div>
+
           </div>
         </details>
 

@@ -295,6 +295,33 @@ section > p.intro { max-width: 64ch; color: var(--cream-dim); margin-bottom: 28p
   color: var(--orange-bright);
   margin-bottom: 10px;
 }
+.os-block + .os-block {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--line);
+}
+.os-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cream-faint);
+  margin-bottom: 10px;
+}
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: var(--orange);
+  color: #1a1206;
+  border-radius: 5px;
+  padding: 12px 20px;
+  text-decoration: none;
+}
+.download-btn:hover { background: var(--orange-bright); }
 .codebox {
   display: flex;
   align-items: center;

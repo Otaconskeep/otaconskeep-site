@@ -56,7 +56,7 @@
     <div class="today-panel">
       <p class="kicker">✓ Available the moment install finishes</p>
       <ul class="today-list">
-        <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command</li>
+        <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command, and it starts itself from then on</li>
         <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
         <li><span class="ok">✓</span> Create and manage persistent agents</li>
         <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
@@ -86,47 +86,45 @@
 <div class="wrap">
   <section id="install">
     <p class="tag">Install</p>
-    <h2>One command, no experience required</h2>
-    <p class="intro">This is the exact command from <span class="mono">install_otacon.sh</span>, committed at the root of the repository. It's safe to run more than once: every step skips whatever's already done.</p>
+    <h2>Install once. Forget it.</h2>
+    <p class="intro">Pick your OS below. Either path ends the same way: Otacon installed as a real background service, set to start itself every time this machine turns on. No terminal to reopen, no server to remember to start.</p>
 
-    <ol class="checklist">
-      <li><div class="step-body">
-        <h4>Open a terminal on an Ubuntu or Debian Linux machine</h4>
-        <p>Ubuntu Desktop: press the Super key, type <span class="mono">terminal</span>, press Enter. Already SSH'd in? You're already there.</p>
-      </div></li>
-      <li><div class="step-body">
-        <h4>Paste the install command</h4>
+    <div class="install-box" style="margin-bottom: 28px;">
+      <div class="os-block">
+        <p class="os-label">🪟 Windows</p>
+        <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>⭳ Download Windows Installer</a>
+        <p class="info-note" style="margin-top: 12px;">Double-click it. It sets up WSL2 and Ubuntu automatically if they're not already there, walks you through the one unavoidable manual step (a restart and/or a one-time Ubuntu username/password, Microsoft's own requirement, not something any script can skip), then finishes on its own. You never need to open Ubuntu, WSL, or a terminal again after this.</p>
+      </div>
+      <div class="os-block">
+        <p class="os-label">🐧 Linux (Ubuntu/Debian, or already inside WSL)</p>
         <div class="codebox">
           <code id="otacon-cmd-full">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
           <button class="copy-btn" data-copy-target="otacon-cmd-full">Copy</button>
         </div>
-      </div></li>
-      <li><div class="step-body">
-        <h4>Press Enter and wait</h4>
-        <p>First run takes 10–30 minutes: installs Python, Rust, and Otacon itself; builds a native <span class="mono">.deb</span> package; runs the self-test suite. It asks for your password once, for <span class="mono">sudo</span>.</p>
-      </div></li>
-      <li><div class="step-body">
-        <h4>Open Otacon</h4>
-        <p>It prints and tries to auto-open a local web address, and detects your LAN IP too:</p>
-        <div class="tablewrap" style="margin-top: 8px; max-width: 420px;">
-          <table>
-            <tr><th>Local</th><td class="mono">http://127.0.0.1:5757</td></tr>
-            <tr><th>LAN</th><td class="mono">http://&lt;your-lan-ip&gt;:5757</td></tr>
-          </table>
-        </div>
-      </div></li>
-      <li><div class="step-body">
-        <h4>Connect an LLM to actually chat</h4>
-        <p>Install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> and pull the model tier Otacon recommended during install. Otacon's default provider looks for Ollama at <span class="mono">127.0.0.1:11434</span> automatically. No config file editing required for the default setup.</p>
-      </div></li>
-    </ol>
+        <p class="info-note">First run takes 10&ndash;30 minutes and asks for your <span class="mono">sudo</span> password once. Installs itself as a systemd service, enabled to survive reboots and restart itself if it ever crashes.</p>
+      </div>
+    </div>
 
-    <div class="warn-note">Requires <span class="mono">sudo</span> to install a handful of system packages (build tools, Python, WebKit libs). This is what triggers the one password prompt. The script explicitly refuses to run as the <span class="mono">root</span> user itself.</div>
-    <div class="info-note">Also detects your GPU (if NVIDIA), recommends <span class="mono">qwen2.5:7b</span> at 8GB+ VRAM or <span class="mono">qwen2.5:1.5b</span> otherwise, and falls back to CPU cleanly if no GPU is present.</div>
+    <div class="today-panel" style="border-color: var(--orange-dim);">
+      <p class="kicker" style="color: var(--orange-bright);">✓ When it's done</p>
+      <p style="margin: 14px 0 0; font-size: 1.05rem;">Otacon is ready. Open it any time at:</p>
+      <p style="margin: 10px 0 0;"><a class="btn btn-primary" href="http://localhost:5757" target="_blank" rel="noopener">Open Otacon &rarr;</a></p>
+      <p class="info-note" style="margin-top: 16px;">Connect an LLM to actually chat: install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> and pull the model tier Otacon recommended during install. Otacon's default provider looks for it at <span class="mono">127.0.0.1:11434</span> automatically. No config editing needed.</p>
+    </div>
 
     <details class="install-toggle" style="margin-top: 22px;">
-      <summary>Optional environment variables</summary>
+      <summary>Advanced: LAN access, repair, uninstall, and other options</summary>
       <div class="install-box">
+        <h4>Use Otacon from another device on your network</h4>
+        <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">By default Otacon only answers on this machine. To reach it from your phone or another computer, find this PC's LAN IP (<span class="mono">ip addr</span> inside Ubuntu, or your router's device list) and visit <span class="mono">http://&lt;that-ip&gt;:5757</span> instead.</p>
+
+        <h4>Repair</h4>
+        <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">Something not starting right? Just run <span class="mono">install_otacon.bat</span> (or <span class="mono">install_otacon.sh</span>) again. It re-checks and re-creates the auto-start service and logon task if either is missing, without resetting your existing install or data.</p>
+
+        <h4>Uninstall auto-start only</h4>
+        <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">Run <a href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/uninstall_otacon.bat">uninstall_otacon.bat</a> (Windows). It removes the logon task and the systemd service only. Your Ubuntu environment, install folder, and data are untouched.</p>
+
+        <h4>Optional environment variables (set before running <span class="mono">install_otacon.sh</span>)</h4>
         <div class="tablewrap">
           <table>
             <thead><tr><th>Variable</th><th>Default</th><th>What it changes</th></tr></thead>
@@ -134,7 +132,7 @@
               <tr><td class="mono">OTACON_INSTALL_DIR</td><td class="mono">~/otacon-ai-ecosystem</td><td>Where Otacon gets installed</td></tr>
               <tr><td class="mono">OTACON_BUILD_NATIVE</td><td class="mono">1</td><td>Set to 0 to skip building the native .deb app</td></tr>
               <tr><td class="mono">OTACON_INSTALL_DEB</td><td class="mono">0</td><td>Set to 1 to also install the built .deb automatically</td></tr>
-              <tr><td class="mono">OTACON_LAUNCH_WIZARD</td><td class="mono">1</td><td>Set to 0 to skip auto-launching the web UI</td></tr>
+              <tr><td class="mono">OTACON_LAUNCH_WIZARD</td><td class="mono">1</td><td>Set to 0 to skip auto-launching the service at the end</td></tr>
               <tr><td class="mono">OTACON_INSTALL_STT</td><td class="mono">0</td><td>Set to 1 to install optional Faster-Whisper speech-to-text</td></tr>
               <tr><td class="mono">OTACON_RUN_TESTS</td><td class="mono">1</td><td>Set to 0 to skip the self-test suite (faster, less safe)</td></tr>
             </tbody>
@@ -142,6 +140,9 @@
         </div>
       </div>
     </details>
+
+    <div class="warn-note" style="margin-top: 18px;">Requires <span class="mono">sudo</span> to install a handful of system packages (build tools, Python, WebKit libs) and to register the systemd service. The script explicitly refuses to run as the <span class="mono">root</span> user itself.</div>
+    <div class="info-note">Also detects your GPU (if NVIDIA), recommends <span class="mono">qwen2.5:7b</span> at 8GB+ VRAM or <span class="mono">qwen2.5:1.5b</span> otherwise, and falls back to CPU cleanly if no GPU is present.</div>
 
     <p style="margin-top: 20px; font-size: 0.92rem;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem#readme" target="_blank" rel="noopener">Full install documentation on GitHub →</a></p>
   </section>
