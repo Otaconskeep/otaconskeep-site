@@ -41,8 +41,8 @@
     <h1 class="display" style="font-size: clamp(2.6rem, 7vw, 4.5rem);">Otacon AI Ecosystem</h1>
     <p class="lede">The foundation of a Keep: persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="/#the-keep">what a Keep is</a> for where this is headed.</p>
     <div class="btn-row" style="margin-top: 26px;">
-      <a class="btn btn-primary" href="#install">▾ Install Otacon</a>
-      <a class="btn btn-ghost" href="#voice-trainer">Voice Training</a>
+      <a class="btn btn-primary btn-install" href="#install">Install Otacon</a>
+      <a class="btn btn-secondary-strong btn-install" href="#voice-trainer">Install Voice Trainer</a>
       <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </section>
@@ -86,23 +86,29 @@
 
 <div class="wrap">
   <section id="install">
-    <p class="tag">Install</p>
-    <h2>Install once. Forget it.</h2>
-    <p class="intro">Pick your OS below. Either path ends the same way: Otacon installed as a real background service, set to start itself every time this machine turns on. No terminal to reopen, no server to remember to start.</p>
+    <p class="tag">Install // One Click</p>
+    <h2>Install Otacon</h2>
+    <p class="intro">Pick Windows or Linux. Either path ends the same: Otacon as a background service that starts itself every boot.</p>
 
-    <div class="install-box" style="margin-bottom: 28px;">
-      <div class="os-block">
-        <p class="os-label">🪟 Windows</p>
-        <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>⭳ Download Windows Installer</a>
-        <p class="info-note" style="margin-top: 12px;">Double-click it. It sets up WSL2 and Ubuntu automatically if they're not already there, walks you through the one unavoidable manual step (a restart and/or a one-time Ubuntu username/password, Microsoft's own requirement, not something any script can skip), then finishes on its own. You never need to open Ubuntu, WSL, or a terminal again after this.</p>
+    <div class="install-panel" style="margin-bottom: 28px;">
+      <div class="install-panel-head">
+        <h3 class="install-panel-title">Otacon Core</h3>
+        <span class="one-click-badge">One click</span>
       </div>
-      <div class="os-block">
-        <p class="os-label">🐧 Linux (Ubuntu/Debian, or already inside WSL)</p>
-        <div class="codebox">
-          <code id="otacon-cmd-full">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
-          <button class="copy-btn" data-copy-target="otacon-cmd-full">Copy</button>
+      <div class="os-grid">
+        <div class="os-card">
+          <p class="os-label">Windows</p>
+          <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>Download Windows Installer</a>
+          <p class="os-hint">Double-click. Sets up WSL2 and Ubuntu if needed, then finishes. You should not need to open Ubuntu again after this.</p>
         </div>
-        <p class="info-note">First run takes 10&ndash;30 minutes and asks for your <span class="mono">sudo</span> password once. Installs itself as a systemd service, enabled to survive reboots and restart itself if it ever crashes.</p>
+        <div class="os-card">
+          <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
+          <div class="codebox">
+            <code id="otacon-cmd-full">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+            <button class="copy-btn" data-copy-target="otacon-cmd-full">Copy</button>
+          </div>
+          <p class="os-hint">First run takes 10–30 minutes and asks for sudo once. Registers a systemd service that survives reboots.</p>
+        </div>
       </div>
     </div>
 
@@ -152,43 +158,41 @@
 
 <div class="wrap">
   <section id="voice-trainer">
-    <p class="tag">Voice Training</p>
-    <h2>Genome Voice Trainer — one-click GPU Piper cloning</h2>
-    <p class="intro">Train a custom Piper voice on your NVIDIA GPU, then plug it into Otacon agent voice profiles. The installer handles Python, Docker, WSL on Windows, GPU lookup, the NVIDIA Container Toolkit, the CUDA training image, and a simple local status UI. Training is GPU-only on purpose: CPU torch was the silent failure mode we closed.</p>
+    <p class="tag">Voice Training // One Click</p>
+    <h2>Install Voice Trainer</h2>
+    <p class="intro">Genome Voice Trainer — GPU-only Piper cloning for Otacon agent voices. Handles Python, Docker, WSL, GPU lookup, NVIDIA Container Toolkit, the CUDA image, and a local status UI.</p>
 
-    <div class="today-panel">
-      <p class="kicker">✓ One click, forget it</p>
-      <ul class="today-list">
-        <li><span class="ok">✓</span> ASCII Otacon-style installer with interactive menu</li>
-        <li><span class="ok">✓</span> Detects NVIDIA GPU via <span class="mono">nvidia-smi</span> and refuses to pretend CPU is fine</li>
-        <li><span class="ok">✓</span> Builds <span class="mono">piper-voice-trainer:gpu</span> and verifies CUDA inside the container</li>
-        <li><span class="ok">✓</span> Local status UI at <span class="mono">http://127.0.0.1:8765</span></li>
-        <li><span class="ok">✓</span> Hooks into Otacon Core: <span class="mono">OTACON_INSTALL_VOICE_TRAINER=1</span></li>
-      </ul>
-    </div>
-
-    <ol class="checklist" style="margin-top: 22px;">
-      <li><div class="step-body">
-        <h4>Standalone (voice trainer only)</h4>
-        <div class="codebox">
-          <code id="voice-cmd-standalone">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.sh | bash</code>
-          <button class="copy-btn" data-copy-target="voice-cmd-standalone">Copy</button>
+    <div class="install-panel">
+      <div class="install-panel-head">
+        <h3 class="install-panel-title">Genome Voice Trainer</h3>
+        <span class="one-click-badge">One click · GPU</span>
+      </div>
+      <div class="os-grid">
+        <div class="os-card">
+          <p class="os-label">Windows</p>
+          <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.bat" download>Download Windows Installer</a>
+          <p class="os-hint">Double-click. Bootstraps WSL if needed, then hands off to the Linux installer.</p>
         </div>
-      </div></li>
-      <li><div class="step-body">
-        <h4>With Otacon Core in one shot</h4>
+        <div class="os-card">
+          <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
+          <div class="codebox">
+            <code id="voice-cmd-standalone">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.sh | bash</code>
+            <button class="copy-btn" data-copy-target="voice-cmd-standalone">Copy</button>
+          </div>
+          <p class="os-hint">Builds <span class="mono">piper-voice-trainer:gpu</span>, verifies CUDA, opens status UI at <span class="mono">http://127.0.0.1:8765</span>.</p>
+        </div>
+      </div>
+      <div class="os-card">
+        <p class="os-label">Both together · Otacon Core + Voice Trainer</p>
         <div class="codebox">
           <code id="voice-cmd-core">OTACON_INSTALL_VOICE_TRAINER=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
           <button class="copy-btn" data-copy-target="voice-cmd-core">Copy</button>
         </div>
-      </div></li>
-      <li><div class="step-body">
-        <h4>Windows</h4>
-        <p>Use <span class="mono">install_voice_trainer.bat</span> from the repo — it bootstraps WSL and hands off to the Linux installer.</p>
-      </div></li>
-    </ol>
+        <p class="os-hint">Linux / WSL one-shot: install Otacon Core and Genome Voice Trainer in the same run.</p>
+      </div>
+    </div>
 
-    <div class="warn-note">Requires an NVIDIA GPU with working drivers. The pipeline refuses CPU training so you do not burn hours on a silent dead-end.</div>
+    <div class="warn-note" style="margin-top: 18px;">Requires an NVIDIA GPU with working drivers. The pipeline refuses CPU training so you do not burn hours on a silent dead-end.</div>
     <div class="info-note">Write-up (what broke, why <span class="mono">:gpu</span> exists, how Genome uses it): <a href="https://github.com/Otaconskeep/otacon-voice-trainer/blob/main/docs/WRITEUP.md" target="_blank" rel="noopener">docs/WRITEUP.md on GitHub</a>.</div>
 
     <div class="btn-row" style="margin-top: 20px;">

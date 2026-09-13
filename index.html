@@ -43,8 +43,9 @@
     <p class="meta" style="margin-top: 26px; letter-spacing: 0.1em;">AGENTS // MEMORY // VOICE // ROOMS // LOCAL AI<br>MEDIA // AUTOMATION // GPU NODES // HOMELAB</p>
     <p class="meta">CREATED BY: <strong>Antonio G. Garcia</strong> · Built for the Keep.</p>
     <div class="btn-row" style="margin-top: 26px;">
-      <a class="btn btn-primary" href="#today">▾ What You Get Today</a>
-      <a class="btn btn-ghost" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">💬 Discord</a>
+      <a class="btn btn-primary btn-install" href="#install-otacon">Install Otacon</a>
+      <a class="btn btn-secondary-strong btn-install" href="#install-voice">Install Voice Trainer</a>
+      <a class="btn btn-ghost" href="#today">What You Get Today</a>
     </div>
   </section>
 </div>
@@ -326,6 +327,72 @@
 </div>
 
 <div class="wrap">
+  <section id="install">
+    <p class="tag">Install // One Click</p>
+    <h2>Install Otacon. Install Voice Trainer.</h2>
+    <p class="intro">Pick Windows or Linux. One click either way. No scavenger hunt through docs.</p>
+
+    <div class="install-stack">
+
+      <div class="install-panel" id="install-otacon">
+        <div class="install-panel-head">
+          <h3 class="install-panel-title">Install Otacon</h3>
+          <span class="one-click-badge">One click</span>
+        </div>
+        <p class="install-panel-lead">Persistent agents on your hardware. Install once — it starts itself after that.</p>
+        <div class="os-grid">
+          <div class="os-card">
+            <p class="os-label">Windows</p>
+            <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>Download Windows Installer</a>
+            <p class="os-hint">Double-click. Sets up WSL2/Ubuntu if needed, then finishes. Otacon auto-starts on every boot after that.</p>
+          </div>
+          <div class="os-card">
+            <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
+            <div class="codebox">
+              <code id="otacon-cmd">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+              <button class="copy-btn" data-copy-target="otacon-cmd">Copy</button>
+            </div>
+            <p class="os-hint">Paste in a terminal. Asks for sudo once. Registers a systemd service that survives reboots.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="install-panel" id="install-voice">
+        <div class="install-panel-head">
+          <h3 class="install-panel-title">Install Voice Trainer</h3>
+          <span class="one-click-badge">One click · GPU</span>
+        </div>
+        <p class="install-panel-lead">Genome Voice Trainer — GPU-only Piper cloning. Handles Python, Docker, GPU lookup, and a local status UI. Needs NVIDIA.</p>
+        <div class="os-grid">
+          <div class="os-card">
+            <p class="os-label">Windows</p>
+            <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.bat" download>Download Windows Installer</a>
+            <p class="os-hint">Double-click. Bootstraps WSL if needed, then runs the Linux installer for you.</p>
+          </div>
+          <div class="os-card">
+            <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
+            <div class="codebox">
+              <code id="voice-cmd-home">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacon-voice-trainer/main/install_voice_trainer.sh | bash</code>
+              <button class="copy-btn" data-copy-target="voice-cmd-home">Copy</button>
+            </div>
+            <p class="os-hint">Standalone one-liner. Builds <span class="mono">piper-voice-trainer:gpu</span> and opens status UI at <span class="mono">http://127.0.0.1:8765</span>.</p>
+          </div>
+        </div>
+        <div class="os-card" style="margin-top: 2px;">
+          <p class="os-label">Both together · Otacon Core + Voice Trainer</p>
+          <div class="codebox">
+            <code id="otacon-voice-cmd">OTACON_INSTALL_VOICE_TRAINER=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+            <button class="copy-btn" data-copy-target="otacon-voice-cmd">Copy</button>
+          </div>
+          <p class="os-hint">Linux / WSL one-shot: Core install, then Genome Voice Trainer in the same run.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
   <section id="projects">
     <p class="tag">05 // The Umbrella</p>
     <h2>Otaconskeep → Otacon + AI9</h2>
@@ -344,38 +411,15 @@
       <article class="project-card">
         <span class="kicker">Project 01 · Agent Platform</span>
         <h3>Otacon<span>AI Ecosystem</span></h3>
-        <p style="color: var(--cream-dim); margin: 0;">Persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="#today">what you get today</a>. Custom Piper voices: <a href="/otacon/#voice-trainer">Genome Voice Trainer</a>.</p>
+        <p style="color: var(--cream-dim); margin: 0;">Persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="#today">what you get today</a>.</p>
 
-        <details class="install-toggle">
-          <summary>Install Otacon</summary>
-          <div class="install-box">
-
-            <div class="os-block">
-              <p class="os-label">🪟 Windows</p>
-              <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>⭳ Download Windows Installer</a>
-              <p class="info-note">Double-click it. Sets up WSL2/Ubuntu if needed and continues automatically; you don't need to know what either of those are. Install once: Otacon starts itself every time you turn your PC on, from then on.</p>
-            </div>
-
-            <div class="os-block">
-              <p class="os-label">🐧 Linux (Ubuntu/Debian, or already inside WSL)</p>
-              <div class="codebox">
-                <code id="otacon-cmd">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
-                <button class="copy-btn" data-copy-target="otacon-cmd">Copy</button>
-              </div>
-              <p class="info-note">Asks for your password once (sudo, for system packages). Installs itself as a systemd service that survives reboots. An LLM provider (Ollama) still needs to be connected separately, see above.</p>
-              <p class="os-label" style="margin-top: 14px;">Core + Genome Voice Trainer (GPU)</p>
-              <div class="codebox">
-                <code id="otacon-voice-cmd">OTACON_INSTALL_VOICE_TRAINER=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
-                <button class="copy-btn" data-copy-target="otacon-voice-cmd">Copy</button>
-              </div>
-            </div>
-          </div>
-        </details>
-
+        <div class="btn-row">
+          <a class="btn btn-primary btn-install" href="#install-otacon">Install Otacon</a>
+          <a class="btn btn-secondary-strong btn-install" href="#install-voice">Install Voice Trainer</a>
+        </div>
         <div class="btn-row">
           <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
           <a class="btn btn-ghost" href="/otacon/">Learn More</a>
-          <a class="btn btn-ghost" href="/otacon/#voice-trainer">Voice Training</a>
         </div>
       </article>
 

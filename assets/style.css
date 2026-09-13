@@ -339,6 +339,141 @@ section > p.intro { max-width: 64ch; color: var(--cream-dim); margin-bottom: 28p
   flex: 1;
   color: var(--cream);
 }
+
+/* ---------------- obvious one-click install panels ---------------- */
+.install-panel {
+  border: 1.5px solid var(--line-bright);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.install-panel + .install-panel { margin-top: 18px; }
+.install-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.install-panel-title {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0;
+  color: var(--cream);
+}
+.one-click-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1a1206;
+  background: var(--orange);
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+.install-panel-lead {
+  margin: 0;
+  color: var(--cream-dim);
+  font-size: 0.95rem;
+  max-width: 68ch;
+}
+.os-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 720px) {
+  .os-grid { grid-template-columns: 1fr; }
+}
+.os-card {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.os-card .os-label {
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--orange-bright);
+  margin: 0;
+  font-weight: 600;
+}
+.os-card .os-hint {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--cream-dim);
+  line-height: 1.45;
+}
+.os-card .download-btn {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+}
+.os-card .codebox {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.os-card .codebox code {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.os-card .copy-btn {
+  align-self: flex-end;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  border-color: var(--orange-dim);
+  color: var(--orange-bright);
+}
+.os-card .copy-btn:hover {
+  border-color: var(--orange);
+  background: rgba(232, 140, 48, 0.12);
+}
+.install-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+.project-card .install-stack { margin-top: 4px; }
+.btn-install {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 14px 22px;
+}
+.btn-secondary-strong {
+  background: transparent;
+  color: var(--orange-bright);
+  border-color: var(--orange);
+  font-weight: 700;
+}
+.btn-secondary-strong:hover {
+  background: rgba(232, 140, 48, 0.12);
+  border-color: var(--orange-bright);
+  color: var(--cream);
+}
 .copy-btn {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.72rem;
