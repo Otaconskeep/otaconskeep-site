@@ -96,7 +96,20 @@
     { slug: 'monolith-editor', title: 'Monolith Editor', caption: 'Built-in tooling for evolving the environment itself.' },
     { slug: 'otacons-myspace', title: 'Otacon MySpace: Social Layer', caption: 'A persistent, retro social world the agents participate in.' },
     { slug: 'otacons-myspace-posts', title: 'Agent Social Posts', caption: 'Persistent agent voice and output outside direct prompts.' },
-    { slug: 'fitness-ai', title: 'AI Fitness Control Room', caption: 'Workout tracking, progression and AI coaching in one panel.' }
+    { slug: 'fitness-ai', title: 'AI Fitness Control Room', caption: 'Workout tracking, progression and AI coaching in one panel.' },
+    { slug: 'albedo-operational-update', title: 'Albedo — Operational Update', caption: 'Albedo reports live FOXDIE and Project REX activity, including review queues, approved work, and items requiring escalation.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'naomi-appointment-digest', title: 'Naomi Hunter — Appointment Digest', caption: 'Naomi turns upcoming household and personal events into a concise reminder digest so important appointments don’t disappear into a calendar.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'otacon-weekly-lab-intelligence', title: 'Otacon — Weekly Lab Intelligence', caption: 'A scheduled intelligence report combining system observations, research progress, and agent development into one readable update.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'otacon-voice-training-completion', title: 'Otacon — Voice Training Completion', caption: 'AI jobs don’t silently finish in the background. Otacon reports successful model export and deployment when a trained voice becomes available to the Keep.', folder: 'discord', tag: 'Discord Relay' },
+    { slug: 'otacon-morning-briefing', title: 'Otacon — Morning Briefing', caption: 'A daily briefing combining useful personal and system context into a message delivered automatically.', folder: 'discord', tag: 'Discord Relay' }
+  ];
+
+  var DISCORD_SLUGS = [
+    'albedo-operational-update',
+    'naomi-appointment-digest',
+    'otacon-weekly-lab-intelligence',
+    'otacon-voice-training-completion',
+    'otacon-morning-briefing'
   ];
 
   var FEATURED_SLUGS = [
@@ -115,18 +128,26 @@
     { slug: 'codec-1', label: '07 CODEC' }
   ];
 
-  function imgPath(slug) { return 'assets/img/keep/' + slug + '.webp'; }
+  function imgPath(item) {
+    var folder = (item && item.folder) ? item.folder : 'keep';
+    var slug = typeof item === 'string' ? item : item.slug;
+    if (typeof item === 'string') return 'assets/img/keep/' + slug + '.webp';
+    return 'assets/img/' + folder + '/' + slug + '.webp';
+  }
   function findItem(slug) {
     for (var i = 0; i < GALLERY_DATA.length; i++) if (GALLERY_DATA[i].slug === slug) return i;
     return -1;
   }
 
-  function galleryCardHTML(item, idx) {
+  function galleryCardHTML(item, idx, opts) {
+    opts = opts || {};
+    var cls = opts.cardClass || 'gallery-item';
+    var tag = item.tag || 'Reference Keep';
     return (
-      '<button type="button" class="gallery-item" data-idx="' + idx + '">' +
+      '<button type="button" class="' + cls + '" data-idx="' + idx + '">' +
         '<span class="thumb-wrap">' +
-          '<img src="' + imgPath(item.slug) + '" alt="' + item.title + ': real screenshot from the Otaconskeep reference Keep" loading="lazy">' +
-          '<span class="gtag">Reference Keep</span>' +
+          '<img src="' + imgPath(item) + '" alt="' + item.title + ': Discord / Keep screenshot from the Otaconskeep reference Keep" loading="lazy">' +
+          '<span class="gtag">' + tag + '</span>' +
         '</span>' +
         '<span class="gbody">' +
           '<h4>' + item.title + '</h4>' +
@@ -139,7 +160,7 @@
   function initGalleries() {
     var featuredEl = document.getElementById('gallery-featured');
     var fullEl = document.getElementById('gallery-full');
-    if (!featuredEl && !fullEl) return;
+    var discordEl = document.getElementById('discord-feed');
 
     if (featuredEl) {
       featuredEl.innerHTML = FEATURED_SLUGS.map(function (slug) {
@@ -150,11 +171,18 @@
 
     if (fullEl) {
       fullEl.innerHTML = GALLERY_DATA.map(function (item, idx) {
-        return galleryCardHTML(item, idx);
+        return galleryCardHTML(item, idx, item.folder === 'discord' ? { cardClass: 'gallery-item discord-in-gallery' } : {});
       }).join('');
     }
 
-    initLightbox();
+    if (discordEl) {
+      discordEl.innerHTML = DISCORD_SLUGS.map(function (slug) {
+        var idx = findItem(slug);
+        return galleryCardHTML(GALLERY_DATA[idx], idx, { cardClass: 'discord-card' });
+      }).join('');
+    }
+
+    if (featuredEl || fullEl || discordEl) initLightbox();
   }
 
   function initLightbox() {
@@ -168,13 +196,13 @@
     function show(idx) {
       current = (idx + GALLERY_DATA.length) % GALLERY_DATA.length;
       var item = GALLERY_DATA[current];
-      imgEl.src = imgPath(item.slug);
+      imgEl.src = imgPath(item);
       imgEl.alt = item.title;
       titleEl.textContent = item.title;
       capEl.textContent = item.caption;
     }
 
-    document.querySelectorAll('.gallery-item').forEach(function (btn) {
+    document.querySelectorAll('.gallery-item, .discord-card').forEach(function (btn) {
       btn.addEventListener('click', function () {
         show(parseInt(btn.getAttribute('data-idx'), 10));
         lb.classList.add('open');
