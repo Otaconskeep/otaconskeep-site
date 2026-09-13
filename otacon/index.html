@@ -42,7 +42,8 @@
     <p class="lede">The foundation of a Keep: persistent AI agents with their own identity, memory, and voice, routed through a provider-neutral core you run on your own hardware. See <a href="/#the-keep">what a Keep is</a> for where this is headed.</p>
     <div class="btn-row" style="margin-top: 26px;">
       <a class="btn btn-primary btn-install" href="#install">Install Otacon</a>
-      <a class="btn btn-secondary-strong btn-install" href="#voice-trainer">Install Voice Trainer</a>
+      <a class="btn btn-primary btn-install" href="#install-default-model">Install + Default Model</a>
+      <a class="btn btn-primary btn-install" href="#voice-trainer">Install Voice Trainer</a>
       <a class="btn btn-ghost" href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </section>
@@ -58,15 +59,15 @@
       <p class="kicker">✓ Available the moment install finishes</p>
       <ul class="today-list">
         <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command, and it starts itself from then on</li>
-        <li><span class="ok">✓</span> Auto-install Ollama and pull a default chat model sized to your GPU VRAM</li>
-        <li><span class="ok">✓</span> Open your own local Otacon web interface and chat with an agent</li>
+        <li><span class="ok">✓</span> Optional one-click Default Model: Ollama + a chat model sized to your GPU VRAM</li>
+        <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
         <li><span class="ok">✓</span> Create and manage persistent agents</li>
         <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
         <li><span class="ok">✓</span> Configure agent identities and voice profiles</li>
-        <li><span class="ok">✓</span> Automatic hardware detection selects a recommended local model tier for your GPU</li>
+        <li><span class="ok">✓</span> Automatic hardware detection recommends a local model tier for your GPU</li>
         <li><span class="ok">✓</span> Provider-neutral capability routing: swap LLM/TTS/STT backends without touching agent identity</li>
       </ul>
-      <div class="info-note" style="margin-top: 22px;">The installer installs <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> and pulls a default chat model sized to your GPU VRAM (CPU-safe small model if no NVIDIA GPU). Open Otacon and chat. Voice synthesis, speech-to-text, and image/video generation still need their own providers when you want those (see <a href="#status">status</a> below).</div>
+      <div class="info-note" style="margin-top: 22px;">Core does not force a chat model. Want agents that talk immediately? Use optional <a href="#install-default-model">Default Model</a> (Ollama + VRAM-tier model). Voice / STT / image still need their own providers when you want those (see <a href="#status">status</a>).</div>
     </div>
   </section>
 </div>
@@ -89,12 +90,12 @@
   <section id="install">
     <p class="tag">Install // One Click</p>
     <h2>Install Otacon</h2>
-    <p class="intro">Pick Windows or Linux. Either path ends the same: Otacon as a background service that starts itself every boot.</p>
+    <p class="intro">Pick Windows or Linux for Core. Add optional Default Model in one click if you want Ollama chat ready at the end.</p>
 
-    <div class="install-panel" style="margin-bottom: 28px;">
+    <div class="install-panel" style="margin-bottom: 18px;">
       <div class="install-panel-head">
         <h3 class="install-panel-title">Otacon Core</h3>
-        <span class="one-click-badge">One click</span>
+        <span class="one-click-badge">One click · Core</span>
       </div>
       <div class="os-grid">
         <div class="os-card">
@@ -113,11 +114,34 @@
       </div>
     </div>
 
+    <div class="install-panel" id="install-default-model" style="margin-bottom: 28px;">
+      <div class="install-panel-head">
+        <h3 class="install-panel-title">Optional · Default Model</h3>
+        <span class="one-click-badge">One click · Chat</span>
+      </div>
+      <p class="install-panel-lead">Adds Ollama and pulls a VRAM-sized chat model in the same Core install so agents can talk when it finishes.</p>
+      <div class="os-grid">
+        <div class="os-card">
+          <p class="os-label">Windows</p>
+          <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon_with_default_model.bat" download>Download Windows + Default Model</a>
+          <p class="os-hint">Same as Core, with Default Model enabled.</p>
+        </div>
+        <div class="os-card">
+          <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
+          <div class="codebox">
+            <code id="otacon-model-cmd-full">OTACON_INSTALL_DEFAULT_MODEL=1 curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.sh | bash</code>
+            <button class="copy-btn" data-copy-target="otacon-model-cmd-full">Copy</button>
+          </div>
+          <p class="os-hint">Under 6GB → <span class="mono">qwen2.5:1.5b</span> · ≥6 → <span class="mono">3b</span> · ≥8 → <span class="mono">7b</span> · ≥16 → <span class="mono">14b</span>. Override: <span class="mono">OTACON_LLM_MODEL=...</span></p>
+        </div>
+      </div>
+    </div>
+
     <div class="today-panel" style="border-color: var(--orange-dim);">
       <p class="kicker" style="color: var(--orange-bright);">✓ When it's done</p>
       <p style="margin: 14px 0 0; font-size: 1.05rem;">Otacon is ready. Open it any time at:</p>
       <p style="margin: 10px 0 0;"><a class="btn btn-primary" href="http://localhost:5757" target="_blank" rel="noopener">Open Otacon &rarr;</a></p>
-      <p class="info-note" style="margin-top: 16px;">Chat is ready: the installer set up Ollama and pulled a VRAM-sized default model. Otacon talks to it at <span class="mono">127.0.0.1:11434</span>. Override with <span class="mono">OTACON_LLM_MODEL=...</span> before install if you want a specific tag.</p>
+      <p class="info-note" style="margin-top: 16px;">Used Default Model? Chat talks to Ollama at <span class="mono">127.0.0.1:11434</span>. Core-only install? Add Default Model later with the same one-click flag.</p>
     </div>
 
     <details class="install-toggle" style="margin-top: 22px;">
@@ -144,7 +168,7 @@
               <tr><td class="mono">OTACON_INSTALL_STT</td><td class="mono">0</td><td>Set to 1 to install optional Faster-Whisper speech-to-text</td></tr>
               <tr><td class="mono">OTACON_RUN_TESTS</td><td class="mono">1</td><td>Set to 0 to skip the self-test suite (faster, less safe)</td></tr>
               <tr><td class="mono">OTACON_INSTALL_VOICE_TRAINER</td><td class="mono">0</td><td>Set to 1 to also install Genome Voice Trainer (GPU Piper) in the same run</td></tr>
-              <tr><td class="mono">OTACON_INSTALL_OLLAMA</td><td class="mono">1</td><td>Set to 0 to skip installing Ollama and pulling the default chat model</td></tr>
+              <tr><td class="mono">OTACON_INSTALL_DEFAULT_MODEL</td><td class="mono">0</td><td>Set to 1 to install Ollama + VRAM-sized default chat model (optional)</td></tr>
               <tr><td class="mono">OTACON_LLM_MODEL</td><td class="mono">(auto)</td><td>Override the VRAM-picked Ollama model tag (e.g. qwen2.5:7b)</td></tr>
             </tbody>
           </table>
@@ -153,7 +177,7 @@
     </details>
 
     <div class="warn-note" style="margin-top: 18px;">Requires <span class="mono">sudo</span> to install a handful of system packages (build tools, Python, WebKit libs) and to register the systemd service. The script explicitly refuses to run as the <span class="mono">root</span> user itself.</div>
-    <div class="info-note">Detects your NVIDIA GPU (if present) and auto-installs Ollama with a default model by VRAM: <span class="mono">qwen2.5:1.5b</span> (CPU/&lt;6GB), <span class="mono">3b</span> (≥6GB), <span class="mono">7b</span> (≥8GB), <span class="mono">14b</span> (≥16GB). Skip with <span class="mono">OTACON_INSTALL_OLLAMA=0</span>.</div>
+    <div class="info-note">Optional Default Model (<span class="mono">OTACON_INSTALL_DEFAULT_MODEL=1</span>) installs Ollama with a VRAM-tier chat model: <span class="mono">qwen2.5:1.5b</span> (CPU/&lt;6GB), <span class="mono">3b</span> (≥6GB), <span class="mono">7b</span> (≥8GB), <span class="mono">14b</span> (≥16GB).</div>
 
     <p style="margin-top: 20px; font-size: 0.92rem;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem#readme" target="_blank" rel="noopener">Full install documentation on GitHub →</a></p>
   </section>
@@ -224,7 +248,7 @@
       <div class="item"><h4>Agent identity &amp; voice profile config</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Native installer &amp; hardware planning</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Backup / restore / safe uninstall</h4><span class="badge validated">Available now</span></div>
-      <div class="item"><h4>Agent chat (Ollama, auto-installed)</h4><span class="badge validated">Available now</span></div>
+      <div class="item"><h4>Agent chat (optional Default Model / Ollama)</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Voice synthesis (Piper)</h4><span class="badge pending">Requires provider</span></div>
       <div class="item"><h4>Genome Voice Trainer (GPU Piper)</h4><span class="badge validated">Available now</span></div>
       <div class="item"><h4>Speech-to-text</h4><span class="badge pending">Requires provider</span></div>
