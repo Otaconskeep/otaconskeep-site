@@ -64,14 +64,15 @@
       <p class="kicker">✓ Available the moment install finishes</p>
       <ul class="today-list">
         <li><span class="ok">✓</span> Install Otacon locally on your own machine, one command, and it starts itself from then on</li>
-        <li><span class="ok">✓</span> Open your own local Otacon web interface</li>
+        <li><span class="ok">✓</span> Auto-install Ollama and pull a default chat model sized to your GPU VRAM</li>
+        <li><span class="ok">✓</span> Open your own local Otacon web interface and chat with an agent</li>
         <li><span class="ok">✓</span> Create and manage persistent agents</li>
         <li><span class="ok">✓</span> Maintain separate conversation history and long-term memory per agent</li>
         <li><span class="ok">✓</span> Configure agent identities and voice profiles</li>
         <li><span class="ok">✓</span> Automatic hardware detection selects a recommended local model tier for your GPU</li>
         <li><span class="ok">✓</span> Provider-neutral capability routing: swap LLM/TTS/STT backends without touching agent identity</li>
       </ul>
-      <div class="warn-note" style="margin-top: 22px;">Otacon does <strong>not</strong> install or configure an LLM for you. To actually chat with an agent, install <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> separately and pull the model tier Otacon recommended for your hardware. Otacon's default provider talks to Ollama automatically once it's running. Real-time voice synthesis, speech-to-text, and image/video generation work the same way: the architecture and routing exist today, but each needs its own provider connected, and real-provider validation is still in progress (see the <a href="/otacon/#status">status table</a>).</div>
+      <div class="info-note" style="margin-top: 22px;">The installer installs <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> for you and pulls a default chat model sized to your GPU VRAM (or a small CPU-safe model if no NVIDIA GPU is found). Open Otacon and chat. Voice synthesis, speech-to-text, and image/video generation still need their own providers when you want those (see the <a href="/otacon/#status">status table</a>).</div>
     </div>
   </section>
 </div>
