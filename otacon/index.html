@@ -100,8 +100,9 @@
       <div class="os-grid">
         <div class="os-card">
           <p class="os-label">Windows</p>
-          <a class="download-btn" href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon.bat" download>Download Windows Installer</a>
-          <p class="os-hint">Double-click. Sets up WSL2 and Ubuntu if needed, then finishes. You should not need to open Ubuntu again after this.</p>
+          <a class="download-btn" href="/downloads/OtaconsKeep-Setup.bat" download="OtaconsKeep-Setup.bat">Download OtaconsKeep Setup</a>
+          <p class="os-hint">Saves as <span class="mono">OtaconsKeep-Setup.bat</span>. Double-click, follow the guided stages, restart once if asked. Setup resumes automatically. Do not open localhost until it says OTACON IS READY.</p>
+          <p class="os-hint" style="margin-top: 8px;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem/archive/refs/heads/main.zip">Having trouble downloading? Download the GitHub ZIP instead</a>.</p>
         </div>
         <div class="os-card">
           <p class="os-label">Linux · Ubuntu / Debian / WSL</p>
@@ -128,7 +129,11 @@
         <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">By default Otacon only answers on this machine. To reach it from your phone or another computer, find this PC's LAN IP (<span class="mono">ip addr</span> inside Ubuntu, or your router's device list) and visit <span class="mono">http://&lt;that-ip&gt;:5757</span> instead.</p>
 
         <h4>Repair</h4>
+<<<<<<< Updated upstream
         <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">Something not starting right? Just run <span class="mono">install_otacon.bat</span> (or <span class="mono">install_otacon.sh</span>) again. It re-checks and re-creates the auto-start service and logon task if either is missing, without resetting your existing install or data.</p>
+=======
+        <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">Something not starting right? Re-run <span class="mono">OtaconsKeep-Setup.bat</span> (or <span class="mono">install_otacon.sh</span>). It re-checks and continues from where you left off without wiping data. Windows status: <span class="mono">OtaconsKeep-Setup.bat --status</span>. Linux health: <span class="mono">otacon doctor</span>.</p>
+>>>>>>> Stashed changes
 
         <h4>Uninstall auto-start only</h4>
         <p style="color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 14px;">Run <a href="https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/uninstall_otacon.bat">uninstall_otacon.bat</a> (Windows). It removes the logon task and the systemd service only. Your Ubuntu environment, install folder, and data are untouched.</p>
