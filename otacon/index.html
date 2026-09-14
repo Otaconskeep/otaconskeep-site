@@ -101,6 +101,19 @@
         <div class="os-card">
           <p class="os-label">Windows</p>
           <a class="download-btn" href="/downloads/OtaconsKeep-Setup.bat" download="OtaconsKeep-Setup.bat">Download OtaconsKeep Setup</a>
+          <div class="setup-normal-disclaimer" role="note">
+            <strong>These are normal — not failures</strong>
+            <p>If something below happens, do not close everything and start over. Setup is still working.</p>
+            <ul>
+              <li><strong>Windows SmartScreen</strong> may say it protected your PC. Click <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+              <li><strong>Administrator / Yes popup</strong> is required. Click <strong>Yes</strong>. A new Setup window may open — that is expected. The old window can stay open or say setup continues in the new one.</li>
+              <li><strong>Long waits</strong> (minutes with a black window and progress text) are normal while Windows enables Linux and Otacon installs. Do not close the window.</li>
+              <li><strong>Restart required</strong> does <em>not</em> mean install failed. Save your work, restart, then Setup should show <strong>WELCOME BACK</strong> and continue. Or double-click the same <span class="mono">OtaconsKeep-Setup.bat</span> again.</li>
+              <li><strong>Ubuntu username / password</strong> screens are part of Windows Linux setup — not a crash, and not Proxmox.</li>
+              <li><strong>Do not open</strong> <span class="mono">localhost:5757</span> until the window says <strong>OTACON IS READY</strong>. Opening early looks broken even when install is fine.</li>
+              <li>If you see <strong>SETUP NEEDS HELP</strong>, that is recovery — not a crash. Press <strong>R</strong> to retry, <strong>O</strong> for logs, or <strong>X</strong> to exit. The window should stay open.</li>
+            </ul>
+          </div>
           <p class="os-hint">Saves as <span class="mono">OtaconsKeep-Setup.bat</span>. Double-click, follow the guided stages, restart once if asked. Setup resumes automatically. Do not open localhost until it says OTACON IS READY.</p>
           <p class="os-hint" style="margin-top: 8px;"><a href="https://github.com/Otaconskeep/otacons-ai-ecosystem/archive/refs/heads/main.zip">Having trouble downloading? Download the GitHub ZIP instead</a>.</p>
         </div>

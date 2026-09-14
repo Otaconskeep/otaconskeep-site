@@ -444,6 +444,49 @@ section > p.intro { max-width: 64ch; color: var(--cream-dim); margin-bottom: 28p
   color: var(--cream-dim);
   line-height: 1.45;
 }
+
+/* Big “this is normal” callout for Windows setup */
+.setup-normal-disclaimer {
+  margin: 0;
+  padding: 16px 16px 14px;
+  border: 2px solid var(--orange);
+  border-radius: 7px;
+  background: rgba(221, 138, 60, 0.12);
+}
+.setup-normal-disclaimer > strong {
+  display: block;
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--orange-bright);
+  margin: 0 0 8px;
+  line-height: 1.15;
+}
+.setup-normal-disclaimer > p {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+  color: var(--cream);
+  line-height: 1.4;
+  font-weight: 600;
+}
+.setup-normal-disclaimer ul {
+  margin: 0;
+  padding: 0 0 0 1.15em;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.setup-normal-disclaimer li {
+  font-size: 0.86rem;
+  color: var(--cream-dim);
+  line-height: 1.4;
+}
+.setup-normal-disclaimer li strong {
+  color: var(--cream);
+  font-weight: 600;
+}
 .os-card .download-btn {
   width: 100%;
   justify-content: center;
