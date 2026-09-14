@@ -1,0 +1,7 @@
+/downloads/OtaconsKeep-Setup.bat
+  Content-Type: application/octet-stream
+  Content-Disposition: attachment; filename="OtaconsKeep-Setup.bat"
+  X-Content-Type-Options: nosniff
+
+/downloads/*
+  X-Content-Type-Options: nosniff
