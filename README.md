@@ -1,5 +1,9 @@
 # Otaconskeep
 
+[![Otaconskeep trailer](https://img.youtube.com/vi/vYXsi4ZRStw/maxresdefault.jpg)](https://youtu.be/vYXsi4ZRStw)
+
+**[Watch the trailer on YouTube](https://youtu.be/vYXsi4ZRStw)**
+
 Public site for the Otaconskeep project: [Otacon AI Ecosystem](https://github.com/Otaconskeep/otacons-ai-ecosystem)
 and [AI9 Manga Colorizer](https://github.com/Otaconskeep/AI9). Designed & Engineered
 by Antonio G. Garcia.
