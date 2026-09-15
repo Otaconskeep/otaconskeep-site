@@ -42,15 +42,11 @@
   <div id="gate" class="gate-panel">
     <p class="gate-icon">&#128274; Restricted &middot; Invite Only</p>
     <h1>Otaconskeep Premium</h1>
-    <p>Early access is invite-only while Otacon Expansion is in development. If Antonio gave you a name and a code, use them below &mdash; either your password or your short PIN works.</p>
+    <p>Early access is invite-only while Otacon Expansion is in development. If Antonio gave you a name, a password, and a PIN, enter all three below.</p>
     <form class="gate-form" id="gate-form" autocomplete="off">
-      <select id="gate-user" aria-label="Your name" required>
-        <option value="" disabled selected>Select your name</option>
-        <option value="RAM36">ram36</option>
-        <option value="BLOCK">block</option>
-        <option value="CRISTO">cristo</option>
-      </select>
-      <input type="password" id="gate-input" placeholder="PASSWORD OR PIN" aria-label="Password or PIN" autocomplete="off">
+      <input type="text" id="gate-name" placeholder="NAME" aria-label="Your name" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input type="password" id="gate-pw" placeholder="PASSWORD" aria-label="Password" autocomplete="off">
+      <input type="password" id="gate-pin" placeholder="PIN" aria-label="PIN" autocomplete="off" inputmode="numeric" maxlength="8">
       <button type="submit">Unlock</button>
     </form>
     <p class="gate-error" id="gate-error"></p>
@@ -141,8 +137,9 @@
   var gate = document.getElementById('gate');
   var unlocked = document.getElementById('unlocked');
   var form = document.getElementById('gate-form');
-  var userSel = document.getElementById('gate-user');
-  var input = document.getElementById('gate-input');
+  var nameInput = document.getElementById('gate-name');
+  var pwInput = document.getElementById('gate-pw');
+  var pinInput = document.getElementById('gate-pin');
   var errorEl = document.getElementById('gate-error');
   var welcomeEl = document.getElementById('welcome-line');
 
@@ -174,7 +171,7 @@
     }).join('');
   }
 
-  function notifyUnlock(username, method) {
+  function notifyUnlock(username) {
     if (!NOTIFY_WEBHOOK_URL) return;
     (async function () {
       var ip = 'unknown';
@@ -184,7 +181,6 @@
       } catch (e) {}
       var lines = [
         '**Premium unlock** — ' + displayName(username),
-        'Method: ' + method,
         'Time: ' + new Date().toISOString(),
         'IP: ' + ip,
         'UA: ' + navigator.userAgent,
@@ -203,24 +199,24 @@
   form.addEventListener('submit', async function (ev) {
     ev.preventDefault();
     errorEl.textContent = '';
-    var username = userSel.value;
-    var code = input.value;
-    if (!username) { errorEl.textContent = 'Select your name first.'; return; }
-    if (!code) return;
+    var username = (nameInput.value || '').trim().toUpperCase();
+    var pw = pwInput.value;
+    var pin = pinInput.value;
+    if (!username || !pw || !pin) { errorEl.textContent = 'Enter your name, password, and PIN.'; return; }
     var user = USERS[username];
     try {
-      var pwHash = await sha256Hex(code);
-      var pinHash = await sha256Hex(username + ':' + code);
-      if (pwHash === user.pwHash) {
-        notifyUnlock(username, 'password');
-        reveal(username);
-      } else if (pinHash === user.pinHash) {
-        notifyUnlock(username, 'PIN');
+      // Hash unconditionally even for an unknown name, so how long this takes
+      // doesn't itself reveal whether the name exists.
+      var pwHash = await sha256Hex(pw);
+      var pinHash = await sha256Hex(username + ':' + pin);
+      if (user && pwHash === user.pwHash && pinHash === user.pinHash) {
+        notifyUnlock(username);
         reveal(username);
       } else {
-        errorEl.textContent = 'Incorrect password or PIN for that name. Try again, or ask in Discord.';
-        input.value = '';
-        input.focus();
+        errorEl.textContent = 'Incorrect name, password, or PIN. Try again, or ask in Discord.';
+        pwInput.value = '';
+        pinInput.value = '';
+        nameInput.focus();
       }
     } catch (e) {
       errorEl.textContent = 'Could not verify in this browser. Try a modern browser, or ask in Discord.';
