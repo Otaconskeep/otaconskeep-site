@@ -204,6 +204,19 @@
 </div>
 
 <div class="wrap">
+  <section id="foundation-install">
+    <p class="tag premium">Install &mdash; One Command</p>
+    <h2>The foundation layer is real. Install it today.</h2>
+    <p class="intro">Not the finished product &mdash; there's no Dashboard, Codec, War Room, or Video Studio here yet. What's real: the versioned agent schema, the bounded relationship/mood formulas, the motion-manifest schema, and a schema-validated five-agent default roster, generated and written to disk. Requires <a href="/otacon/#install">Otacon Core</a> already installed.</p>
+    <div class="codebox">
+      <code id="expansion-cmd">curl -fsSL https://raw.githubusercontent.com/Otaconskeep/otacons-ai-ecosystem/main/install_otacon_expansion.sh | bash</code>
+      <button class="copy-btn" data-copy-target="expansion-cmd">Copy</button>
+    </div>
+    <p class="os-hint" style="margin-top:10px;">Fast-forwards the same repo Core already cloned, reuses Core's Python environment, runs the <span class="mono">expansion/</span> test suite (50 tests) as a real acceptance gate, then generates and validates Aria/Vector/Ledger/Muse/Sentry &mdash; written to <span class="mono">~/.config/otacon/expansion/agents/</span>. Rerunning it is safe. Reports <span class="mono">FOUNDATION READY</span>, <span class="mono">DEGRADED</span>, or <span class="mono">FAILED</span>, matching exit codes 0/2/1.</p>
+  </section>
+</div>
+
+<div class="wrap">
   <section id="provisioning">
     <p class="tag premium">Engineering Contract</p>
     <h2>Agent creation is one transaction, not a row in a roster</h2>
