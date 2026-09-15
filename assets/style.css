@@ -1454,3 +1454,82 @@ footer .wrap {
 }
 footer a { color: var(--cream-dim); }
 footer a:hover { color: var(--orange-bright); }
+
+/* ---------------- Otacon Expansion (premium tier) ---------------- */
+:root {
+  --premium: #a888e0;
+  --premium-bright: #c4a8f5;
+  --premium-dim: #5a4a80;
+}
+.stamp.premium { border-color: var(--premium); color: var(--premium-bright); }
+.badge.premium { color: var(--premium-bright); border: 1px solid var(--premium-dim); }
+.legend .dot.premium { background: var(--premium); }
+.tag.premium { color: var(--premium-bright); }
+
+.agentgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.agentcard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  border-top: 3px solid var(--agent-accent, var(--premium));
+}
+.agentcard img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.92);
+}
+.agentcard .agentbody { padding: 14px 16px 16px; }
+.agentcard h4 {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin: 0 0 2px;
+  color: var(--agent-accent, var(--premium-bright));
+}
+.agentcard .agentrole {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--cream-faint);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.agentcard p { font-size: 0.86rem; color: var(--cream-dim); margin: 0; }
+.agentcard .agentroom {
+  margin-top: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--cream-faint);
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.agentcard .agentroom strong { color: var(--cream-dim); }
+
+.disclaimer-panel {
+  background: var(--surface);
+  border: 1px solid var(--line-bright);
+  border-radius: 8px;
+  padding: 22px 24px;
+  margin-top: 22px;
+}
+.disclaimer-panel h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+.disclaimer-panel h4.verified { color: var(--signal); }
+.disclaimer-panel h4.pending { color: var(--orange-bright); }
+.disclaimer-panel ul { margin: 8px 0 0; padding-left: 18px; }
+.disclaimer-panel li { font-size: 0.9rem; color: var(--cream-dim); margin-bottom: 6px; }
+.disclaimer-panel + .disclaimer-panel { margin-top: 12px; }
+.progression .step.premium { border-color: var(--premium-dim); color: var(--premium-bright); }
