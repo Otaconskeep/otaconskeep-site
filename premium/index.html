@@ -30,6 +30,7 @@
       <a href="/otacon/">Otacon</a>
       <a href="/expansion/">Expansion</a>
       <a href="/ai9/">AI9</a>
+      <a href="/faq/">FAQ</a>
       <a href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">GitHub</a>
       <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
     </div>
@@ -41,19 +42,25 @@
   <div id="gate" class="gate-panel">
     <p class="gate-icon">&#128274; Restricted &middot; Invite Only</p>
     <h1>Otaconskeep Premium</h1>
-    <p>Early access is invite-only while Otacon Expansion is in development. If Antonio gave you a code, enter it below.</p>
+    <p>Early access is invite-only while Otacon Expansion is in development. If Antonio gave you a name and a code, use them below &mdash; either your password or your short PIN works.</p>
     <form class="gate-form" id="gate-form" autocomplete="off">
-      <input type="password" id="gate-input" placeholder="ACCESS CODE" aria-label="Access code" autofocus>
+      <select id="gate-user" aria-label="Your name" required>
+        <option value="" disabled selected>Select your name</option>
+        <option value="RAM36">ram36</option>
+        <option value="BLOCK">block</option>
+        <option value="CRISTO">cristo</option>
+      </select>
+      <input type="password" id="gate-input" placeholder="PASSWORD OR PIN" aria-label="Password or PIN" autocomplete="off">
       <button type="submit">Unlock</button>
     </form>
     <p class="gate-error" id="gate-error"></p>
-    <p class="gate-hint">Don't have a code? Ask in <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>, or start with <a href="/otacon/">Otaconskeep Lite</a> &mdash; it's free and real today.</p>
+    <p class="gate-hint">Don't have access? Ask in <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>, or start with <a href="/otacon/">Otaconskeep Lite</a> &mdash; it's free and real today.</p>
   </div>
 
   <div id="unlocked" hidden>
     <section class="hero flush">
       <div class="stamp premium">Otaconskeep Premium<small>early access</small></div>
-      <p class="eyebrow" style="margin-top: 18px;">You're in</p>
+      <p class="eyebrow" style="margin-top: 18px;" id="welcome-line">You're in</p>
       <h1 class="display" style="font-size: clamp(2.2rem, 6vw, 3.6rem);">Welcome to Early Access</h1>
       <p class="lede">Here's an honest status, not a sales pitch: Otacon Expansion (the five-agent roster, relationship engine, command-center surfaces) is <strong>specification complete, not yet a separate installer</strong>. There's nothing extra to download here today beyond what's on the public site. What early access actually gets you right now:</p>
     </section>
@@ -85,8 +92,19 @@
         <a class="btn btn-primary" href="/otacon/#install">Install Otaconskeep Lite &rarr;</a>
         <a class="btn btn-ghost" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener" style="border-color: var(--premium); color: var(--premium-bright);">Claim your Discord role &rarr;</a>
         <a class="btn btn-ghost" href="/expansion/">Read the full spec &rarr;</a>
+        <a class="btn btn-ghost" href="/faq/">FAQ / Troubleshooting &rarr;</a>
       </div>
       <p class="intro" style="margin-top: 22px;">In Discord, mention you came in with an access code and Antonio will get you set up. Thanks for being early on this one.</p>
+    </section>
+
+    <section>
+      <p class="tag premium">Support development</p>
+      <p class="intro">Otaconskeep is self-funded and built solo. If Expansion is worth something to you before it's finished, a coffee helps it get there faster &mdash; entirely optional, never required for access.</p>
+      <div class="btn-row">
+        <a class="btn btn-ghost donate-btn" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">&#9749; $5</a>
+        <a class="btn btn-ghost donate-btn" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">&#9749; $10</a>
+        <a class="btn btn-ghost donate-btn" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">&#9749; $20</a>
+      </div>
     </section>
   </div>
 
@@ -102,46 +120,110 @@
 <script src="../assets/site.js"></script>
 <script>
 (function () {
-  var CORRECT_HASH = '500d343e960da89e459627ddb572cfb68e9ddd00658d383d2d0c741731d2dd5a';
+  // Per-user password + PIN hashes (SHA-256). Password is hashed on its own;
+  // PIN is hashed as "USERNAME:PIN" so the same 4 digits differ per user.
+  // Neither the password nor the PIN is stored in this file as plain text.
+  var USERS = {
+    RAM36:  { pwHash: '2428a5260348e9ed5340ca09471e085f5415f5dbe1d106408b5d300fec28cd3a',
+              pinHash: 'cc65ec6dbf2e389a5bb42f42a78d546040af789a9b875d202ea4d4ff295bf5f2' },
+    BLOCK:  { pwHash: 'db6f6407248b4114581efbe642ab75b551d6dc5ae76dc141bb7432db128cc731',
+              pinHash: '4aa28222afbc5df797bc645cc4e5ed71d733c34676a0f2a24dfc768a905fa391' },
+    CRISTO: { pwHash: '101ea620e95097064943b518e9456392523a063e3fee1a87fab3679c17017e30',
+              pinHash: 'e888e0ff427cc49d4facf2182f713e523b5092c01e34e63a2e1c7e328daf90df' }
+  };
+
+  // Optional: a Discord webhook URL. When set, every successful unlock posts
+  // who unlocked, how, and a rough client fingerprint -- so reuse/sharing of
+  // a single name+code across many different browsers/locations is visible.
+  // Left blank until a webhook is supplied; unlock still works either way.
+  var NOTIFY_WEBHOOK_URL = '';
+
   var gate = document.getElementById('gate');
   var unlocked = document.getElementById('unlocked');
   var form = document.getElementById('gate-form');
+  var userSel = document.getElementById('gate-user');
   var input = document.getElementById('gate-input');
   var errorEl = document.getElementById('gate-error');
+  var welcomeEl = document.getElementById('welcome-line');
 
-  function reveal() {
+  function displayName(code) {
+    return code ? code.charAt(0) + code.slice(1).toLowerCase() : '';
+  }
+
+  function reveal(username) {
     gate.hidden = true;
     unlocked.hidden = false;
-    try { sessionStorage.setItem('otaconskeep_premium_unlocked', '1'); } catch (e) {}
+    if (welcomeEl && username) welcomeEl.textContent = 'You\'re in, ' + displayName(username);
+    try {
+      sessionStorage.setItem('otaconskeep_premium_unlocked', '1');
+      sessionStorage.setItem('otaconskeep_premium_user', username || '');
+    } catch (e) {}
   }
 
   try {
-    if (sessionStorage.getItem('otaconskeep_premium_unlocked') === '1') reveal();
+    if (sessionStorage.getItem('otaconskeep_premium_unlocked') === '1') {
+      reveal(sessionStorage.getItem('otaconskeep_premium_user'));
+    }
   } catch (e) {}
 
   async function sha256Hex(text) {
-    var enc = new TextEncoder().encode(text.trim());
+    var enc = new TextEncoder().encode(text);
     var digest = await crypto.subtle.digest('SHA-256', enc);
     return Array.prototype.map.call(new Uint8Array(digest), function (b) {
       return b.toString(16).padStart(2, '0');
     }).join('');
   }
 
+  function notifyUnlock(username, method) {
+    if (!NOTIFY_WEBHOOK_URL) return;
+    (async function () {
+      var ip = 'unknown';
+      try {
+        var r = await fetch('https://api.ipify.org?format=json');
+        ip = (await r.json()).ip;
+      } catch (e) {}
+      var lines = [
+        '**Premium unlock** — ' + displayName(username),
+        'Method: ' + method,
+        'Time: ' + new Date().toISOString(),
+        'IP: ' + ip,
+        'UA: ' + navigator.userAgent,
+        'TZ: ' + Intl.DateTimeFormat().resolvedOptions().timeZone
+      ].join('\n');
+      try {
+        await fetch(NOTIFY_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: lines })
+        });
+      } catch (e) {}
+    })();
+  }
+
   form.addEventListener('submit', async function (ev) {
     ev.preventDefault();
     errorEl.textContent = '';
-    if (!input.value) return;
+    var username = userSel.value;
+    var code = input.value;
+    if (!username) { errorEl.textContent = 'Select your name first.'; return; }
+    if (!code) return;
+    var user = USERS[username];
     try {
-      var hash = await sha256Hex(input.value.toUpperCase());
-      if (hash === CORRECT_HASH) {
-        reveal();
+      var pwHash = await sha256Hex(code);
+      var pinHash = await sha256Hex(username + ':' + code);
+      if (pwHash === user.pwHash) {
+        notifyUnlock(username, 'password');
+        reveal(username);
+      } else if (pinHash === user.pinHash) {
+        notifyUnlock(username, 'PIN');
+        reveal(username);
       } else {
-        errorEl.textContent = 'Incorrect code. Try again, or ask in Discord.';
+        errorEl.textContent = 'Incorrect password or PIN for that name. Try again, or ask in Discord.';
         input.value = '';
         input.focus();
       }
     } catch (e) {
-      errorEl.textContent = 'Could not verify the code in this browser. Try a modern browser, or ask in Discord.';
+      errorEl.textContent = 'Could not verify in this browser. Try a modern browser, or ask in Discord.';
     }
   });
 })();
