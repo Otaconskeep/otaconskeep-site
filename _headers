@@ -6,6 +6,3 @@
 
 /downloads/*
   X-Content-Type-Options: nosniff
-
-/premium/*
-  X-Robots-Tag: noindex, nofollow

@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Otaconskeep Premium: Early Access</title>
-<meta name="description" content="Otaconskeep Premium early access.">
-<meta name="robots" content="noindex, nofollow">
+<title>Otaconskeep Premium: Support &amp; Access</title>
+<meta name="description" content="Support Otaconskeep development directly and get Otacon Expansion early access -- one-time or monthly.">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,18 +38,49 @@
 
 <div class="wrap">
 
-  <div id="gate" class="gate-panel">
-    <p class="gate-icon">&#128274; Restricted &middot; Invite Only</p>
-    <h1>Otaconskeep Premium</h1>
-    <p>Early access is invite-only while Otacon Expansion is in development. If Antonio gave you a name, a password, and a PIN, enter all three below.</p>
-    <form class="gate-form" id="gate-form" autocomplete="off">
-      <input type="text" id="gate-name" placeholder="NAME" aria-label="Your name" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <input type="password" id="gate-pw" placeholder="PASSWORD" aria-label="Password" autocomplete="off">
-      <input type="password" id="gate-pin" placeholder="PIN" aria-label="PIN" autocomplete="off" inputmode="numeric" maxlength="8">
-      <button type="submit">Unlock</button>
-    </form>
-    <p class="gate-error" id="gate-error"></p>
-    <p class="gate-hint">Don't have access? Ask in <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>, or start with <a href="/otacon/">Otaconskeep Lite</a> &mdash; it's free and real today.</p>
+  <div id="gate">
+
+    <div class="access-panel">
+      <p class="gate-icon">&#9749; Get Access &middot; Support Development</p>
+      <h1 style="text-align:center;">Support Otaconskeep, get Premium access</h1>
+      <p style="text-align:center; max-width:56ch; margin:0 auto 22px;">Otaconskeep is self-funded and built solo. Supporting it directly funds Expansion's development and gets you an access code &mdash; real payment, processed securely by Buy Me a Coffee, not this site.</p>
+
+      <div class="tier-grid">
+        <a class="tier-card" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">
+          <span class="tier-amount">$5</span>
+          <span class="tier-label">One-time</span>
+        </a>
+        <a class="tier-card" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">
+          <span class="tier-amount">$10</span>
+          <span class="tier-label">One-time</span>
+        </a>
+        <a class="tier-card" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">
+          <span class="tier-amount">$20</span>
+          <span class="tier-label">One-time</span>
+        </a>
+        <a class="tier-card tier-card-monthly" href="https://www.buymeacoffee.com/otaconskeep/membership" target="_blank" rel="noopener">
+          <span class="tier-amount">Monthly</span>
+          <span class="tier-label">Membership &middot; ongoing access + updates</span>
+        </a>
+      </div>
+
+      <div class="info-note" style="margin-top:20px; text-align:left;">After your support goes through on Buy Me a Coffee, Antonio sends your access name, password, and PIN directly &mdash; currently by hand, not instant, usually same day. Mention in the payment note (or in <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>) how you'd like to receive it.</div>
+    </div>
+
+    <div class="gate-panel">
+      <p class="gate-icon">&#128274; Already have a code?</p>
+      <h1>Otaconskeep Premium</h1>
+      <p>Enter the name, password, and PIN you were given.</p>
+      <form class="gate-form" id="gate-form" autocomplete="off">
+        <input type="text" id="gate-name" placeholder="NAME" aria-label="Your name" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input type="password" id="gate-pw" placeholder="PASSWORD" aria-label="Password" autocomplete="off">
+        <input type="password" id="gate-pin" placeholder="PIN" aria-label="PIN" autocomplete="off" inputmode="numeric" maxlength="8">
+        <button type="submit">Unlock</button>
+      </form>
+      <p class="gate-error" id="gate-error"></p>
+      <p class="gate-hint">Free instead: start with <a href="/otacon/">Otaconskeep Lite</a> &mdash; no code needed, real and working today.</p>
+    </div>
+
   </div>
 
   <div id="unlocked" hidden>
@@ -94,13 +124,8 @@
     </section>
 
     <section>
-      <p class="tag premium">Support development</p>
-      <p class="intro">Otaconskeep is self-funded and built solo. If Expansion is worth something to you before it's finished, a coffee helps it get there faster &mdash; entirely optional, never required for access.</p>
-      <div class="btn-row">
-        <a class="btn btn-ghost donate-btn" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">&#9749; $5</a>
-        <a class="btn btn-ghost donate-btn" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">&#9749; $10</a>
-        <a class="btn btn-ghost donate-btn" href="https://www.buymeacoffee.com/otaconskeep" target="_blank" rel="noopener">&#9749; $20</a>
-      </div>
+      <p class="tag premium">Already supporting</p>
+      <p class="intro">Thank you for funding this directly &mdash; genuinely. A recurring <a href="https://www.buymeacoffee.com/otaconskeep/membership" target="_blank" rel="noopener" style="color: var(--warn);">Monthly Membership</a> keeps Expansion moving fastest if you want to keep going.</p>
     </section>
   </div>
 
