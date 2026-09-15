@@ -1637,8 +1637,9 @@ footer a:hover { color: var(--accent-bright); }
 }
 .gate-panel p { color: var(--cream-dim); font-size: 0.92rem; margin: 0 0 20px; }
 .gate-form { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.gate-form input[type="password"] {
-  flex: 1 1 200px;
+.gate-form input[type="password"],
+.gate-form select {
+  flex: 1 1 160px;
   background: var(--bg-elevated);
   border: 1px solid var(--line-bright);
   border-radius: 4px;
@@ -1646,10 +1647,12 @@ footer a:hover { color: var(--accent-bright); }
   font-family: 'JetBrains Mono', monospace;
   padding: 11px 14px;
   font-size: 0.95rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-align: center;
 }
-.gate-form input[type="password"]:focus { outline: 2px solid var(--premium); outline-offset: 2px; }
+.gate-form input[type="password"] { flex-basis: 200px; letter-spacing: 0.08em; }
+.gate-form input[type="password"]:focus,
+.gate-form select:focus { outline: 2px solid var(--premium); outline-offset: 2px; }
 .gate-form button {
   background: var(--premium);
   color: #150f24;
@@ -1663,3 +1666,5 @@ footer a:hover { color: var(--accent-bright); }
 .gate-form button:hover { background: var(--premium-bright); border-color: var(--premium-bright); }
 .gate-error { color: var(--danger); font-size: 0.84rem; margin-top: 12px; min-height: 1.2em; }
 .gate-hint { margin-top: 18px; font-size: 0.8rem; color: var(--cream-faint); }
+.donate-btn { border-color: var(--warn-dim); color: var(--warn); }
+.donate-btn:hover { border-color: var(--warn); color: var(--warn); background: rgba(224, 168, 60, 0.1); }
