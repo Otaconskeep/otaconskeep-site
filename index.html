@@ -468,21 +468,21 @@
           <h3 class="install-panel-title">Install AI9 Manga Colorizer</h3>
           <span class="one-click-badge">One click · Windows</span>
         </div>
-        <p class="install-panel-lead">Local GPU manga colorization + Firefox reading extension. Windows Git Bash installer — not a Linux <span class="mono">curl | bash</span> one-liner, and not WSL.</p>
+        <p class="install-panel-lead">Local GPU manga colorization + Firefox reading extension. Same pattern as Otacon Setup: download one file from this site, double-click it. No Command Prompt. No ZIP required.</p>
         <div class="os-grid">
           <div class="os-card">
             <p class="os-label">Windows 10 / 11</p>
-            <a class="download-btn" href="https://github.com/Otaconskeep/AI9/archive/refs/heads/main.zip">Download AI9 ZIP</a>
-            <p class="os-hint">Extract the ZIP, then double-click <span class="mono">install_ai9.bat</span>. It installs Git Bash if needed and finishes the rest.</p>
-            <a class="btn btn-ghost" style="justify-content: center;" href="https://raw.githubusercontent.com/Otaconskeep/AI9/main/install_ai9.bat" download>Or grab install_ai9.bat</a>
+            <a class="download-btn" href="/downloads/AI9-Setup.bat" download="AI9-Setup.bat">Download AI9 Setup</a>
+            <p class="os-hint">Saves as <span class="mono">AI9-Setup.bat</span>. Open your Downloads folder and <strong>double-click</strong> it. Approve the Windows prompt if asked. It installs Git Bash if needed, detects your NVIDIA GPU, and finishes the rest. Do <em>not</em> type the filename into Command Prompt.</p>
+            <details style="margin-top: 10px;">
+              <summary style="cursor:pointer; color: var(--cream-dim); font-size: 0.88rem;">Advanced / already cloned the repo?</summary>
+              <p class="os-hint" style="margin-top: 8px;">From the extracted AI9 folder, double-click <span class="mono">install_ai9.bat</span>, or in Git Bash run <span class="mono">./install_ai9.sh</span>. Same installer.</p>
+              <p class="os-hint" style="margin-top: 6px;"><a href="https://github.com/Otaconskeep/AI9/archive/refs/heads/main.zip">Download GitHub ZIP</a> if you prefer a full checkout first.</p>
+            </details>
           </div>
           <div class="os-card">
-            <p class="os-label">Already have Git Bash?</p>
-            <div class="codebox">
-              <code id="ai9-cmd">./install_ai9.sh</code>
-              <button class="copy-btn" data-copy-target="ai9-cmd">Copy</button>
-            </div>
-            <p class="os-hint">Run that inside the extracted AI9 folder. Same installer as the .bat path. Detects GPU, installs PyTorch, verifies weights, registers auto-start.</p>
+            <p class="os-label">What it does</p>
+            <p class="os-hint" style="margin: 0;">Installs Git / Python / Firefox if missing · picks the right PyTorch CUDA build for your GPU · downloads and verifies model weights · runs a real GPU inference test · registers auto-start. Requires an NVIDIA GPU with a current driver.</p>
           </div>
         </div>
       </div>
