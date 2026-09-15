@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -47,16 +47,39 @@
   </div>
 </section>
 
+<div class="wrap quickpick-wrap">
+  <div class="quickpick-grid">
+    <div class="quickpick" style="--qp-accent: var(--signal);">
+      <span class="qp-eyebrow">Free &middot; Open Source</span>
+      <h3>Otaconskeep Lite</h3>
+      <p>The real, complete public platform. Persistent agents, memory, voice, one-click install. No license key, no artificial limit.</p>
+      <a class="btn btn-primary" href="#install-otacon">Install Lite</a>
+    </div>
+    <div class="quickpick" style="--qp-accent: var(--keep-ref);">
+      <span class="qp-eyebrow">Free &middot; Windows GPU</span>
+      <h3>AI9 Colorizer</h3>
+      <p>Local GPU manga colorization for Firefox. Black-and-white in, color out, on your own hardware.</p>
+      <a class="btn btn-primary" href="#install-ai9">Install AI9</a>
+    </div>
+    <div class="quickpick" style="--qp-accent: var(--premium);">
+      <span class="qp-eyebrow">Premium &middot; Early Access</span>
+      <h3>Otaconskeep Premium</h3>
+      <p>Five-agent roster, relationship engine, command-center surfaces, free local Video Studio. Invite-only while in development.</p>
+      <a class="btn btn-ghost" href="/premium/" style="border-color: var(--premium); color: var(--premium-bright);">Request Access</a>
+    </div>
+  </div>
+</div>
+
 <div class="wrap">
   <section class="hero flush">
     <p class="eyebrow">Field Dossier // Public Index</p>
     <h1 class="display">Build your own Keep.</h1>
-    <p class="lede">Otacon is a local-first AI ecosystem for running persistent AI agents on hardware you control. Give agents identities, memories, voices, rooms, and capabilities, then connect them to local models, media, automation, compute nodes, and the rest of your homelab.</p>
+    <p class="lede">Otaconskeep Lite (built on Otacon Core) is a local-first AI ecosystem for running persistent AI agents on hardware you control. Give agents identities, memories, voices, rooms, and capabilities, then connect them to local models, media, automation, compute nodes, and the rest of your homelab.</p>
     <p class="lede" style="font-weight: 600; color: var(--cream); margin-top: 10px;">Your agents. Your hardware. Your data. Your Keep.</p>
     <p class="meta" style="margin-top: 26px; letter-spacing: 0.1em;">AGENTS // MEMORY // VOICE // ROOMS // LOCAL AI<br>MEDIA // AUTOMATION // GPU NODES // HOMELAB</p>
     <p class="meta">CREATED BY: <strong>Antonio G. Garcia</strong> · Built for the Keep.</p>
     <div class="btn-row" style="margin-top: 26px;">
-      <a class="btn btn-primary btn-install" href="#install-otacon">Install Otacon</a>
+      <a class="btn btn-primary btn-install" href="#install-otacon">Install Otaconskeep Lite</a>
       <a class="btn btn-primary btn-install" href="#install-ai9">Install AI9 Manga Colorizer</a>
     </div>
     <div class="btn-row" style="margin-top: 10px;">
@@ -328,6 +351,51 @@
 
 <div class="wrap">
   <section>
+    <p class="tag premium">03b // Otacon Expansion</p>
+    <div class="stamp premium">Otacon Expansion<small>premium &middot; spec complete</small></div>
+    <h2 style="margin-top: 18px;">Five agents. Real hierarchy. A Keep of your own.</h2>
+    <p class="intro">The premium layer that installs on top of Lite: a five-agent roster with genuine room ownership, a live mood and relationship engine, and a free local Video Studio. Specification complete, not yet installable &mdash; <a href="/expansion/">read the full spec</a>.</p>
+
+    <div class="agentgrid">
+      <div class="agentcard" style="--agent-accent:#43d98a">
+        <img src="assets/img/expansion/aria.webp" alt="Aria, Command Coordinator">
+        <div class="agentbody"><h4>Aria</h4><p class="agentrole">Coordinator</p><p class="agentroom">Dashboard + Codec</p></div>
+      </div>
+      <div class="agentcard" style="--agent-accent:#a888e0">
+        <img src="assets/img/expansion/vector.webp" alt="Vector, Systems and Infrastructure">
+        <div class="agentbody"><h4>Vector</h4><p class="agentrole">Systems</p><p class="agentroom">War Room</p></div>
+      </div>
+      <div class="agentcard" style="--agent-accent:#39e6c8">
+        <img src="assets/img/expansion/ledger.webp" alt="Ledger, Data and Continuity">
+        <div class="agentbody"><h4>Ledger</h4><p class="agentrole">Continuity</p><p class="agentroom">Intel Board</p></div>
+      </div>
+      <div class="agentcard" style="--agent-accent:#8db3d9">
+        <img src="assets/img/expansion/muse.webp" alt="Muse, Creative and Media Curation">
+        <div class="agentbody"><h4>Muse</h4><p class="agentrole">Creative</p><p class="agentroom">Video Studio</p></div>
+      </div>
+      <div class="agentcard" style="--agent-accent:#e0a83c">
+        <img src="assets/img/expansion/sentry.webp" alt="Sentry, Security and Operations">
+        <div class="agentbody"><h4>Sentry</h4><p class="agentrole">Security</p><p class="agentroom">Home Automation</p></div>
+      </div>
+    </div>
+
+    <p class="intro" style="margin-top: 26px; margin-bottom: 10px;">Agents move &mdash; Aria's motion pack, hand-produced as the reference set every default agent's generator matches:</p>
+    <div class="motiongrid">
+      <div class="motioncard"><video controls preload="metadata" src="assets/video/expansion/aria-talking.mp4"></video><div class="mc-label"><span class="mc-name">Talking</span><span class="mc-key">talking</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="assets/video/expansion/aria-happy.mp4"></video><div class="mc-label"><span class="mc-name">Happy</span><span class="mc-key">affect.happy</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="assets/video/expansion/aria-rage.mp4"></video><div class="mc-label"><span class="mc-name">Rage</span><span class="mc-key">affect.rage</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="assets/video/expansion/aria-sad-masked.mp4"></video><div class="mc-label"><span class="mc-name">Hiding Sad</span><span class="mc-key">affect.sad_masked</span></div></div>
+    </div>
+
+    <div class="btn-row" style="margin-top: 22px;">
+      <a class="btn btn-ghost" href="/expansion/" style="border-color: var(--premium); color: var(--premium-bright);">Full Expansion spec &rarr;</a>
+      <a class="btn btn-ghost" href="/premium/" style="border-color: var(--premium); color: var(--premium-bright);">Request early access</a>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
     <p class="tag">04 // How to Get It</p>
     <h2>Four ways in</h2>
     <div class="tablewrap">
@@ -349,9 +417,9 @@
 
 <div class="wrap">
   <section id="install">
-    <p class="tag">Install // One Click</p>
-    <h2>Install Otacon. Install AI9.</h2>
-    <p class="intro">Two products. Otacon’s normal install already includes Default Model (chat) and Voice Trainer.</p>
+    <p class="tag">Install</p>
+    <h2>Lite. AI9. Premium.</h2>
+    <p class="intro">Three products. Lite's normal install already includes Default Model (chat) and Voice Trainer. Premium is invite-only while it's in development.</p>
 
     <div class="install-stack">
 
@@ -414,6 +482,25 @@
               <button class="copy-btn" data-copy-target="ai9-cmd">Copy</button>
             </div>
             <p class="os-hint">Run that inside the extracted AI9 folder. Same installer as the .bat path. Detects GPU, installs PyTorch, verifies weights, registers auto-start.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="install-panel" id="install-premium" style="border-color: var(--premium-dim);">
+        <div class="install-panel-head">
+          <h3 class="install-panel-title" style="color: var(--premium-bright);">Otaconskeep Premium</h3>
+          <span class="one-click-badge" style="color: var(--premium-bright); border-color: var(--premium-dim);">Invite only</span>
+        </div>
+        <p class="install-panel-lead">The Expansion layer: five-agent roster, relationship engine, command-center surfaces, free local Video Studio. In active development &mdash; not a public download yet.</p>
+        <div class="os-grid">
+          <div class="os-card">
+            <p class="os-label">Get access</p>
+            <a class="download-btn" href="/premium/" style="background: var(--premium); color: #150f24;">Request Early Access</a>
+            <p class="os-hint">Password-protected. Ask Antonio directly, or in <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>, for the current access code.</p>
+          </div>
+          <div class="os-card">
+            <p class="os-label">Read first</p>
+            <p class="os-hint">See exactly what's built, what's spec-only, and what's still missing before asking for a code &mdash; <a href="/expansion/">full Expansion spec</a>.</p>
           </div>
         </div>
       </div>
