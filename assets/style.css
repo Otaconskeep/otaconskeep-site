@@ -1728,3 +1728,4 @@ footer a:hover { color: var(--accent-bright); }
 .tier-card-monthly { border-color: var(--premium-dim); }
 .tier-card-monthly:hover { border-color: var(--premium); box-shadow: 0 0 14px rgba(168, 136, 224, 0.3); }
 .tier-card-monthly .tier-amount { color: var(--premium-bright); }
+.bmc-widget-wrap { display: flex; justify-content: center; margin-top: 18px; min-height: 54px; }
