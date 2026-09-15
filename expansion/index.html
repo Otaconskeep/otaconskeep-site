@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -125,6 +125,26 @@
     War Room     Intel Board    Video Studio   Home Automation
    (systems)     (records)      (creative)      (security)</div>
     <p class="diagram-caption">REX Board and Dossier stay Keep-wide rather than single-owner &mdash; every agent files into REX, every agent gets a dossier.</p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="motion">
+    <p class="tag premium">Aria's Motion Pack</p>
+    <h2>Nine real clips, the reference set</h2>
+    <p class="intro">The Codec surface (&sect;03) isn't a static chat window &mdash; agents move. Aria's set below is hand-produced and ships as the reference implementation every other default agent's motion generator is built to match: idle, talking, thinking, and five distinct affect reactions, classified from a compliment/insult/annoyance/question the same way the relationship engine classifies everything else, never a second, separate sentiment model.</p>
+    <div class="motiongrid">
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-waiting.mp4"></video><div class="mc-label"><span class="mc-name">Waiting</span><span class="mc-key">idle</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-talking.mp4"></video><div class="mc-label"><span class="mc-name">Talking</span><span class="mc-key">talking</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-thinking.mp4"></video><div class="mc-label"><span class="mc-name">Thinking</span><span class="mc-key">thinking</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-thinking-hard.mp4"></video><div class="mc-label"><span class="mc-name">Thinking Hard</span><span class="mc-key">thinking.hard</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-happy.mp4"></video><div class="mc-label"><span class="mc-name">Happy</span><span class="mc-key">affect.happy</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-angry.mp4"></video><div class="mc-label"><span class="mc-name">Angry</span><span class="mc-key">affect.angry</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-rage.mp4"></video><div class="mc-label"><span class="mc-name">Rage</span><span class="mc-key">affect.rage</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-sad.mp4"></video><div class="mc-label"><span class="mc-name">Sad</span><span class="mc-key">affect.sad</span></div></div>
+      <div class="motioncard"><video controls preload="metadata" src="../assets/video/expansion/aria-sad-masked.mp4"></video><div class="mc-label"><span class="mc-name">Hiding Sad</span><span class="mc-key">affect.sad_masked</span></div></div>
+    </div>
+    <p class="diagram-caption">A plain insult reads as masked hurt first (Aria is written composed, not volatile) &mdash; it only escalates to visible anger on repetition. Same principle the text-response side of the relationship engine already applies, now applied to motion.</p>
   </section>
 </div>
 

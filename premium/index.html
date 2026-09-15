@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Otaconskeep Premium: Early Access</title>
+<meta name="description" content="Otaconskeep Premium early access.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="filebar">
+  <div class="wrap">
+    <span>FILE // OTACONSKEEP-PREMIUM</span>
+    <span>ACCESS // RESTRICTED</span>
+  </div>
+</div>
+
+<nav class="topnav">
+  <div class="wrap">
+    <a class="brand" href="/">Otaconskeep</a>
+    <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+    <div class="navlinks">
+      <a href="/">Home</a>
+      <a href="/otacon/">Otacon</a>
+      <a href="/expansion/">Expansion</a>
+      <a href="/ai9/">AI9</a>
+      <a href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">GitHub</a>
+      <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div id="gate" class="gate-panel">
+    <p class="gate-icon">&#128274; Restricted &middot; Invite Only</p>
+    <h1>Otaconskeep Premium</h1>
+    <p>Early access is invite-only while Otacon Expansion is in development. If Antonio gave you a code, enter it below.</p>
+    <form class="gate-form" id="gate-form" autocomplete="off">
+      <input type="password" id="gate-input" placeholder="ACCESS CODE" aria-label="Access code" autofocus>
+      <button type="submit">Unlock</button>
+    </form>
+    <p class="gate-error" id="gate-error"></p>
+    <p class="gate-hint">Don't have a code? Ask in <a href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>, or start with <a href="/otacon/">Otaconskeep Lite</a> &mdash; it's free and real today.</p>
+  </div>
+
+  <div id="unlocked" hidden>
+    <section class="hero flush">
+      <div class="stamp premium">Otaconskeep Premium<small>early access</small></div>
+      <p class="eyebrow" style="margin-top: 18px;">You're in</p>
+      <h1 class="display" style="font-size: clamp(2.2rem, 6vw, 3.6rem);">Welcome to Early Access</h1>
+      <p class="lede">Here's an honest status, not a sales pitch: Otacon Expansion (the five-agent roster, relationship engine, command-center surfaces) is <strong>specification complete, not yet a separate installer</strong>. There's nothing extra to download here today beyond what's on the public site. What early access actually gets you right now:</p>
+    </section>
+
+    <section>
+      <p class="tag premium">What's real today</p>
+      <div class="today-panel">
+        <p class="kicker">&#10003; Available right now</p>
+        <ul class="today-list">
+          <li><span class="ok">&#10003;</span> Otaconskeep Lite, fully working &mdash; the real foundation Expansion installs on top of</li>
+          <li><span class="ok">&#10003;</span> The full Expansion engineering spec and a first tested code slice (canonical agent schema, relationship formulas, motion manifest schema) on GitHub</li>
+          <li><span class="ok">&#10003;</span> A private early-access role in Discord &mdash; first look at Expansion builds as they land, direct line to Antonio</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <p class="tag premium">Get started</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/otacon/#install">Install Otaconskeep Lite &rarr;</a>
+        <a class="btn btn-ghost" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener" style="border-color: var(--premium); color: var(--premium-bright);">Claim your Discord role &rarr;</a>
+        <a class="btn btn-ghost" href="/expansion/">Read the full spec &rarr;</a>
+      </div>
+      <p class="intro" style="margin-top: 22px;">In Discord, mention you came in with an access code and Antonio will get you set up. Thanks for being early on this one.</p>
+    </section>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Otaconskeep Premium &middot; Designed &amp; Engineered by Antonio G. Garcia.</span>
+    <span><a href="/">otaconskeep-site</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+<script>
+(function () {
+  var CORRECT_HASH = '500d343e960da89e459627ddb572cfb68e9ddd00658d383d2d0c741731d2dd5a';
+  var gate = document.getElementById('gate');
+  var unlocked = document.getElementById('unlocked');
+  var form = document.getElementById('gate-form');
+  var input = document.getElementById('gate-input');
+  var errorEl = document.getElementById('gate-error');
+
+  function reveal() {
+    gate.hidden = true;
+    unlocked.hidden = false;
+    try { sessionStorage.setItem('otaconskeep_premium_unlocked', '1'); } catch (e) {}
+  }
+
+  try {
+    if (sessionStorage.getItem('otaconskeep_premium_unlocked') === '1') reveal();
+  } catch (e) {}
+
+  async function sha256Hex(text) {
+    var enc = new TextEncoder().encode(text.trim());
+    var digest = await crypto.subtle.digest('SHA-256', enc);
+    return Array.prototype.map.call(new Uint8Array(digest), function (b) {
+      return b.toString(16).padStart(2, '0');
+    }).join('');
+  }
+
+  form.addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    errorEl.textContent = '';
+    if (!input.value) return;
+    try {
+      var hash = await sha256Hex(input.value.toUpperCase());
+      if (hash === CORRECT_HASH) {
+        reveal();
+      } else {
+        errorEl.textContent = 'Incorrect code. Try again, or ask in Discord.';
+        input.value = '';
+        input.focus();
+      }
+    } catch (e) {
+      errorEl.textContent = 'Could not verify the code in this browser. Try a modern browser, or ask in Discord.';
+    }
+  });
+})();
+</script>
+</body>
+</html>
