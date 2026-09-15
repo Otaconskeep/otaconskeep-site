@@ -27,6 +27,7 @@
     <div class="navlinks">
       <a href="/">Home</a>
       <a href="/otacon/" aria-current="page">Otacon</a>
+      <a href="/expansion/">Expansion</a>
       <a href="/ai9/">AI9</a>
       <a href="https://github.com/Otaconskeep/otacons-ai-ecosystem" target="_blank" rel="noopener">GitHub</a>
       <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
@@ -127,6 +128,21 @@
           <p class="os-hint">First run takes a while and asks for sudo once. Registers a systemd service that survives reboots.</p>
         </div>
       </div>
+    </div>
+
+    <div class="disclaimer-panel">
+      <h4 class="verified">✓ Verified — Windows installer, first install phase</h4>
+      <ul>
+        <li>Downloaded and launched directly from this site's <span class="mono">/downloads/</span> path, not a raw GitHub Save-As</li>
+        <li>Handled a genuinely hostile real-world filename/path: <span class="mono">Test User\Downloads\OtaconsKeep-Setup (1).bat</span></li>
+        <li>Elevated to admin correctly, ran through to 100.0%, and reported successful operations</li>
+        <li>Correctly requested a reboot when WSL2 needed one, exactly as designed</li>
+      </ul>
+    </div>
+    <div class="disclaimer-panel">
+      <h4 class="pending">◐ Not yet fully proven — post-reboot completion</h4>
+      <p style="font-size: 0.9rem; color: var(--cream-dim); margin: 0 0 10px;">The full "installed and usable after reboot" pass hasn't been independently confirmed end-to-end yet. This is a <strong>test-infrastructure limitation, not a known product defect</strong>: the automated Windows test lab runs Windows guests with nested virtualization disabled by default (a safety default to avoid a known guest-crash class), and Otacon's setup needs WSL2, which needs nested virt. The lab guest hung at the Windows boot screen after the WSL-enable reboot for that reason. The lab config has since been corrected (nested virt enabled) for future runs, but a corrected lab is not yet a green, repeatable release-gate result.</p>
+      <p style="font-size: 0.9rem; color: var(--cream-dim); margin: 0;">Release-gate criterion before this is called fully proven: the same download → hostile-path → double-click → WSL → reboot → resume → Core-ready → health-check sequence, green on real Windows 11 hardware or a VM with genuinely proven nested virtualization — not this lab alone.</p>
     </div>
 
     <div class="today-panel" style="border-color: var(--orange-dim);">
@@ -245,7 +261,8 @@
         <thead><tr><th>Tier</th><th>What it is</th><th>Status</th><th>Price</th></tr></thead>
         <tbody>
           <tr><td><strong>Otacon Core</strong></td><td>Free · open source · self-hosted</td><td>Install today</td><td>Free</td></tr>
-          <tr><td><strong>Keep Blueprint</strong></td><td>The broader ecosystem architecture demonstrated by the real Keep</td><td>Direction, not yet a public installer</td><td>Not offered publicly yet</td></tr>
+          <tr><td><strong>Otacon Expansion</strong></td><td>Five-agent roster, emotional/relationship engine, command-center surfaces, free local Video Studio</td><td>Specification complete — <a href="/expansion/">see the spec</a></td><td>Not yet available (licensed, priced later)</td></tr>
+          <tr><td><strong>Keep Blueprint</strong></td><td>The broader ecosystem architecture demonstrated by the real Keep</td><td>Reference only</td><td>Not offered publicly</td></tr>
           <tr><td><strong>Otaconskeep Services</strong></td><td>Architecture · deployment · support</td><td>Available now</td><td>Contact for scope/pricing</td></tr>
         </tbody>
       </table>
