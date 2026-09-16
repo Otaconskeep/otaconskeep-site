@@ -8,6 +8,8 @@ Public site for the Otaconskeep project: [Otacon AI Ecosystem](https://github.co
 and [AI9 Manga Colorizer](https://github.com/Otaconskeep/AI9). Designed & Engineered
 by Antonio G. Garcia.
 
+**[Watch the AI9 video on YouTube](https://youtu.be/aUiwMACSPBk)** (embedded on [`/ai9/`](https://otaconskeep.com/ai9/))
+
 Plain static HTML/CSS/JS. No build step, no framework, no server-side code.
 
 ```
