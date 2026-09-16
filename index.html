@@ -475,7 +475,18 @@
             <p class="os-label">Windows 10 / 11</p>
             <a class="download-btn" href="/downloads/AI9-Setup.bat" download="AI9-Setup.bat">Download AI9 Setup</a>
             <p class="os-hint">Saves as <span class="mono">AI9-Setup.bat</span>. Open your Downloads folder and <strong>double-click</strong> it. Approve the Windows prompt if asked. It installs Git Bash if needed, detects your NVIDIA GPU, and finishes the rest. Do <em>not</em> type the filename into Command Prompt.</p>
-            <details style="margin-top: 10px;">
+            <div class="install-demo-video" aria-label="AI9 Manga Colorizer demo video">
+              <div class="install-demo-video-frame">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/aUiwMACSPBk"
+                  title="AI9 Manga Colorizer demo"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                  loading="lazy"
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+              </div>
+            </div>
+            <details style="margin-top: 4px;">
               <summary style="cursor:pointer; color: var(--cream-dim); font-size: 0.88rem;">Advanced / already cloned the repo?</summary>
               <p class="os-hint" style="margin-top: 8px;">From the extracted AI9 folder, double-click <span class="mono">install_ai9.bat</span>, or in Git Bash run <span class="mono">./install_ai9.sh</span>. Same installer.</p>
               <p class="os-hint" style="margin-top: 6px;"><a href="https://github.com/Otaconskeep/AI9/archive/refs/heads/main.zip">Download GitHub ZIP</a> if you prefer a full checkout first.</p>
@@ -485,18 +496,6 @@
             <p class="os-label">What it does</p>
             <p class="os-hint" style="margin: 0;">Installs Git / Python / Firefox if missing · picks the right PyTorch CUDA build for your GPU · downloads and verifies model weights · runs a real GPU inference test · registers auto-start. Requires an NVIDIA GPU with a current driver.</p>
           </div>
-        </div>
-        <div class="install-demo-video" aria-label="AI9 Manga Colorizer demo video">
-          <div class="install-demo-video-frame">
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/aUiwMACSPBk"
-              title="AI9 Manga Colorizer demo"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen
-              loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin"></iframe>
-          </div>
-          <p class="os-hint" style="margin: 8px 0 0;"><a href="https://youtu.be/aUiwMACSPBk" target="_blank" rel="noopener">Watch on YouTube</a> · AI9 demo</p>
         </div>
       </div>
 

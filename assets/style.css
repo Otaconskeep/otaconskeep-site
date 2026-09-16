@@ -435,12 +435,14 @@ section > p.intro { max-width: 64ch; color: var(--cream-dim); margin-bottom: 28p
   max-width: 68ch;
 }
 .install-demo-video {
-  margin-top: 16px;
-  max-width: 420px;
+  margin-top: 4px;
+  width: 100%;
+  max-width: 100%;
 }
 .install-demo-video-frame {
   position: relative;
   width: 100%;
+  max-width: 280px;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #000;
