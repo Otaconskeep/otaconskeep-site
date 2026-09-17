@@ -65,6 +65,7 @@ set "LAST_FAIL_CMD="
 set "LAST_FAIL_REASON="
 set "LAST_FAIL_OUT="
 set "SYNTAX_ONLY="
+set "FORCE_UPDATE="
 
 :PARSE_ARGS
 if "%~1"=="" goto ARGS_DONE
@@ -72,6 +73,17 @@ if /I "%~1"=="--syntax-check" goto SET_SYNTAX
 if /I "%~1"=="-syntax-check" goto SET_SYNTAX
 if /I "%~1"=="--debug" goto SET_DEBUG
 if /I "%~1"=="-debug" goto SET_DEBUG
+if /I "%~1"=="--update" goto SET_UPDATE
+if /I "%~1"=="-update" goto SET_UPDATE
+if /I "%~1"=="--refresh" goto SET_UPDATE
+if /I "%~1"=="--reinstall" goto SET_REINSTALL
+if /I "%~1"=="-reinstall" goto SET_REINSTALL
+if /I "%~1"=="--fix-codec" goto SET_FIXCODEC
+if /I "%~1"=="-fix-codec" goto SET_FIXCODEC
+if /I "%~1"=="--fix" goto SET_FIXCODEC
+if /I "%~1"=="-fix" goto SET_FIXCODEC
+if /I "%~1"=="--open" goto SET_OPEN_ARG
+if /I "%~1"=="-open" goto SET_OPEN_ARG
 set "ARGS=!ARGS! %~1"
 goto PARSE_SHIFT
 :SET_SYNTAX
@@ -79,6 +91,19 @@ set "SYNTAX_ONLY=1"
 goto PARSE_SHIFT
 :SET_DEBUG
 set "DEBUG=1"
+goto PARSE_SHIFT
+:SET_UPDATE
+set "FORCE_UPDATE=1"
+goto PARSE_SHIFT
+:SET_REINSTALL
+set "FORCE_UPDATE=1"
+set "ARGS=!ARGS! --reinstall"
+goto PARSE_SHIFT
+:SET_FIXCODEC
+set "ARGS=!ARGS! --fix-codec"
+goto PARSE_SHIFT
+:SET_OPEN_ARG
+set "ARGS=!ARGS! --open"
 goto PARSE_SHIFT
 :PARSE_SHIFT
 shift
@@ -104,8 +129,15 @@ if defined DEBUG echo [DEBUG] INST=%INST%
 if defined DEBUG echo [DEBUG] RAW=%RAW%
 
 set "LOCAL_ASSISTANT=%~dp0deploy\windows-setup-assistant.ps1"
-if not exist "%LOCAL_ASSISTANT%" goto NEED_FETCH
-call :LOG "local tree detected; skipping bootstrap fetch"
+set "LOCAL_SH=%~dp0install_otacon.sh"
+REM Only skip fetch for a full repo/dev tree (has install_otacon.sh).
+REM AppData\OtaconsKeep\installer ALSO has deploy\*.ps1 after first fetch — skipping
+REM there pinned crist on stale assistants and reboot-looped forever.
+if exist "%LOCAL_ASSISTANT%" if exist "%LOCAL_SH%" goto USE_LOCAL_TREE
+goto NEED_FETCH
+
+:USE_LOCAL_TREE
+call :LOG "full local tree detected (install_otacon.sh present); skipping bootstrap fetch"
 if defined DEBUG echo [DEBUG] command=call "%~dp0install_otacon.bat" %ARGS%
 call "%~dp0install_otacon.bat" %ARGS%
 set "RC=!ERRORLEVEL!"
@@ -115,6 +147,26 @@ if not "!RC!"=="0" call :STAY_OPEN_AFTER_CHILD !RC!
 exit /b !RC!
 
 :NEED_FETCH
+REM Pin local AppData installer across retries unless --update/--refresh,
+REM or unless GitHub's installer-revision.txt moved (so fixes reach Josh).
+if defined FORCE_UPDATE goto NEED_FETCH_FORCE
+if not exist "%ASSISTANT%" goto NEED_FETCH_FORCE
+if not exist "%INST%\deploy\installer-revision.txt" goto NEED_FETCH_FORCE
+set "LOCAL_REV="
+set "REMOTE_REV="
+for /f "usebackq delims=" %%R in ("%INST%\deploy\installer-revision.txt") do set "LOCAL_REV=%%R"
+curl.exe -fsSL --connect-timeout 8 --max-time 15 "%RAW%/deploy/installer-revision.txt" > "%TEMP%\otacon-installer-rev-remote.txt" 2>nul
+if exist "%TEMP%\otacon-installer-rev-remote.txt" for /f "usebackq delims=" %%R in ("%TEMP%\otacon-installer-rev-remote.txt") do set "REMOTE_REV=%%R"
+if defined REMOTE_REV if /I not "!LOCAL_REV!"=="!REMOTE_REV!" (
+  call :LOG "pinned revision stale local=!LOCAL_REV! remote=!REMOTE_REV! - refetching"
+  goto NEED_FETCH_FORCE
+)
+goto USE_PINNED_LOCAL
+:USE_PINNED_LOCAL
+call :LOG "pinned local installer present; skipping refetch - pass --update to refresh from GitHub"
+for /f "usebackq delims=" %%R in ("%INST%\deploy\installer-revision.txt") do call :LOG "pinned revision=%%R"
+goto FETCH_VERIFY_OK
+:NEED_FETCH_FORCE
 echo.
 echo ============================================================
 echo                  OTACONSKEEP SETUP
