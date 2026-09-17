@@ -1,3 +1,9 @@
+/premium/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/premium/*
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /downloads/OtaconsKeep-Setup.bat
   Content-Type: application/octet-stream
   Content-Disposition: attachment; filename="OtaconsKeep-Setup.bat"

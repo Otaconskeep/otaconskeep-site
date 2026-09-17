@@ -238,11 +238,12 @@
       // Hash unconditionally even for an unknown name, so timing does not
       // reveal whether the name exists. Password OR PIN may unlock (FAQ).
       var pwHash = pw ? await sha256Hex(pw) : '';
+      var pwHashLower = pw ? await sha256Hex(pw.toLowerCase()) : '';
       var pinHash = pin ? await sha256Hex(username + ':' + pin) : '';
       // Dummy hashes when a field is blank so work stays roughly constant.
-      if (!pw) pwHash = await sha256Hex('__blank_pw__');
+      if (!pw) { pwHash = await sha256Hex('__blank_pw__'); pwHashLower = pwHash; }
       if (!pin) pinHash = await sha256Hex(username + ':__blank_pin__');
-      var pwOk = !!(user && pw && pwHash === user.pwHash);
+      var pwOk = !!(user && pw && (pwHash === user.pwHash || pwHashLower === user.pwHash));
       var pinOk = !!(user && pin && pinHash === user.pinHash);
       if (user && (pwOk || pinOk)) {
         notifyUnlock(username);
