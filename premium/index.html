@@ -229,26 +229,32 @@
     ev.preventDefault();
     errorEl.textContent = '';
     var username = (nameInput.value || '').trim().toUpperCase();
-    var pw = pwInput.value;
-    var pin = pinInput.value;
-    if (!username || !pw || !pin) { errorEl.textContent = 'Enter your name, password, and PIN.'; return; }
+    var pw = (pwInput.value || '').trim();
+    var pin = (pinInput.value || '').trim();
+    if (!username) { errorEl.textContent = 'Enter your access name.'; return; }
+    if (!pw && !pin) { errorEl.textContent = 'Enter your password or PIN (either one works).'; return; }
     var user = USERS[username];
     try {
-      // Hash unconditionally even for an unknown name, so how long this takes
-      // doesn't itself reveal whether the name exists.
-      var pwHash = await sha256Hex(pw);
-      var pinHash = await sha256Hex(username + ':' + pin);
-      if (user && pwHash === user.pwHash && pinHash === user.pinHash) {
+      // Hash unconditionally even for an unknown name, so timing does not
+      // reveal whether the name exists. Password OR PIN may unlock (FAQ).
+      var pwHash = pw ? await sha256Hex(pw) : '';
+      var pinHash = pin ? await sha256Hex(username + ':' + pin) : '';
+      // Dummy hashes when a field is blank so work stays roughly constant.
+      if (!pw) pwHash = await sha256Hex('__blank_pw__');
+      if (!pin) pinHash = await sha256Hex(username + ':__blank_pin__');
+      var pwOk = !!(user && pw && pwHash === user.pwHash);
+      var pinOk = !!(user && pin && pinHash === user.pinHash);
+      if (user && (pwOk || pinOk)) {
         notifyUnlock(username);
         reveal(username);
       } else {
-        errorEl.textContent = 'Incorrect name, password, or PIN. Try again, or ask in Discord.';
+        errorEl.textContent = 'Incorrect name, password, or PIN. Name is case-insensitive; password or PIN alone is enough. Ask in Discord if it still fails.';
         pwInput.value = '';
         pinInput.value = '';
         nameInput.focus();
       }
     } catch (e) {
-      errorEl.textContent = 'Could not verify in this browser. Try a modern browser, or ask in Discord.';
+      errorEl.textContent = 'Could not verify in this browser (needs HTTPS or localhost). Try a modern browser, or ask in Discord.';
     }
   });
 })();
