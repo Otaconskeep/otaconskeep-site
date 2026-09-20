@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KEEPROUTE 1.0 — OtaconsKeep Stateful AI Orchestration</title>
-<meta name="description" content="KEEPROUTE turns AI routing into persistent mission orchestration. Powered by OmniRoute. Built by OtaconsKeep.">
+<meta name="description" content="KeepRoute is not OmniRoute. OmniRoute routes requests; KeepRoute owns the mission — checkpoints, recovery, and agent handoff. Powered by OmniRoute. Built by OtaconsKeep.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,9 +42,11 @@
 <nav class="kr-subnav" aria-label="KeepRoute sections">
   <div class="wrap">
     <a href="#overview">Overview</a>
+    <a href="#why">Why KeepRoute</a>
     <a href="#ui">See the UI</a>
     <a href="#how">How it works</a>
-    <a href="#different">Why different</a>
+    <a href="#compare">OmniRoute vs KeepRoute</a>
+    <a href="#different">What changed</a>
     <a href="#benchmarks">Benchmarks</a>
     <a href="#security">Security</a>
     <a href="#proscons">Pros &amp; Cons</a>
@@ -59,16 +61,73 @@
     <div class="stamp">KEEPROUTE 1.0<small>stable · powered by OmniRoute</small></div>
     <p class="eyebrow" style="margin-top: 18px;">OtaconsKeep Stateful AI Orchestration</p>
     <h1 class="display" style="font-size: clamp(2.4rem, 7vw, 4.2rem);">One job. The right AI.<br>No starting over.</h1>
-    <p class="lede">KEEPROUTE turns AI routing into persistent mission orchestration. It uses <strong>OmniRoute</strong> underneath for provider/model routing and adds mission state, recovery, checkpoints, local-first policy, and supported agent handoff.</p>
-    <p class="lede" style="margin-top: 10px; color: var(--cream-dim); font-size: 1.02rem;">We did not create stock OmniRoute. OmniRoute is the upstream routing data plane. KEEPROUTE is the OtaconsKeep orchestration layer built around it.</p>
+    <p class="lede"><strong>OmniRoute routes a request.</strong> <strong>KeepRoute owns the mission.</strong> When Claude hits a limit, OmniRoute can switch models — KeepRoute can keep the <em>same job</em> alive with checkpoints, remaining work, and a handoff to another agent so you are not copy-pasting progress by hand.</p>
+    <p class="lede" style="margin-top: 10px; color: var(--cream-dim); font-size: 1.02rem;">We did not invent OmniRoute. It is the excellent upstream routing gateway. KeepRoute is OtaconsKeep’s layer <em>on top</em> — built because long agent work kept dying when a single provider failed.</p>
     <div class="btn-row" style="margin-top: 26px;">
       <a class="btn btn-primary" href="#install">Install KeepRoute</a>
+      <a class="btn btn-ghost" href="#why">Why it exists</a>
       <a class="btn btn-ghost" href="#ui">See the UI</a>
-      <a class="btn btn-ghost" href="#how">How it works</a>
+      <a class="btn btn-ghost" href="#compare">OmniRoute vs KeepRoute</a>
       <a class="btn btn-ghost" href="#benchmarks">See the proof</a>
-      <a class="btn btn-ghost" href="#compare">Compare with stock</a>
     </div>
     <p class="meta" style="margin-top: 22px;">ROUTE · RECOVER · CONTINUE &nbsp;//&nbsp; MISSION CONTROL</p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section id="why">
+    <p class="tag">Why KeepRoute was made</p>
+    <h2>OmniRoute solves traffic. KeepRoute solves unfinished work.</h2>
+    <p class="intro">People already had a great way to send chat to many AIs. What kept breaking real Keep workflows was not “pick a model” — it was <strong>losing the job</strong> when that model hit a wall.</p>
+
+    <div class="kr-diff-banner" role="note">
+      <div>
+        <p class="kr-diff-label">OmniRoute (upstream)</p>
+        <p class="kr-diff-line">One API in → best available provider/model out → response.</p>
+        <p class="kr-diff-meta">Routing · fallback · health · combos · gateway</p>
+      </div>
+      <div class="kr-diff-vs" aria-hidden="true">VS</div>
+      <div>
+        <p class="kr-diff-label ours">KeepRoute (OtaconsKeep)</p>
+        <p class="kr-diff-line">One <strong>mission</strong> in → route → work → checkpoint → if failure, continue elsewhere → same mission completes.</p>
+        <p class="kr-diff-meta">Missions · policy · checkpoints · handoff · recovery · local-first</p>
+      </div>
+    </div>
+
+    <div class="kr-why-build">
+      <article>
+        <h3>The problem we kept hitting</h3>
+        <p>A coding session would be halfway done. Claude hit quota. Or Cursor stalled. Or the host rebooted. Stock routing can send the <em>next</em> prompt somewhere else — but the human still had to rebuild context: what finished, what failed, what files mattered, what not to do twice.</p>
+      </article>
+      <article>
+        <h3>Why not “just use OmniRoute”?</h3>
+        <p>You should — KeepRoute does. OmniRoute is the traffic director. KeepRoute is mission control. Without KeepRoute you still have excellent fallback between models. With KeepRoute the <strong>job itself</strong> has an ID, memory, and a recovery path.</p>
+      </article>
+      <article>
+        <h3>What we refused to accept</h3>
+        <p>Trivial “hi” burning paid tokens. Clients each inventing their own routing rules. Starting over after a recoverable failure. Replaying a destructive step because the new agent did not know it already ran.</p>
+      </article>
+      <article>
+        <h3>The design bet</h3>
+        <p><strong>The mission is the product. The model is replaceable.</strong> KeepRoute exists so OtaconsKeep can treat Claude, Codex, Cursor, Grok, and Local as executors — not as the owner of your work.</p>
+      </article>
+    </div>
+
+    <div class="kr-10s" style="margin-top:22px;" aria-label="Ten-second explanation">
+      <article>
+        <h3>OmniRoute</h3>
+        <p>Chooses <em>where this request goes</em> among providers and models.</p>
+      </article>
+      <article>
+        <h3>KeepRoute</h3>
+        <p>Owns <em>the whole job</em> — watches it, checkpoints it, and continues it if the AI has to change.</p>
+      </article>
+    </div>
+
+    <div class="kr-principle">
+      <strong>OmniRoute moves packets of AI work. KeepRoute moves missions.</strong>
+      <span>Same underlying gateway. Different job: continuity under failure.</span>
+    </div>
   </section>
 </div>
 
@@ -309,10 +368,23 @@
 
 <div class="wrap">
   <section id="compare">
-    <p class="tag">KeepRoute vs stock OmniRoute</p>
-    <h2>Capabilities, not a scoreboard</h2>
-    <p class="intro">Stock OmniRoute is an excellent provider/model routing gateway. KeepRoute adds a higher-level stateful orchestration/control plane. We do not claim stock OmniRoute is “bad.”</p>
-    <p class="kr-disclaimer">Stock column verified against public OmniRoute documentation (architecture + resilience guides on the upstream GitHub project). Where stock has no mission-orchestration equivalent, we say so plainly.</p>
+    <p class="tag">OmniRoute vs KeepRoute</p>
+    <h2>Same gateway family. Different job.</h2>
+    <p class="intro"><strong>OmniRoute</strong> is the upstream routing data plane: pick a provider, fall back, stay healthy. <strong>KeepRoute</strong> was built because that was not enough for long Keep missions — when the model died, the <em>work</em> still died with it. KeepRoute sits on OmniRoute and adds mission state so the job can continue.</p>
+    <div class="kr-diff-banner" role="note" style="margin-top:18px;">
+      <div>
+        <p class="kr-diff-label">Made for</p>
+        <p class="kr-diff-line">“Send this chat to the right model.”</p>
+        <p class="kr-diff-meta">OmniRoute · request routing</p>
+      </div>
+      <div class="kr-diff-vs" aria-hidden="true">VS</div>
+      <div>
+        <p class="kr-diff-label ours">Made for</p>
+        <p class="kr-diff-line">“Finish this mission even if the model has to change.”</p>
+        <p class="kr-diff-meta">KeepRoute · mission orchestration</p>
+      </div>
+    </div>
+    <p class="kr-disclaimer">We do not claim stock OmniRoute is “bad.” Stock column verified against public OmniRoute docs. Where stock has no mission-orchestration equivalent, we say so plainly.</p>
 
     <div class="tablewrap kr-table" style="margin-top:16px;">
       <table>

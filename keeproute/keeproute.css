@@ -86,6 +86,97 @@
 }
 .kr-10s p { margin: 0; color: var(--cream); font-size: 1.05rem; font-weight: 600; line-height: 1.45; }
 
+.kr-diff-banner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: stretch;
+  margin: 22px 0 20px;
+  padding: 20px;
+  border: 1px solid var(--line-bright);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(141, 179, 217, 0.08), transparent 45%),
+    linear-gradient(225deg, rgba(57, 230, 200, 0.1), transparent 45%),
+    var(--surface);
+}
+@media (max-width: 800px) {
+  .kr-diff-banner {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .kr-diff-vs { transform: rotate(90deg); justify-self: center; }
+}
+.kr-diff-label {
+  margin: 0 0 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--kr-stock);
+}
+.kr-diff-label.ours { color: var(--accent-bright); }
+.kr-diff-line {
+  margin: 0 0 10px;
+  color: var(--cream);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.kr-diff-meta {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream-faint);
+}
+.kr-diff-vs {
+  align-self: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  color: var(--cream-faint);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+}
+
+.kr-why-build {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 8px 0 0;
+}
+@media (max-width: 800px) {
+  .kr-why-build { grid-template-columns: 1fr; }
+}
+.kr-why-build article {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+}
+.kr-why-build h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 8px;
+  color: var(--cream);
+}
+.kr-why-build p {
+  margin: 0;
+  color: var(--cream-dim);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .kr-stack {
   display: grid;
   gap: 0;
