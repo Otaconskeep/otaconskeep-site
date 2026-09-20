@@ -24,15 +24,31 @@
 .kd-subnav a { color: var(--cream-dim); text-decoration: none; }
 .kd-subnav a:hover { color: var(--accent-bright); }
 
-/* -------- cinematic hero -------- */
-.kd-hero {
-  position: relative;
-  min-height: min(92vh, 920px);
-  display: flex;
-  align-items: flex-end;
-  padding: 0 0 56px;
-  border-bottom: 1px solid var(--line-bright);
-  overflow: hidden;
+/* Text-only hero — no video/screenshot plane at top */
+.kd-hero-text {
+  min-height: auto;
+  align-items: flex-start;
+  padding: 48px 0 40px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(57,230,200,0.1), transparent 50%),
+    var(--bg);
+}
+.kd-hero-text .kd-hero-copy {
+  padding-top: 12px;
+}
+.kd-hero-text .kd-hero-title {
+  text-shadow: none;
+}
+.kd-hero-meta a {
+  color: var(--accent-bright);
+  text-decoration: none;
+}
+.kd-hero-meta a:hover { text-decoration: underline; }
+
+.kd-videos-bottom {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line-bright);
 }
 .kd-hero-bg {
   position: absolute;
