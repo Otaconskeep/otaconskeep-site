@@ -76,6 +76,18 @@
   border-radius: 6px;
   padding: 18px 20px;
 }
+.kr-10s article:first-child {
+  border-color: #4a6f96;
+  box-shadow: inset 4px 0 0 #6ea0d4;
+  background: linear-gradient(135deg, rgba(141, 179, 217, 0.12), var(--surface) 70%);
+}
+.kr-10s article:last-child {
+  border-color: var(--accent-dim);
+  box-shadow: inset 4px 0 0 var(--accent-bright);
+  background: linear-gradient(135deg, rgba(57, 230, 200, 0.12), var(--surface) 70%);
+}
+.kr-10s article:first-child h3 { color: #9ec4ef; }
+.kr-10s article:last-child h3 { color: var(--accent-bright); }
 .kr-10s h3 {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
