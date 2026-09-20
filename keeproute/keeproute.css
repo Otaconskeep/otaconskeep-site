@@ -101,16 +101,45 @@
 .kr-watch {
   padding-top: 8px;
 }
+.kr-why-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 28px;
+  align-items: start;
+  margin: 18px 0 22px;
+}
+@media (max-width: 900px) {
+  .kr-why-split {
+    grid-template-columns: 1fr;
+  }
+  .kr-short {
+    justify-self: start;
+    max-width: 280px;
+  }
+}
+.kr-why-main .intro { margin-top: 0; }
+.kr-why-main .kr-10s { margin-top: 16px; }
+.kr-why-main .kr-principle { margin-top: 16px; margin-bottom: 0; }
 .kr-short {
-  margin: 18px 0 8px;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  align-items: stretch;
+  gap: 10px;
+  position: sticky;
+  top: 110px;
+}
+.kr-short-label {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
 }
 .kr-short-frame {
   position: relative;
-  width: min(360px, 100%);
+  width: 100%;
   aspect-ratio: 9 / 16;
   overflow: hidden;
   background: #000;

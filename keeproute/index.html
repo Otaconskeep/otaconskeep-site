@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/style.css">
-<link rel="stylesheet" href="keeproute.css?v=20260919f">
+<link rel="stylesheet" href="keeproute.css?v=20260919g">
 </head>
 <body>
 
@@ -42,8 +42,8 @@
 <nav class="kr-subnav" aria-label="KeepRoute sections">
   <div class="wrap">
     <a href="#overview">Overview</a>
-    <a href="#watch">Watch</a>
     <a href="#why">Why KeepRoute</a>
+    <a href="#watch">Watch</a>
     <a href="#ui">See the UI</a>
     <a href="#how">How it works</a>
     <a href="#compare">OmniRoute vs KeepRoute</a>
@@ -66,8 +66,8 @@
     <p class="lede" style="margin-top: 10px; color: var(--cream-dim); font-size: 1.02rem;">We did not invent OmniRoute. It is the excellent upstream routing gateway. KeepRoute is OtaconsKeep’s layer <em>on top</em> — built because long agent work kept dying when a single provider failed.</p>
     <div class="btn-row" style="margin-top: 26px;">
       <a class="btn btn-primary" href="#install">Install KeepRoute</a>
-      <a class="btn btn-ghost" href="#watch">Watch the short</a>
       <a class="btn btn-ghost" href="#why">Why it exists</a>
+      <a class="btn btn-ghost" href="#watch">Watch the short</a>
       <a class="btn btn-ghost" href="#ui">See the UI</a>
       <a class="btn btn-ghost" href="#compare">OmniRoute vs KeepRoute</a>
       <a class="btn btn-ghost" href="#benchmarks">See the proof</a>
@@ -77,32 +77,47 @@
 </div>
 
 <div class="wrap">
-  <section id="watch" class="kr-watch">
-    <p class="tag">Watch</p>
-    <h2>KeepRoute in under a minute</h2>
-    <p class="intro">A short walkthrough of what KeepRoute is and why it sits on top of OmniRoute.</p>
-    <div class="kr-short">
-      <div class="kr-short-frame">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/Icc8LA7KIzA"
-          title="KeepRoute YouTube Short"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          loading="lazy"
-          referrerpolicy="strict-origin-when-cross-origin"></iframe>
-      </div>
-      <p class="kr-short-link">
-        <a href="https://youtube.com/shorts/Icc8LA7KIzA" target="_blank" rel="noopener">Open on YouTube</a>
-      </p>
-    </div>
-  </section>
-</div>
-
-<div class="wrap">
   <section id="why">
     <p class="tag">Why KeepRoute was made</p>
     <h2>OmniRoute solves traffic. KeepRoute solves unfinished work.</h2>
-    <p class="intro">People already had a great way to send chat to many AIs. What kept breaking real Keep workflows was not “pick a model” — it was <strong>losing the job</strong> when that model hit a wall.</p>
+
+    <div class="kr-why-split">
+      <div class="kr-why-main">
+        <p class="intro">People already had a great way to send chat to many AIs. What kept breaking real Keep workflows was not “pick a model” — it was <strong>losing the job</strong> when that model hit a wall.</p>
+
+        <div class="kr-10s" aria-label="Ten-second explanation">
+          <article>
+            <h3>OmniRoute</h3>
+            <p>Chooses <em>where this request goes</em> among providers and models.</p>
+          </article>
+          <article>
+            <h3>KeepRoute</h3>
+            <p>Owns <em>the whole job</em> — watches it, checkpoints it, and continues it if the AI has to change.</p>
+          </article>
+        </div>
+
+        <div class="kr-principle">
+          <strong>OmniRoute moves packets of AI work. KeepRoute moves missions.</strong>
+          <span>Same underlying gateway. Different job: continuity under failure.</span>
+        </div>
+      </div>
+
+      <aside id="watch" class="kr-short" aria-label="KeepRoute YouTube Short">
+        <p class="kr-short-label">Watch · short</p>
+        <div class="kr-short-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/Icc8LA7KIzA"
+            title="KeepRoute YouTube Short"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p class="kr-short-link">
+          <a href="https://youtube.com/shorts/Icc8LA7KIzA" target="_blank" rel="noopener">Open on YouTube</a>
+        </p>
+      </aside>
+    </div>
 
     <div class="kr-diff-banner" role="note">
       <div class="kr-diff-side stock">
@@ -135,22 +150,6 @@
         <h3>The design bet</h3>
         <p><strong>The mission is the product. The model is replaceable.</strong> KeepRoute exists so OtaconsKeep can treat Claude, Codex, Cursor, Grok, and Local as executors — not as the owner of your work.</p>
       </article>
-    </div>
-
-    <div class="kr-10s" style="margin-top:22px;" aria-label="Ten-second explanation">
-      <article>
-        <h3>OmniRoute</h3>
-        <p>Chooses <em>where this request goes</em> among providers and models.</p>
-      </article>
-      <article>
-        <h3>KeepRoute</h3>
-        <p>Owns <em>the whole job</em> — watches it, checkpoints it, and continues it if the AI has to change.</p>
-      </article>
-    </div>
-
-    <div class="kr-principle">
-      <strong>OmniRoute moves packets of AI work. KeepRoute moves missions.</strong>
-      <span>Same underlying gateway. Different job: continuity under failure.</span>
     </div>
   </section>
 </div>
