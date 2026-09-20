@@ -788,6 +788,9 @@ python3 desk/app.py</pre>
     <details open><summary>Why does KeepRoute exist if OmniRoute already routes?</summary>
       <p><strong>OmniRoute routes a request. KeepRoute owns the mission.</strong> We built KeepRoute because long agent jobs kept dying when Claude hit a limit, a provider failed, or the host restarted. Stock routing can send the next prompt elsewhere — KeepRoute checkpoints the job and continues it so you are not rebuilding progress by hand.</p>
     </details>
+    <details><summary>Is there a GitHub write-up?</summary>
+      <p>Yes — <a href="https://github.com/Otaconskeep/KeepRoute" target="_blank" rel="noopener">github.com/Otaconskeep/KeepRoute</a> has the full product write-up, <strong>INSTALL.md</strong> how-to, WHY doc, and the KeepRoute-UI package you can clone. This page mirrors the install path with screenshots.</p>
+    </details>
     <details><summary>Is this stock OmniRoute?</summary>
       <p>No. It uses stock OmniRoute as its underlying provider/model routing data plane and adds a stateful Mission Controller and orchestration layer (KeepRoute). Same family of gateway; different product job.</p>
     </details>
