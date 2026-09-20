@@ -81,14 +81,14 @@
     <p class="intro">People already had a great way to send chat to many AIs. What kept breaking real Keep workflows was not “pick a model” — it was <strong>losing the job</strong> when that model hit a wall.</p>
 
     <div class="kr-diff-banner" role="note">
-      <div>
+      <div class="kr-diff-side stock">
         <p class="kr-diff-label">OmniRoute (upstream)</p>
         <p class="kr-diff-line">One API in → best available provider/model out → response.</p>
         <p class="kr-diff-meta">Routing · fallback · health · combos · gateway</p>
       </div>
-      <div class="kr-diff-vs" aria-hidden="true">VS</div>
-      <div>
-        <p class="kr-diff-label ours">KeepRoute (OtaconsKeep)</p>
+      <div class="kr-diff-vs" aria-hidden="true"><span>VS</span></div>
+      <div class="kr-diff-side ours">
+        <p class="kr-diff-label">KeepRoute (OtaconsKeep)</p>
         <p class="kr-diff-line">One <strong>mission</strong> in → route → work → checkpoint → if failure, continue elsewhere → same mission completes.</p>
         <p class="kr-diff-meta">Missions · policy · checkpoints · handoff · recovery · local-first</p>
       </div>
@@ -372,14 +372,14 @@
     <h2>Same gateway family. Different job.</h2>
     <p class="intro"><strong>OmniRoute</strong> is the upstream routing data plane: pick a provider, fall back, stay healthy. <strong>KeepRoute</strong> was built because that was not enough for long Keep missions — when the model died, the <em>work</em> still died with it. KeepRoute sits on OmniRoute and adds mission state so the job can continue.</p>
     <div class="kr-diff-banner" role="note" style="margin-top:18px;">
-      <div>
+      <div class="kr-diff-side stock">
         <p class="kr-diff-label">Made for</p>
         <p class="kr-diff-line">“Send this chat to the right model.”</p>
         <p class="kr-diff-meta">OmniRoute · request routing</p>
       </div>
-      <div class="kr-diff-vs" aria-hidden="true">VS</div>
-      <div>
-        <p class="kr-diff-label ours">Made for</p>
+      <div class="kr-diff-vs" aria-hidden="true"><span>VS</span></div>
+      <div class="kr-diff-side ours">
+        <p class="kr-diff-label">Made for</p>
         <p class="kr-diff-line">“Finish this mission even if the model has to change.”</p>
         <p class="kr-diff-meta">KeepRoute · mission orchestration</p>
       </div>
@@ -761,11 +761,14 @@ python3 desk/app.py</pre>
     <p class="tag">FAQ</p>
     <h2>Practical questions</h2>
 
+    <details open><summary>Why does KeepRoute exist if OmniRoute already routes?</summary>
+      <p><strong>OmniRoute routes a request. KeepRoute owns the mission.</strong> We built KeepRoute because long agent jobs kept dying when Claude hit a limit, a provider failed, or the host restarted. Stock routing can send the next prompt elsewhere — KeepRoute checkpoints the job and continues it so you are not rebuilding progress by hand.</p>
+    </details>
     <details><summary>Is this stock OmniRoute?</summary>
-      <p>No. It uses stock OmniRoute as its underlying provider/model routing data plane and adds a stateful Mission Controller and orchestration layer (KeepRoute).</p>
+      <p>No. It uses stock OmniRoute as its underlying provider/model routing data plane and adds a stateful Mission Controller and orchestration layer (KeepRoute). Same family of gateway; different product job.</p>
     </details>
     <details><summary>Did you fork OmniRoute?</summary>
-      <p>KeepRoute extends OmniRoute with an independent stateful orchestration/control layer. We do not present KeepRoute as “our OmniRoute fork.” Upstream OmniRoute remains its own project.</p>
+      <p>KeepRoute extends OmniRoute with an independent stateful orchestration/control layer. We do not present KeepRoute as “our OmniRoute fork.” Upstream OmniRoute remains its own project — KeepRoute is OtaconsKeep’s mission layer on top.</p>
     </details>
     <details><summary>What happens when Claude reaches its limit?</summary>
       <p>KeepRoute can checkpoint the mission and continue on another eligible provider/agent when the path is supported. That is different from simply retrying the same prompt blindly.</p>
