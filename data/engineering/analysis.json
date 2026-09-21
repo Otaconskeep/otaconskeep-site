@@ -1,0 +1,115 @@
+{
+  "status": "ANALYSIS datasets published (equation-derived + public GPU tier CSV)",
+  "honesty": "Datasets under ingest/analysis_*.csv are generated from the published Continuity Model / Formula 5 equations with redacted synthetic operator parameters. They contain no private chat logs, user names, IPs, or credentials. Label = ANALYSIS. GPU tier CSV remains MEASURED/SIMULATED per benchmarks package. MOCK teaching traces were removed from Analysis.",
+  "datasets": [
+    {
+      "id": "DS-ANAL-EMO-001",
+      "label": "ANALYSIS",
+      "title": "Attachment × sensitivity → Δjealousy (n=120)",
+      "path": "/data/engineering/ingest/analysis_emotion_sensitivity.csv",
+      "n": 120,
+      "description": "Equation-derived samples across public personality coefficient sets (albedo, solid_snake, otacon, default). No private Keep logs."
+    },
+    {
+      "id": "DS-ANAL-SWEEP-001",
+      "label": "ANALYSIS",
+      "title": "Parametric ±10–50% sweep on ΔJ (n=80)",
+      "path": "/data/engineering/ingest/analysis_param_sweep.csv",
+      "n": 80,
+      "description": "Sensitivity grid for comparison_sensitivity, attachment, jealousy_inertia, rejection_sensitivity, n_comparisons_scale."
+    },
+    {
+      "id": "DS-ANAL-REL-001",
+      "label": "ANALYSIS",
+      "title": "Formula 5 relationship update (n=60)",
+      "path": "/data/engineering/ingest/analysis_relationship_f5.csv",
+      "n": 60,
+      "description": "Offline Algebra for r' = clamp(r + Δ − 0.008(r−0.5)). Bounds invariant column included."
+    },
+    {
+      "id": "DS-GPU-TIERS-001",
+      "label": "MIXED",
+      "title": "GPU throughput tiers (MEASURED / SIMULATED)",
+      "path": "/data/engineering/ingest/gpu_throughput_tiers.csv",
+      "n": 22,
+      "description": "Public GPU series table; row labels distinguish MEASURED vs SIMULATED in benchmarks.json."
+    }
+  ],
+  "sample_total": 282,
+  "correlations": [
+    {
+      "id": "CORR-ANAL-001",
+      "label": "ANALYSIS",
+      "title": "Emotion sensitivity matrix (Pearson on DS-ANAL-EMO-001)",
+      "variables": [
+        "attachment",
+        "comparison_sensitivity",
+        "delta_jealousy",
+        "trust1",
+        "n_comparisons"
+      ],
+      "matrix": [
+        [
+          1.0,
+          0.7903,
+          0.7634,
+          -0.6122,
+          0.1574
+        ],
+        [
+          0.7903,
+          1.0,
+          0.8733,
+          -0.779,
+          0.0574
+        ],
+        [
+          0.7634,
+          0.8733,
+          1.0,
+          -0.6877,
+          0.5072
+        ],
+        [
+          -0.6122,
+          -0.779,
+          -0.6877,
+          1.0,
+          -0.01
+        ],
+        [
+          0.1574,
+          0.0574,
+          0.5072,
+          -0.01,
+          1.0
+        ]
+      ],
+      "note": "Computed on equation-derived ANALYSIS CSV (seed 20260920). Not a private Keep corpus."
+    }
+  ],
+  "sensitivity": {
+    "id": "SENS-ANAL-001",
+    "label": "ANALYSIS",
+    "title": "Tornado: ±10% comparison_sensitivity on ΔJ (albedo, n_comparisons=1)",
+    "baseline_delta_j": 0.1787,
+    "bars": [
+      {
+        "param": "comparison_sensitivity",
+        "low": 0.1608,
+        "high": 0.1966
+      },
+      {
+        "param": "attachment",
+        "low": 0.1749,
+        "high": 0.1826
+      },
+      {
+        "param": "jealousy_inertia",
+        "low": 0.2492,
+        "high": 0.2582
+      }
+    ],
+    "note": "Tornado from Continuity Model algebra on public coefficients."
+  }
+}
