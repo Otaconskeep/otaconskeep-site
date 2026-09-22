@@ -13,6 +13,7 @@ from pathlib import Path
 _MOD = Path(__file__).resolve().parent / "lib" / "automergable_paths.py"
 _spec = importlib.util.spec_from_file_location("automergable_paths", _MOD)
 _mod = importlib.util.module_from_spec(_spec)
+sys.modules["automergable_paths"] = _mod
 assert _spec.loader is not None
 _spec.loader.exec_module(_mod)
 evaluate_paths = _mod.evaluate_paths
