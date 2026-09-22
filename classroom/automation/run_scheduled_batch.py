@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scheduled entrypoint — global lock; resume existing PR; never publish while DRY_RUN=1.
+"""Scheduled entrypoint — global lock; resume existing PR; production when activated.
 
 AM and late share the same lock with news. Duplicate same-slot starts resume one batch/PR.
 Numbering does not advance until deploy verification is recorded.
@@ -23,6 +23,7 @@ from lib.publish_control import (
     resume_or_create_batch,
     save_slot_state,
 )
+from run_production_batch import activation_ok, run_production_batch
 
 
 def main() -> int:
@@ -47,7 +48,6 @@ def main() -> int:
             expected = next_expected_batches(max(existing) if existing else 0)
             logger.event("expected_batches", **expected)
 
-            # Gate: if a prior batch is awaiting deploy verify, do not start a new one
             prior = load_slot_state(cfg, args.slot)
             if prior.status in {"merged", "deploy_pending"} and prior.batch_ids and prior.batch_ids != class_ids:
                 if not may_advance_numbering(cfg, last_batch_ids=prior.batch_ids, logger=logger):
@@ -59,18 +59,9 @@ def main() -> int:
                     return 0
 
             state = resume_or_create_batch(cfg, args.slot, class_ids, logger=logger)
-            if state.status == "pr_open" and state.pr_number:
-                logger.event(
-                    "complete",
-                    disposition="resume_existing_pr",
-                    pr_number=state.pr_number,
-                    pr_url=state.pr_url,
-                    batch_ids=state.batch_ids,
-                )
-                print(json.dumps({"disposition": "resume_existing_pr", "state": state.to_dict()}, indent=2))
-                return 0
             if state.status == "deployed" and state.fingerprint == f"batch:{','.join(map(str, class_ids))}":
                 logger.event("complete", disposition="already_deployed", batch_ids=class_ids)
+                print(json.dumps({"disposition": "already_deployed", "batch_ids": class_ids}, indent=2))
                 return 0
 
             if cfg.dry_run:
@@ -84,14 +75,20 @@ def main() -> int:
                 print(json.dumps({"disposition": "dry_run_blocks_schedule", "batch_ids": class_ids}, indent=2))
                 return 0
 
-            logger.event(
-                "blocked",
-                disposition="activation_required",
-                message="Set DRY_RUN=0 and ACTIVATION_APPROVED before scheduled publish is permitted.",
-                batch_ids=class_ids,
-            )
-            print(json.dumps({"disposition": "activation_required", "batch_ids": class_ids}, indent=2))
-            return 0
+            ok, approval = activation_ok(cfg)
+            if not ok:
+                logger.event(
+                    "blocked",
+                    disposition="activation_required",
+                    message="Set DRY_RUN=0 and ACTIVATION_APPROVED before scheduled publish is permitted.",
+                    batch_ids=class_ids,
+                )
+                print(json.dumps({"disposition": "activation_required", "batch_ids": class_ids}, indent=2))
+                return 0
+
+            logger.event("activation_present", approval_keys=list(approval.keys())[:12])
+            # Production path (writer→critic→PR→deploy). Lock already held.
+            return run_production_batch(cfg, args.slot, logger)
     except RuntimeError as e:
         if "lock busy" in str(e):
             print(json.dumps({"disposition": "lock_busy", "slot": args.slot}))
