@@ -1,0 +1,29 @@
+{
+  "classes": {
+    "16": {
+      "redirect": "06-linux-foundations/topics/01-linux-filesystem-and-navigation/lesson.html",
+      "title": "Linux Filesystem and Navigation"
+    },
+    "17": {
+      "redirect": "06-linux-foundations/topics/02-shell-pipes-and-redirection/lesson.html",
+      "title": "Shell Pipes and Redirection"
+    },
+    "18": {
+      "redirect": "06-linux-foundations/topics/03-users-groups-permissions-and-least-privilege/lesson.html",
+      "title": "Users, Groups, Permissions, and Least Privilege"
+    },
+    "19": {
+      "redirect": "06-linux-foundations/topics/04-processes-signals-and-systemd/lesson.html",
+      "title": "Processes, Signals, and systemd"
+    },
+    "20": {
+      "redirect": "06-linux-foundations/topics/05-logs-and-journalctl/lesson.html",
+      "title": "Logs and journalctl"
+    },
+    "21": {
+      "redirect": "06-linux-foundations/topics/06-ssh-keys-and-safe-hardening/lesson.html",
+      "title": "SSH Keys and Safe Hardening"
+    }
+  },
+  "updated_at": "2026-09-22T17:30:53Z"
+}
