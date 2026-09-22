@@ -37,6 +37,7 @@ ALLOWED_GLOBS: tuple[str, ...] = (
     "classroom/course-map.html",
     "classroom/instructor.html",
     "classroom/welcome.html",
+    "classroom/news-lab/**",
     "classroom/classroom.css",
     "classroom/classroom.js",
 )

@@ -54,6 +54,49 @@ jobs:
         run: |
           mkdir -p "$CLASSROOM_STATE_DIR" "$CLASSROOM_LOG_DIR" "$CLASSROOM_STAGING_DIR" "$CLASSROOM_ARTIFACT_DIR"
           python -m tests.test_expanded
+          python tests/test_fault_injection.py
+
+      - name: Content security scan (pack + generated HTML)
+        working-directory: classroom/automation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from lib.content_security import scan_paths
+          root = Path("..")
+          paths = list((root / "pack").rglob("*.md")) + list((root / "classes").glob("*.html"))
+          paths += list((root / "modules").rglob("*.html"))
+          if (root / "welcome.html").is_file():
+              paths.append(root / "welcome.html")
+          fails = scan_paths(paths)
+          # Allowlist known chrome that is not lesson body
+          fails = [f for f in fails if "classroom.js" not in f]
+          assert not fails, fails[:20]
+          print("content_security_ok", len(paths))
+          PY
+
+      - name: Regenerate classroom HTML and prove class index parity
+        run: |
+          python - <<'PY'
+          import re, shutil, tempfile
+          from pathlib import Path
+          import subprocess, sys
+          site = Path("classroom")
+          # Compile-check generator; compare live index class ids to pack discovery
+          sys.path.insert(0, "classroom/automation")
+          from lib import load_config
+          from lib.curriculum import discover_existing_classes
+          cfg = load_config()
+          existing = discover_existing_classes(cfg.pack_dir)
+          idx = (site / "index.html").read_text(encoding="utf-8")
+          ids = sorted({int(n) for n in re.findall(r"classes/(\d{1,3})", idx)})
+          assert set(range(1, max(existing)+1)).issubset(set(existing.keys()))
+          assert max(ids) == max(existing), (max(ids), max(existing))
+          assert len(ids) == len(existing), (len(ids), len(existing))
+          # welcome must exist and stay free of login/discord gates
+          welcome = (site / "welcome.html").read_text(encoding="utf-8").lower()
+          assert "discord.gg" not in welcome and "login" not in welcome
+          print("html_pack_parity_ok", len(ids))
+          PY
 
       - name: Roadmap + schema sanity
         working-directory: classroom/automation

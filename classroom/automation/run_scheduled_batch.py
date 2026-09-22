@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Scheduled entrypoint — no-ops when core complete; never publishes while DRY_RUN=1."""
+"""Scheduled entrypoint — global lock; resume existing PR; never publish while DRY_RUN=1.
+
+AM and late share the same lock with news. Duplicate same-slot starts resume one batch/PR.
+Numbering does not advance until deploy verification is recorded.
+"""
 from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -12,7 +15,14 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from lib import load_config, JsonLogger, new_run_id, publication_lock
-from lib.curriculum import next_core_batch, reconcile_manifest
+from lib.curriculum import next_core_batch, reconcile_manifest, discover_existing_classes
+from lib.publish_control import (
+    load_slot_state,
+    may_advance_numbering,
+    next_expected_batches,
+    resume_or_create_batch,
+    save_slot_state,
+)
 
 
 def main() -> int:
@@ -32,20 +42,61 @@ def main() -> int:
             if not pending:
                 logger.event("complete", disposition="core_complete_noop")
                 return 0
+            class_ids = [int(b["class_id"]) for b in pending]
+            existing = discover_existing_classes(cfg.pack_dir)
+            expected = next_expected_batches(max(existing) if existing else 0)
+            logger.event("expected_batches", **expected)
+
+            # Gate: if a prior batch is awaiting deploy verify, do not start a new one
+            prior = load_slot_state(cfg, args.slot)
+            if prior.status in {"merged", "deploy_pending"} and prior.batch_ids and prior.batch_ids != class_ids:
+                if not may_advance_numbering(cfg, last_batch_ids=prior.batch_ids, logger=logger):
+                    logger.event(
+                        "blocked",
+                        disposition="awaiting_prior_deploy_verify",
+                        prior=prior.batch_ids,
+                    )
+                    return 0
+
+            state = resume_or_create_batch(cfg, args.slot, class_ids, logger=logger)
+            if state.status == "pr_open" and state.pr_number:
+                logger.event(
+                    "complete",
+                    disposition="resume_existing_pr",
+                    pr_number=state.pr_number,
+                    pr_url=state.pr_url,
+                    batch_ids=state.batch_ids,
+                )
+                print(json.dumps({"disposition": "resume_existing_pr", "state": state.to_dict()}, indent=2))
+                return 0
+            if state.status == "deployed" and state.fingerprint == f"batch:{','.join(map(str, class_ids))}":
+                logger.event("complete", disposition="already_deployed", batch_ids=class_ids)
+                return 0
+
             if cfg.dry_run:
                 logger.event(
                     "blocked",
                     disposition="dry_run_blocks_schedule",
-                    message="DRY_RUN=1 — scheduled publish disabled. Run run_dry_batch.py and seek approval.",
+                    message="DRY_RUN=1 — scheduled publish disabled.",
+                    batch_ids=class_ids,
                 )
+                save_slot_state(cfg, state)
+                print(json.dumps({"disposition": "dry_run_blocks_schedule", "batch_ids": class_ids}, indent=2))
                 return 0
-            # Production path would call generate→review→publish with git; left gated.
+
             logger.event(
                 "blocked",
                 disposition="activation_required",
                 message="Set DRY_RUN=0 and ACTIVATION_APPROVED before scheduled publish is permitted.",
+                batch_ids=class_ids,
             )
+            print(json.dumps({"disposition": "activation_required", "batch_ids": class_ids}, indent=2))
             return 0
+    except RuntimeError as e:
+        if "lock busy" in str(e):
+            print(json.dumps({"disposition": "lock_busy", "slot": args.slot}))
+            return 75
+        raise
     finally:
         logger.close()
 

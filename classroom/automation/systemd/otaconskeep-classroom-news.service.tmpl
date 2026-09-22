@@ -5,10 +5,11 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=/root/otaconskeep-site/classroom/automation
+WorkingDirectory=@AUTOMATION_ROOT@
 EnvironmentFile=-/etc/otaconskeep-classroom.env
+Environment=CLASSROOM_SITE_REPO=@SITE_REPO@
 ExecCondition=/bin/sh -c 'test ! -f /var/lib/otaconskeep-classroom/state/PAUSED'
-ExecStart=/usr/bin/python3 /root/otaconskeep-site/classroom/automation/news_scout.py
+ExecStart=@PYTHON@ @AUTOMATION_ROOT@/news_scout.py
 TimeoutStartSec=1800
 
 [Install]
