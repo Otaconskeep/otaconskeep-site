@@ -58,7 +58,10 @@ class ExpandedTests(unittest.TestCase):
         existing = discover_existing_classes(self.cfg.pack_dir)
         batch = next_core_batch(self.cfg)
         ids = [b["class_id"] for b in batch]
-        if all(n in existing for n in range(16, 22)):
+        if all(n in existing for n in range(22, 28)):
+            self.assertEqual(ids, [28, 29, 30, 31, 32, 33])
+            self.assertIn("Docker Images", batch[0]["title"])
+        elif all(n in existing for n in range(16, 22)):
             self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
             self.assertIn("Package Management", batch[0]["title"])
         else:

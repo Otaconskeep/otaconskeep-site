@@ -32,7 +32,10 @@ class CurriculumTests(unittest.TestCase):
         batch = next_core_batch(self.cfg)
         self.assertEqual(len(batch), 6)
         ids = [b["class_id"] for b in batch]
-        if all(n in existing for n in range(16, 22)):
+        if all(n in existing for n in range(22, 28)):
+            # After Classes 22–27 publish, next protected batch is 28–33.
+            self.assertEqual(ids, [28, 29, 30, 31, 32, 33])
+        elif all(n in existing for n in range(16, 22)):
             # After Classes 16–21 publish, next protected batch is 22–27.
             self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
         else:

