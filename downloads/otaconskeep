@@ -1,0 +1,577 @@
+#!/usr/bin/env bash
+# otaconskeep — Keep operator ceremony → KeepRoute Auto REPL
+# Portable: no hardcoded LAN IPs. Discovers Otacon / OmniRoute / KeepRoute / Missions.
+# Designed & Engineered by Antonio G. Garcia // Otaconskeep
+set -euo pipefail
+
+G=$'\033[38;5;46m'; B=$'\033[1m'; D=$'\033[2m'
+C=$'\033[38;5;51m'; Y=$'\033[38;5;226m'; R=$'\033[38;5;196m'
+M=$'\033[38;5;201m'; W=$'\033[97m'; N=$'\033[0m'
+BG=$'\033[48;5;16m'
+
+NO_ANIM="${OTACONSKEEP_NO_ANIM:-0}"
+OPEN_WEB="${OTACONSKEEP_OPEN_WEB:-0}"
+SKIP_CONNECT="${OTACONSKEEP_SKIP_CONNECT:-0}"
+NO_REPL="${OTACONSKEEP_NO_REPL:-0}"
+CHAT_PORT="${OTACON_CHAT_PORT:-5757}"
+MC_URL_OVERRIDE="${MISSION_CONTROLLER_URL:-}"
+CONNECT="${OTACONSKEEP_CONNECT:-/opt/otacon/omniroute/connect-everything.sh}"
+
+type_line() {
+  local s="$1" delay="${2:-0.013}"
+  if [[ "$NO_ANIM" == "1" ]]; then
+    printf '%s\n' "$s"
+    return
+  fi
+  local i
+  for ((i = 0; i < ${#s}; i++)); do
+    printf '%s' "${s:i:1}"
+    sleep "$delay"
+  done
+  printf '\n'
+}
+
+spin_hack() {
+  local msg="$1" steps="${2:-18}"
+  if [[ "$NO_ANIM" == "1" ]]; then
+    printf '  ✓  %s\n' "$msg"
+    return
+  fi
+  local frames=('⣾' '⣽' '⣻' '⢿' '⡿' '⣟' '⣯' '⣷') i=0 n=0
+  while (( n < steps )); do
+    printf '\r  %s%s%s  %s%s' "$G" "${frames[i++ % 8]}" "$N" "$D" "$msg"
+    sleep 0.07
+    ((n++)) || true
+  done
+  printf '\r  %s%s✓%s  %s%s%s\n' "$G" "$B" "$N" "$W" "$msg" "$N"
+}
+
+detect_lan_ip() {
+  local ip=""
+  if command -v ip >/dev/null 2>&1; then
+    ip="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}' || true)"
+  fi
+  if [[ -z "$ip" ]] && command -v hostname >/dev/null 2>&1; then
+    ip="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
+  fi
+  if [[ -z "$ip" ]]; then
+    ip="$(python3 - <<'PY' 2>/dev/null || true
+import socket
+s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+try:
+    s.connect(("1.1.1.1", 80))
+    print(s.getsockname()[0])
+except Exception:
+    pass
+finally:
+    s.close()
+PY
+)"
+  fi
+  printf '%s' "${ip:-}"
+}
+
+http_ok() {
+  local url="$1"
+  command -v curl >/dev/null 2>&1 || return 1
+  curl -fsS --connect-timeout 1 --max-time 2 -o /dev/null "$url" 2>/dev/null
+}
+
+LAN_IP="$(detect_lan_ip)"
+LOOP="127.0.0.1"
+
+pick_host_port() {
+  local port="$1" path="${2:-/}"
+  local h
+  for h in "$LOOP" ${LAN_IP:+"$LAN_IP"}; do
+    [[ -n "$h" ]] || continue
+    if http_ok "http://${h}:${port}${path}"; then
+      printf '%s' "$h"
+      return 0
+    fi
+  done
+  if [[ -n "$LAN_IP" ]]; then
+    printf '%s' "$LAN_IP"
+  else
+    printf '%s' "$LOOP"
+  fi
+}
+
+OTACON_HOST="$(pick_host_port "$CHAT_PORT" "/")"
+OMNI_HOST="$(pick_host_port 20128 "/")"
+KEEP_HOST="$(pick_host_port 20129 "/")"
+MISS_HOST="$(pick_host_port 20130 "/health")"
+
+OTACON_URL="http://${OTACON_HOST}:${CHAT_PORT}"
+OMNI_URL="http://${OMNI_HOST}:20128"
+KEEP_URL="http://${KEEP_HOST}:20129"
+MISS_URL="http://${MISS_HOST}:20130"
+# Mission Controller has no route at bare "/" (404 Not Found) -- only
+# /health and the /v1/* API. Checking "/" always reported this service
+# offline even when it was genuinely up and ready; check its real health
+# endpoint instead.
+MISS_HEALTH_URL="http://${MISS_HOST}:20130/health"
+MC_URL="${MC_URL_OVERRIDE:-http://${LOOP}:20130}"
+
+OTACON_UP=0; OMNI_UP=0; KEEP_UP=0; MISS_UP=0
+http_ok "$OTACON_URL" && OTACON_UP=1 || true
+http_ok "$OMNI_URL" && OMNI_UP=1 || true
+http_ok "$KEEP_URL" && KEEP_UP=1 || true
+http_ok "$MISS_HEALTH_URL" && MISS_UP=1 || true
+
+status_dot() {
+  if [[ "$1" == "1" ]]; then printf '%sonline%s' "$G" "$N"
+  else printf '%soffline%s' "$D" "$N"; fi
+}
+
+# Resolve the LOCAL model this machine actually has.
+# Core install ships VRAM-tiered qwen2.5:* — never assume this lab's gpt-oss:20b.
+resolve_local_model() {
+  local bare="" envm="" line
+  for envm in "${OTACON_LLM_MODEL:-}" "${ARIA_LOCAL_MODEL:-}" "${OLLAMA_DEFAULT:-}"; do
+    [[ -n "$envm" ]] || continue
+    bare="${envm#ollama-local/}"
+    bare="${bare#ollama/}"
+    printf '%s' "$bare"
+    return 0
+  done
+  if command -v systemctl >/dev/null 2>&1; then
+    line="$(systemctl show -p Environment otacon.service 2>/dev/null | tr ' ' '\n' | grep '^OTACON_LLM_MODEL=' | head -1 || true)"
+    if [[ -n "$line" ]]; then
+      bare="${line#OTACON_LLM_MODEL=}"
+      bare="${bare#ollama-local/}"
+      printf '%s' "$bare"
+      return 0
+    fi
+  fi
+  if command -v curl >/dev/null 2>&1; then
+    local tags
+    tags="$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:11434/api/tags 2>/dev/null || true)"
+    if [[ -n "$tags" ]]; then
+      bare="$(LOCAL_TAGS="$tags" python3 <<'PY'
+import json, os
+names = []
+try:
+    names = [m.get("name", "") for m in json.loads(os.environ.get("LOCAL_TAGS", "{}")).get("models", [])]
+except Exception:
+    names = []
+prefer_prefixes = (
+    "qwen2.5:14b", "qwen2.5:7b", "qwen2.5:3b", "qwen2.5:1.5b",
+    "llama3.2:3b", "llama3.2:1b", "llama3.1:8b",
+)
+for p in prefer_prefixes:
+    for n in names:
+        if n == p or n.startswith(p):
+            print(n)
+            raise SystemExit
+for n in names:
+    if n.startswith("qwen2.5:"):
+        print(n)
+        raise SystemExit
+for n in names:
+    if "gpt-oss" not in n:
+        print(n)
+        raise SystemExit
+if names:
+    print(names[0])
+PY
+)"
+      if [[ -n "$bare" ]]; then
+        printf '%s' "$bare"
+        return 0
+      fi
+    fi
+  fi
+  # Last resort: Core's smallest published default (NOT lab gpt-oss)
+  printf '%s' "qwen2.5:1.5b"
+}
+
+LOCAL_MODEL_BARE="$(resolve_local_model)"
+LOCAL_MODEL_OMNI="ollama-local/${LOCAL_MODEL_BARE}"
+
+otacon_chat() {
+  local objective="$1"
+  local base="$OTACON_URL"
+  http_ok "http://${LOOP}:${CHAT_PORT}/" && base="http://${LOOP}:${CHAT_PORT}"
+  python3 - "$base" "$objective" "$LOCAL_MODEL_BARE" <<'PY'
+import json, sys, urllib.request, uuid
+base, objective, model = sys.argv[1].rstrip("/"), sys.argv[2], sys.argv[3]
+payload = json.dumps({
+    "agent": {"id": "agent_001", "display_name": "Aria", "voice_id": "voice_aria"},
+    "message": objective,
+    "conversation_id": f"otaconskeep-{uuid.uuid4().hex[:8]}",
+    "auto_speak": False,
+}).encode()
+req = urllib.request.Request(
+    f"{base}/api/chat_with_agent",
+    data=payload,
+    method="POST",
+    headers={"Content-Type": "application/json"},
+)
+try:
+    with urllib.request.urlopen(req, timeout=300) as resp:
+        data = json.loads(resp.read().decode("utf-8", errors="replace"))
+except Exception as e:
+    print(f"  → Local helper: Otacon Core  ·  {model}")
+    print(f"  ✖ {e}")
+    sys.exit(1)
+text = (data.get("text") or data.get("reply") or data.get("message") or "").rstrip()
+err = data.get("error")
+print(f"  → Local helper: Otacon Core  ·  {model}")
+print(f"  → class=chat  ·  local")
+if err and not text:
+    print(f"  ✖ {err}")
+    sys.exit(1)
+if text:
+    print()
+    for line in text.splitlines() or [text]:
+        print(f"  {line}")
+    print()
+    sys.exit(0)
+print("  (no reply)")
+sys.exit(1)
+PY
+}
+
+ollama_chat() {
+  local objective="$1"
+  python3 - "$LOCAL_MODEL_BARE" "$objective" <<'PY'
+import json, sys, urllib.request
+model, objective = sys.argv[1], sys.argv[2]
+payload = json.dumps({
+    "model": model,
+    "messages": [{"role": "user", "content": objective}],
+    "stream": False,
+}).encode()
+req = urllib.request.Request(
+    "http://127.0.0.1:11434/api/chat",
+    data=payload,
+    method="POST",
+    headers={"Content-Type": "application/json"},
+)
+try:
+    with urllib.request.urlopen(req, timeout=300) as resp:
+        data = json.loads(resp.read().decode("utf-8", errors="replace"))
+except Exception as e:
+    print(f"  → Local helper: Ollama  ·  {model}")
+    print(f"  ✖ {e}")
+    sys.exit(1)
+msg = ((data.get("message") or {}).get("content") or "").rstrip()
+print(f"  → Local helper: Ollama  ·  {model}")
+print(f"  → class=chat  ·  local")
+if msg:
+    print()
+    for line in msg.splitlines() or [msg]:
+        print(f"  {line}")
+    print()
+    sys.exit(0)
+print("  (no reply)")
+sys.exit(1)
+PY
+}
+
+run_keeproute_auto() {
+  local objective="$1"
+  [[ -n "$objective" ]] || return 0
+
+  # 1) Mission Controller Auto when present (may route paid CLIs)
+  if curl -fsS --connect-timeout 1 --max-time 2 -o /dev/null "${MC_URL}/v1/missions" 2>/dev/null; then
+    local out rc
+    set +e
+    out="$(python3 - "$MC_URL" "$objective" "$LOCAL_MODEL_BARE" <<'PY'
+import json, sys, urllib.error, urllib.request
+mc, objective, local_bare = sys.argv[1].rstrip("/"), sys.argv[2], sys.argv[3]
+payload = json.dumps({
+    "objective": objective,
+    "archive_evidence": False,
+    "allow_paid": True,
+}).encode()
+req = urllib.request.Request(
+    f"{mc}/v1/missions/execute",
+    data=payload,
+    method="POST",
+    headers={"Content-Type": "application/json"},
+)
+try:
+    with urllib.request.urlopen(req, timeout=300) as resp:
+        data = json.loads(resp.read().decode("utf-8", errors="replace"))
+except urllib.error.HTTPError as e:
+    raw = e.read().decode("utf-8", errors="replace")
+    try:
+        data = json.loads(raw)
+    except Exception:
+        data = {"ok": False, "error": raw or str(e)}
+except Exception as e:
+    data = {"ok": False, "error": str(e)}
+
+dec = data.get("decision") or {}
+route = dec.get("selected_route") or {}
+provider = data.get("actual_provider_reached") or route.get("provider") or "?"
+model = str(data.get("actual_model") or route.get("model") or "?")
+klass = dec.get("classification") or "?"
+paid = data.get("paid_or_local") or "?"
+reply = (data.get("reply") or "").rstrip()
+err = str(data.get("error") or "")
+err_l, model_l = err.lower(), model.lower()
+
+need_fallback = False
+if err and any(x in err_l for x in ("not found", "pull", "no such", "unknown model")):
+    need_fallback = True
+# Lab default gpt-oss leaked onto a box that does not have it
+if "gpt-oss" in model_l and local_bare and "gpt-oss" not in local_bare.lower():
+    if provider in ("local", "?", "ollama-local") or not reply:
+        need_fallback = True
+if not reply and err:
+    need_fallback = True
+
+if need_fallback:
+    print("FALLBACK_LOCAL")
+    sys.exit(2)
+
+print(f"  → Auto picked: {provider}  ·  {model}")
+print(f"  → class={klass}  ·  {paid}")
+if err and not reply:
+    print(f"  ✖ {err}")
+    sys.exit(1)
+if reply:
+    print()
+    for line in reply.splitlines() or [reply]:
+        print(f"  {line}")
+    print()
+    sys.exit(0 if data.get("ok", True) else 1)
+print("  (no reply)")
+sys.exit(1)
+PY
+)"
+    rc=$?
+    set -e
+    if [[ $rc -eq 2 ]] || [[ "$out" == FALLBACK_LOCAL* ]]; then
+      printf '  %sAuto local weight not on this Keep — using your install model (%s)%s\n' "$D" "$LOCAL_MODEL_BARE" "$N"
+      if http_ok "$OTACON_URL" || http_ok "http://${LOOP}:${CHAT_PORT}/"; then
+        if otacon_chat "$objective"; then return 0; fi
+      fi
+      ollama_chat "$objective"; return $?
+    fi
+    printf '%s\n' "$out"
+    return "$rc"
+  fi
+
+  # 2) Typical Otacon Core user — no Missions stack
+  printf '  %sKeep Auto (local)%s — model %s%s%s\n' "$C$B" "$N" "$Y" "$LOCAL_MODEL_BARE" "$N"
+  if http_ok "$OTACON_URL" || http_ok "http://${LOOP}:${CHAT_PORT}/"; then
+    if otacon_chat "$objective"; then return 0; fi
+  fi
+  ollama_chat "$objective"
+}
+
+keeproute_repl() {
+  printf '  %sKeep Auto%s is live — type a mission.\n' "$C$B" "$N"
+  if curl -fsS --connect-timeout 1 --max-time 2 -o /dev/null "${MC_URL}/v1/missions" 2>/dev/null; then
+    printf '  %sStack%s: KeepRoute Auto (Claude / Codex / Cursor / Grok / Local)\n' "$D" "$N"
+    printf '  %sLocal fallback model%s: %s\n' "$D" "$N" "$LOCAL_MODEL_BARE"
+  else
+    printf '  %sStack%s: Otacon Core / Ollama  ·  model %s\n' "$D" "$N" "$LOCAL_MODEL_BARE"
+  fi
+  printf '  %sCommands%s:  exit | quit | web | urls | doctor | model\n\n' "$D" "$N"
+  local line
+  while true; do
+    if ! read -r -e -p $'  \033[38;5;46m\033[1mkeep>\033[0m ' line; then
+      printf '\n'
+      break
+    fi
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -z "$line" ]] && continue
+    case "$line" in
+      exit|quit|q|:q)
+        printf '  %slink closed%s\n' "$D" "$N"
+        break
+        ;;
+      web)
+        printf '  KeepRoute UI → %s\n' "$KEEP_URL"
+        printf '  Otacon Core  → %s\n' "$OTACON_URL"
+        if command -v xdg-open >/dev/null 2>&1; then
+          xdg-open "$KEEP_URL" >/dev/null 2>&1 || xdg-open "$OTACON_URL" >/dev/null 2>&1 || true
+        fi
+        continue
+        ;;
+      urls)
+        printf '  %s\n  %s\n  %s\n  %s\n' "$OTACON_URL" "$OMNI_URL" "$KEEP_URL" "$MISS_URL"
+        continue
+        ;;
+      model)
+        printf '  Local model for this Keep: %s\n' "$LOCAL_MODEL_BARE"
+        continue
+        ;;
+      doctor)
+        if command -v otacon >/dev/null 2>&1; then otacon doctor || true
+        elif [[ -x "${HOME}/.local/bin/otacon" ]]; then "${HOME}/.local/bin/otacon" doctor || true
+        else printf '  otacon doctor not installed\n'; fi
+        continue
+        ;;
+    esac
+    printf '\n'
+    set +e
+    run_keeproute_auto "$line"
+    set -e
+    printf '\n'
+  done
+}
+
+# Quiet subcommands that skip cinema
+case "${1:-}" in
+  urls)
+    printf '%s\n' "$OTACON_URL" "$OMNI_URL" "$KEEP_URL" "$MISS_URL"
+    exit 0
+    ;;
+  doctor)
+    if command -v otacon >/dev/null 2>&1; then exec otacon doctor
+    elif [[ -x "${HOME}/.local/bin/otacon" ]]; then exec "${HOME}/.local/bin/otacon" doctor
+    else printf 'otacon doctor not installed yet\n'; exit 1; fi
+    ;;
+  -h|--help|help)
+    cat <<HELP
+Usage: otaconskeep [web|urls|doctor|help|"mission text…"]
+
+  (no args)     cinema → Keep Auto REPL (MC if present, else your Core model)
+  "mission…"    cinema → run one Auto mission → exit
+  web           cinema → open KeepRoute UI
+  urls          print discovered URLs only
+  doctor        run otacon doctor
+
+Env:
+  OTACONSKEEP_NO_ANIM=1       skip typewriter/spinners
+  OTACONSKEEP_NO_REPL=1       ceremony only (do not enter Auto REPL)
+  OTACONSKEEP_OPEN_WEB=1      also open KeepRoute UI after grant
+  OTACONSKEEP_SKIP_CONNECT=1  never run OmniRoute connect-everything
+  OTACON_CHAT_PORT=5757       Otacon Core port
+HELP
+    exit 0
+    ;;
+esac
+
+# --- cinema ---
+clear 2>/dev/null || printf '\n\n'
+printf '%s%s' "$BG" "$G$B"
+cat <<'ART'
+
+     ████████╗██╗  ██╗███████╗    ██╗  ██╗███████╗███████╗██████╗
+     ╚══██╔══╝██║  ██║██╔════╝    ██║ ██╔╝██╔════╝██╔════╝██╔══██╗
+        ██║   ███████║█████╗      █████╔╝ █████╗  █████╗  ██████╔╝
+        ██║   ██╔══██║██╔══╝      ██╔═██╗ ██╔══╝  ██╔══╝  ██╔═══╝
+        ██║   ██║  ██║███████╗    ██║  ██╗███████╗███████╗██║
+        ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝
+ART
+printf '%s' "$N$M$B"
+cat <<'ART'
+              ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+              █  O T A C O N S K E E P  ·  ONLINE  █
+              ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+ART
+printf '%s\n' "$N"
+
+printf '  %s%s' "$G" "$D"
+type_line "> dialing secure satellite uplink..." 0.012
+type_line "> cracking perimeter ICE..." 0.012
+type_line "> injecting rootkit into mainframe..." 0.012
+printf '%s\n' "$N"
+
+spin_hack "hacking into the mainframe..." 24
+spin_hack "overriding security protocols..." 16
+spin_hack "syncing keep neural lattice..." 14
+
+CONNECT_RC=0
+if [[ "$SKIP_CONNECT" != "1" && -x "$CONNECT" ]]; then
+  LOG="$(mktemp)"
+  set +e
+  OMNIROUTE_QUIET=1 bash "$CONNECT" >"$LOG" 2>&1
+  CONNECT_RC=$?
+  set -e
+  KEY=""
+  if [[ -f /opt/otacon/omniroute/.env ]]; then
+    KEY="$(grep OMNIROUTE_API_KEY /opt/otacon/omniroute/.env 2>/dev/null | cut -d= -f2- || true)"
+  fi
+  if [[ -n "$KEY" ]]; then
+    printf '%s\n' "$KEY" > /run/omniroute-api-key 2>/dev/null || true
+    chmod 600 /run/omniroute-api-key 2>/dev/null || true
+    export OMNIROUTE_API_KEY="$KEY"
+  fi
+  if (( CONNECT_RC != 0 )); then
+    printf '\n  %s%s✖ uplink sync failed (continuing with local discovery)%s\n' "$R" "$B" "$N"
+    tail -n 12 "$LOG" 2>/dev/null || true
+  fi
+  rm -f "$LOG"
+  http_ok "$OMNI_URL" && OMNI_UP=1 || true
+  http_ok "$KEEP_URL" && KEEP_UP=1 || true
+  http_ok "$MISS_HEALTH_URL" && MISS_UP=1 || true
+  http_ok "$OTACON_URL" && OTACON_UP=1 || true
+fi
+
+spin_hack "ACCESS GRANTED" 8
+
+printf '\n%s%s' "$G" "$B"
+cat <<'OK'
+     ╔══════════════════════════════════════════════════════╗
+     ║                                                      ║
+     ║          ★★★  ACCESS GRANTED  ★★★                    ║
+     ║             welcome to the mainframe                 ║
+     ║                                                      ║
+     ╚══════════════════════════════════════════════════════╝
+OK
+printf '%s\n' "$N"
+
+printf '  %sYou'\''re in.%s  Type a mission — Auto uses your Keep'\''s installed model (%s%s%s).\n\n' "$W$B" "$N" "$Y" "$LOCAL_MODEL_BARE" "$N"
+
+printf '  %sWEB%s\n' "$C$B" "$N"
+printf '  Otacon Core  → %s  (%s)\n' "$OTACON_URL" "$(status_dot "$OTACON_UP")"
+printf '  OmniRoute    → %s  (%s)\n' "$OMNI_URL" "$(status_dot "$OMNI_UP")"
+printf '  KeepRoute    → %s  (%s)\n' "$KEEP_URL" "$(status_dot "$KEEP_UP")"
+printf '  Missions     → %s  (%s)\n' "$MISS_URL" "$(status_dot "$MISS_UP")"
+
+printf '\n  %sLearning%s     KeepRoute + CLI prompts/responses feed layered intelligence\n\n' "$C" "$N"
+
+# Optional browser
+if [[ "${1:-}" == "web" || "${1:-}" == "open" || "$OPEN_WEB" == "1" ]]; then
+  target="$KEEP_URL"
+  [[ "$KEEP_UP" != "1" && "$OMNI_UP" == "1" ]] && target="$OMNI_URL"
+  [[ "$KEEP_UP" != "1" && "$OMNI_UP" != "1" ]] && target="$OTACON_URL"
+  printf '  Opening %s\n' "$target"
+  if command -v xdg-open >/dev/null 2>&1; then xdg-open "$target" >/dev/null 2>&1 || true
+  elif command -v wslview >/dev/null 2>&1; then wslview "$target" >/dev/null 2>&1 || true
+  else printf '  Open manually: %s\n' "$target"; fi
+  [[ "${1:-}" == "web" || "${1:-}" == "open" ]] && exit 0
+fi
+
+# One-shot mission: otaconskeep "fix the disks"
+if [[ $# -gt 0 && "${1:-}" != "web" && "${1:-}" != "open" && "${1:-}" != "" ]]; then
+  printf '  %sKeepRoute Auto%s — one shot\n\n' "$C$B" "$N"
+  set +e
+  run_keeproute_auto "$*"
+  set -e
+  exit 0
+fi
+
+# Default: drop into Auto REPL (this is the point of otaconskeep)
+if [[ "$NO_REPL" == "1" ]]; then
+  printf '  %sTip%s: re-run without OTACONSKEEP_NO_REPL to enter KeepRoute Auto.\n\n' "$D" "$N"
+  exit 0
+fi
+
+if [[ "$MISS_UP" != "1" ]] && ! curl -fsS --connect-timeout 1 --max-time 2 -o /dev/null "${MC_URL}/v1/missions" 2>/dev/null; then
+  if http_ok "$OTACON_URL" || http_ok "http://${LOOP}:${CHAT_PORT}/" || http_ok "http://${LOOP}:11434/api/tags"; then
+    printf '  %sMission Controller not detected%s — using Otacon Core / Ollama (%s).
+' "$D" "$N" "$LOCAL_MODEL_BARE"
+    printf '  Full KeepRoute Auto (Claude/Codex/Cursor/Grok) appears when Missions (:20130) is up.
+
+'
+  else
+    printf '  %sNo local helper reachable%s — start Otacon (port %s) or Ollama, then re-run.
+' "$R" "$N" "$CHAT_PORT"
+    printf '  Or open the web UI: %sotaconskeep web%s
+
+' "$Y" "$N"
+    exit 1
+  fi
+fi
+
+keeproute_repl
