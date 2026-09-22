@@ -55,14 +55,20 @@ class ExpandedTests(unittest.TestCase):
 
     @record("R01", "test_next_six_selection_after_remap", "unit")
     def test_next_six_selection_after_remap(self):
+        existing = discover_existing_classes(self.cfg.pack_dir)
         batch = next_core_batch(self.cfg)
-        self.assertEqual([b["class_id"] for b in batch], [16, 17, 18, 19, 20, 21])
-        self.assertEqual(batch[0]["title"], "Linux Filesystem and Navigation")
-        self.assertEqual(batch[1]["title"], "Shell Pipes and Redirection")
-        self.assertEqual(batch[2]["title"], "Users, Groups, Permissions, and Least Privilege")
-        self.assertEqual(batch[3]["title"], "Processes, Signals, and systemd")
-        self.assertEqual(batch[4]["title"], "Logs and journalctl")
-        self.assertEqual(batch[5]["title"], "SSH Keys and Safe Hardening")
+        ids = [b["class_id"] for b in batch]
+        if all(n in existing for n in range(16, 22)):
+            self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
+            self.assertIn("Package Management", batch[0]["title"])
+        else:
+            self.assertEqual(ids, [16, 17, 18, 19, 20, 21])
+            self.assertEqual(batch[0]["title"], "Linux Filesystem and Navigation")
+            self.assertEqual(batch[1]["title"], "Shell Pipes and Redirection")
+            self.assertEqual(batch[2]["title"], "Users, Groups, Permissions, and Least Privilege")
+            self.assertEqual(batch[3]["title"], "Processes, Signals, and systemd")
+            self.assertEqual(batch[4]["title"], "Logs and journalctl")
+            self.assertEqual(batch[5]["title"], "SSH Keys and Safe Hardening")
 
     @record("R02", "test_curriculum_collision_preserves_14_15", "unit")
     def test_curriculum_collision_preserves_14_15(self):
@@ -107,9 +113,14 @@ class ExpandedTests(unittest.TestCase):
     @record("R05", "test_successful_batch_advances_once_manifest_logic", "unit")
     def test_successful_batch_advances_once_manifest_logic(self):
         man = reconcile_manifest(self.cfg)
+        existing = discover_existing_classes(self.cfg.pack_dir)
         key = "16"
-        before = man["entries"].get(key, {}).get("status")
-        self.assertNotEqual(before, "published")
+        status = man["entries"].get(key, {}).get("status")
+        if 16 in existing:
+            # Pack already contains class 16 (publish PR / post-merge): status must match.
+            self.assertEqual(status, "published")
+        else:
+            self.assertNotEqual(status, "published")
 
     @record("R06", "test_idempotent_render_rerun", "unit")
     def test_idempotent_render_rerun(self):

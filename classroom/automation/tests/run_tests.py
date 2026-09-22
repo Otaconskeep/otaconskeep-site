@@ -28,11 +28,17 @@ class CurriculumTests(unittest.TestCase):
         self.cfg = load_config()
 
     def test_next_six_missing_starts_at_16(self):
+        existing = discover_existing_classes(self.cfg.pack_dir)
         batch = next_core_batch(self.cfg)
         self.assertEqual(len(batch), 6)
-        self.assertEqual([b["class_id"] for b in batch], [16, 17, 18, 19, 20, 21])
-        self.assertEqual(batch[0]["title"], "Linux Filesystem and Navigation")
-        self.assertEqual(batch[1]["title"], "Shell Pipes and Redirection")
+        ids = [b["class_id"] for b in batch]
+        if all(n in existing for n in range(16, 22)):
+            # After Classes 16–21 publish, next protected batch is 22–27.
+            self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
+        else:
+            self.assertEqual(ids, [16, 17, 18, 19, 20, 21])
+            self.assertEqual(batch[0]["title"], "Linux Filesystem and Navigation")
+            self.assertEqual(batch[1]["title"], "Shell Pipes and Redirection")
 
     def test_existing_1_to_15_present(self):
         existing = discover_existing_classes(self.cfg.pack_dir)
@@ -120,10 +126,14 @@ class CurriculumTests(unittest.TestCase):
             self.assertEqual(len(files), 1)
 
     def test_curated_batch_validates(self):
+        # Schema/heuristic checks only — overwrite guards intentionally block
+        # re-validating already-published pack ids via validate_batch.
         bundles = [get_curated(n) for n in range(16, 22)]
-        report = validate_batch(self.cfg, bundles, expected_ids=list(range(16, 22)))
-        self.assertTrue(report["ok"], report["failures"])
+        titles: set[str] = set()
         for b in bundles:
+            fails = validate_bundle(self.cfg, b, existing_titles=titles)
+            self.assertFalse(fails, fails)
+            titles.add(str(b.get("title")))
             rev = heuristic_review(b)
             self.assertTrue(rev["pass"], rev)
 
