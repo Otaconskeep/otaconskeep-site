@@ -1,0 +1,128 @@
+name: classroom-automerge
+
+# Enables squash auto-merge ONLY for non-draft lesson-content PRs after
+# classroom-validate + classroom-preview succeed. Never auto-merges infra/workflows.
+on:
+  workflow_run:
+    workflows: ["classroom-validate", "classroom-preview"]
+    types: [completed]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: classroom-automerge-${{ github.event.pull_request.number || github.event.workflow_run.head_branch || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  annotate-path-policy:
+    name: lesson-content-automergable
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Evaluate path policy (informational)
+        run: |
+          set +e
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          python classroom/automation/check_automergable.py --base "$BASE" --head "$HEAD" --json > policy.json
+          rc=$?
+          if [[ ! -s policy.json ]]; then
+            echo '{"automergable":false,"reason":"policy evaluation failed","denied":[],"allowed":[],"paths":[]}' > policy.json
+          fi
+          cat policy.json
+          auto=$(python -c 'import json; print(json.load(open("policy.json")).get("automergable"))')
+          if [[ "$auto" == "True" ]]; then
+            echo "::notice::Lesson-content PR — eligible for auto-merge after required checks"
+          else
+            echo "::notice::Non-lesson paths — auto-merge will not be enabled (manual merge required)"
+          fi
+          exit 0
+
+  maybe-automerge:
+    name: maybe-automerge
+    if: >
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Enable auto-merge only for lesson-content non-draft PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          num=$(gh pr list --head "${{ github.repository_owner }}:$HEAD_BRANCH" --state open --json number,isDraft -q '.[0].number // empty')
+          if [[ -z "$num" ]]; then
+            num=$(gh pr list --head "$HEAD_BRANCH" --state open --json number -q '.[0].number // empty')
+          fi
+          if [[ -z "$num" ]]; then
+            echo "No open PR for branch $HEAD_BRANCH"
+            exit 0
+          fi
+          draft=$(gh pr view "$num" --json isDraft -q .isDraft)
+          if [[ "$draft" == "true" ]]; then
+            echo "Draft PR #$num — skip auto-merge"
+            exit 0
+          fi
+          base=$(gh pr view "$num" --json baseRefOid -q .baseRefOid)
+          head=$(gh pr view "$num" --json headRefOid -q .headRefOid)
+          git fetch origin "$base" "$head"
+          python classroom/automation/check_automergable.py --base "$base" --head "$head" --json | tee policy.json
+          auto=$(python -c 'import json; print("yes" if json.load(open("policy.json"))["automergable"] else "no")')
+          if [[ "$auto" != "yes" ]]; then
+            echo "Path policy denies auto-merge for PR #$num"
+            gh pr comment "$num" --body "Auto-merge skipped: changed paths are not limited to approved lesson-content paths. Manual merge required." || true
+            gh pr merge "$num" --disable-auto || true
+            exit 0
+          fi
+          export NUM="$num"
+          python - <<'PY'
+          import json, os, subprocess, sys, time
+          num = os.environ["NUM"]
+          need = {"classroom-validate", "classroom-preview"}
+          for _ in range(12):
+              raw = subprocess.check_output(
+                  ["gh", "pr", "view", num, "--json", "statusCheckRollup,mergeStateStatus"],
+                  text=True,
+              )
+              d = json.loads(raw)
+              r = d.get("statusCheckRollup") or []
+              succ = {x.get("name") for x in r if x.get("conclusion") == "SUCCESS"}
+              fail = {x.get("name") for x in r if x.get("conclusion") == "FAILURE"}
+              pend = {x.get("name") for x in r if x.get("status") == "IN_PROGRESS"}
+              print(d.get("mergeStateStatus"), "succ", succ, "fail", fail, "pend", pend, flush=True)
+              if need <= succ and not (fail & need):
+                  sys.exit(0)
+              if fail & need:
+                  sys.exit(2)
+              time.sleep(15)
+          sys.exit(3)
+          PY
+          status=$?
+          if [[ $status -eq 0 ]]; then
+            gh pr merge "$num" --auto --squash
+            echo "Enabled squash auto-merge for lesson-content PR #$num"
+          elif [[ $status -eq 2 ]]; then
+            echo "Required checks failed — not enabling auto-merge"
+          else
+            echo "Required checks not ready — will retry on next workflow_run"
+          fi

@@ -477,10 +477,48 @@ class ExpandedTests(unittest.TestCase):
             except Exception:
                 pass  # fail-closed is acceptable
 
-    @record("R30", "test_wrangler_dry_run_artifact_present", "integration")
-    def test_wrangler_dry_run_artifact_present(self):
-        log = Path("/tmp/otaconskeep-classroom-dryrun/evidence/wrangler_dryrun.log")
-        self.assertTrue(log.is_file() or True)  # may be regenerated later; presence checked in dry-run harness
+    @record("R35", "test_automergable_lesson_paths", "unit")
+    def test_automergable_lesson_paths(self):
+        from lib.automergable_paths import evaluate_paths
+
+        r = evaluate_paths(
+            [
+                "classroom/pack/classes/16_LINUX_FILESYSTEM_AND_NAVIGATION.md",
+                "classroom/pack/modules/06-linux-foundations/MODULE.md",
+                "classroom/classes/16.html",
+                "classroom/modules/06-linux-foundations/index.html",
+                "classroom/automation/class_index.json",
+            ]
+        )
+        self.assertTrue(r.automergable, r.reason)
+
+    @record("R36", "test_automergable_denies_workflows", "unit")
+    def test_automergable_denies_workflows(self):
+        from lib.automergable_paths import evaluate_paths
+
+        r = evaluate_paths([".github/workflows/classroom-validate.yml"])
+        self.assertFalse(r.automergable)
+        self.assertTrue(any("workflows" in d for d in r.denied))
+
+    @record("R37", "test_automergable_denies_automation_runtime", "unit")
+    def test_automergable_denies_automation_runtime(self):
+        from lib.automergable_paths import evaluate_paths
+
+        r = evaluate_paths(
+            [
+                "classroom/pack/classes/16_X.md",
+                "classroom/automation/run_live_writer_dry_batch.py",
+            ]
+        )
+        self.assertFalse(r.automergable)
+        self.assertIn("classroom/automation/run_live_writer_dry_batch.py", r.denied)
+
+    @record("R38", "test_automergable_denies_secrets_and_unrelated", "unit")
+    def test_automergable_denies_secrets_and_unrelated(self):
+        from lib.automergable_paths import evaluate_paths
+
+        r = evaluate_paths(["classroom/automation/config.example.env", "index.html", "assets/style.css"])
+        self.assertFalse(r.automergable)
 
 
 def run_tests():
