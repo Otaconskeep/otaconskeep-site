@@ -48,3 +48,9 @@ Automation must not push commits straight to `main`.
 - Workers deploy job name: `cloudflare-deploy` (not a required PR check)
 - Rollback: redeploy prior known-good Worker via Actions/wrangler — **no force-push**
 - Record `known_good=$(git rev-parse HEAD)` before merge for rollback targeting
+
+## Auto-merge path policy
+
+Unattended `gh pr merge --auto` is allowed **only** for lesson-content paths
+(see `lib/automergable_paths.py`). Workflow, automation runtime, deploy, secrets,
+and unrelated site files require **manual** merge. Draft PRs never auto-merge.
