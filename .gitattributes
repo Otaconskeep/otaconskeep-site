@@ -1,4 +1,5 @@
-# Keep the public Windows installer bytes exact (UTF-8 BOM + CRLF).
+# Keep the public Windows installer bytes exact (UTF-8 BOM + CRLF where required).
+# *.bat / *.cmd are binary so Git will not rewrite EOL — commit CRLF bytes explicitly.
 downloads/*.bat binary
 *.bat binary
 *.cmd binary
