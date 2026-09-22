@@ -23,7 +23,25 @@
     "21": {
       "redirect": "06-linux-foundations/topics/06-ssh-keys-and-safe-hardening/lesson.html",
       "title": "SSH Keys and Safe Hardening"
+    },
+    "22": {
+      "redirect": "07-network-ops/topics/01-package-management-and-safe-system-updates/lesson.html"
+    },
+    "23": {
+      "redirect": "07-network-ops/topics/02-ip-addresses-subnets-gateways-and-routing/lesson.html"
+    },
+    "24": {
+      "redirect": "07-network-ops/topics/03-dns-dhcp-and-nat/lesson.html"
+    },
+    "25": {
+      "redirect": "07-network-ops/topics/04-ports-protocols-and-host-firewalls/lesson.html"
+    },
+    "26": {
+      "redirect": "07-network-ops/topics/05-network-troubleshooting-tools-and-methodology/lesson.html"
+    },
+    "27": {
+      "redirect": "08-docker-storage/topics/01-docker-engine-installation-and-daemon-fundamenta/lesson.html"
     }
   },
-  "updated_at": "2026-09-22T17:30:53Z"
+  "updated_at": "2026-09-22T21:31:33Z"
 }
