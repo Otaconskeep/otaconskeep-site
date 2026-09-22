@@ -65,7 +65,7 @@ def llm_review(cfg, bundle: dict) -> dict:
         model=cfg.critic_model,
         messages=[
             {"role": "system", "content": "You are a strict curriculum critic. JSON only."},
-            {"role": "user", "content": prompt + "\n\n" + json.dumps(bundle)[:20000]},
+            {"role": "user", "content": prompt + "\n\n" + json.dumps(bundle, ensure_ascii=False)[:100000]},
         ],
         temperature=0,
         max_tokens=2000,

@@ -66,8 +66,32 @@ def activation_ok(cfg) -> tuple[bool, dict]:
     return True, data if isinstance(data, dict) else {"raw": data}
 
 
+def bundle_complete_enough(bundle: dict) -> list[str]:
+    """Extra completeness gates beyond schema (catch truncated LLM JSON)."""
+    fails: list[str] = []
+    quiz = bundle.get("quiz") or []
+    key = bundle.get("answer_key") or []
+    if len(quiz) < 5:
+        fails.append("COMPLETE: quiz < 5")
+    if len(key) < len(quiz):
+        fails.append("COMPLETE: answer_key shorter than quiz")
+    for i, a in enumerate(key):
+        if not str(a).strip() or str(a).strip().endswith(("Record re", "mid-", "...")):
+            fails.append(f"COMPLETE: answer_key[{i}] thin/truncated")
+    teaching = str(bundle.get("teaching") or "")
+    if len(teaching) < 800:
+        fails.append("COMPLETE: teaching too short")
+    if teaching.rstrip().endswith(("Record re", " the", " a", " an", " to", " of", " and")):
+        fails.append("COMPLETE: teaching looks truncated")
+    for field in ("lab", "rollback", "security", "feynman", "homework"):
+        val = str(bundle.get(field) or "")
+        if len(val) < 80:
+            fails.append(f"COMPLETE: {field} too short")
+    return fails
+
+
 def generate_one(cfg, class_id: int, title: str, logger: JsonLogger) -> dict:
-    max_attempts = max(1, int(cfg.max_repair) + 1)
+    max_attempts = max(1, int(cfg.max_repair) + 2)
     prior = ""
     last_err = ""
     for attempt in range(max_attempts):
@@ -77,7 +101,9 @@ def generate_one(cfg, class_id: int, title: str, logger: JsonLogger) -> dict:
             repair = (
                 "\nPrevious attempt failed validation. Fix these issues:\n"
                 f"{prior}\n"
-                "difficulty must be beginner|intermediate|advanced; lab_risk low|medium|high.\n"
+                "Return ONE complete JSON object. Every string field must be finished.\n"
+                "quiz >= 5 strings; answer_key length MUST equal quiz length; no truncated sentences.\n"
+                "difficulty beginner|intermediate|advanced; lab_risk low|medium|high.\n"
             )
         content, resolved = chat(
             cfg,
@@ -85,22 +111,29 @@ def generate_one(cfg, class_id: int, title: str, logger: JsonLogger) -> dict:
             messages=[
                 {
                     "role": "system",
-                    "content": "You write rigorous Homelab Academy lessons as pure JSON matching the schema. No markdown fences.",
+                    "content": "You write rigorous Homelab Academy lessons as pure JSON matching the schema. No markdown fences. Never truncate fields.",
                 },
                 {"role": "user", "content": WRITER_PROMPT.format(class_id=class_id, title=title) + repair},
             ],
             temperature=0.2,
-            max_tokens=12000,
+            max_tokens=16000,
         )
         if any(w in resolved.lower() for w in cfg.weak_prefixes):
             raise WeakModelError(f"resolved weak model {resolved}")
-        bundle = normalize_bundle(extract_json_object(content))
+        try:
+            bundle = normalize_bundle(extract_json_object(content))
+        except Exception as e:
+            prior = f"JSON_PARSE: {e}"
+            last_err = prior
+            logger.event("generate_parse_failed", class_id=class_id, error=str(e)[:200])
+            continue
         bundle["class_id"] = class_id
         bundle["title"] = title
         bundle["schema_version"] = "1.0"
         bundle["_meta"] = {"writer_requested": cfg.writer_model, "writer_resolved": resolved}
         fails = validate_bundle(cfg, bundle, existing_titles=set())
         fails.extend(scan_bundle_fields(bundle))
+        fails.extend(bundle_complete_enough(bundle))
         if not fails:
             return bundle
         prior = "; ".join(fails[:12])
