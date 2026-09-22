@@ -94,7 +94,10 @@ jobs:
           assert len(ids) == len(existing), (len(ids), len(existing))
           # welcome must exist and stay free of login/discord gates
           welcome = (site / "welcome.html").read_text(encoding="utf-8").lower()
-          assert "discord.gg" not in welcome and "login" not in welcome
+          assert "discord.gg" not in welcome
+          assert "accept the rules" not in welcome
+          # "no login" is intentional; reject gated login CTAs
+          assert "sign in" not in welcome and "log in to continue" not in welcome
           print("html_pack_parity_ok", len(ids))
           PY
 
