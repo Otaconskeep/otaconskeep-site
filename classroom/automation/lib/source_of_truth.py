@@ -28,13 +28,20 @@ def _pack_fingerprint(root: Path) -> str:
     return h.hexdigest()
 
 
+def _exists_dir(path: Path) -> bool:
+    try:
+        return path.is_dir()
+    except OSError:
+        return False
+
+
 def detect_divergence() -> dict:
     """Fail closed if both sides have unpublished local pack edits vs each other without sync marker."""
-    site_fp = _pack_fingerprint(SITE) if SITE.is_dir() else "missing"
-    mirror_fp = _pack_fingerprint(MIRROR) if MIRROR.is_dir() else "missing"
+    site_fp = _pack_fingerprint(SITE) if _exists_dir(SITE) else "missing"
+    mirror_fp = _pack_fingerprint(MIRROR) if _exists_dir(MIRROR) else "missing"
     site_dirty = False
     mirror_dirty = False
-    if SITE.is_dir() and (SITE / ".git").exists():
+    if _exists_dir(SITE) and (SITE / ".git").exists():
         site_dirty = bool(
             subprocess.run(
                 ["git", "status", "--porcelain", "classroom/pack"],
@@ -43,7 +50,7 @@ def detect_divergence() -> dict:
                 capture_output=True,
             ).stdout.strip()
         )
-    if MIRROR.is_dir() and (MIRROR / ".git").exists():
+    if _exists_dir(MIRROR) and (MIRROR / ".git").exists():
         mirror_dirty = bool(
             subprocess.run(
                 ["git", "status", "--porcelain", "pack"],

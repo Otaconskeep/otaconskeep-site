@@ -44,5 +44,7 @@ Automation must not push commits straight to `main`.
 
 ## Cloudflare production detection / rollback
 
-- After merge to `main`: `gh run list --workflow deploy-cloudflare.yml` → conclusion `success`
+- After merge to `main`: poll `gh pr view --json state,statusCheckRollup` then `gh run list --workflow deploy-cloudflare.yml` → conclusion `success`
+- Workers deploy job name: `cloudflare-deploy` (not a required PR check)
 - Rollback: redeploy prior known-good Worker via Actions/wrangler — **no force-push**
+- Record `known_good=$(git rev-parse HEAD)` before merge for rollback targeting
