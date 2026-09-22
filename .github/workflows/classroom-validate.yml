@@ -81,9 +81,12 @@ jobs:
 
       - name: Security — no secrets in workflow tree
         run: |
+          # Scan real config/code; ignore unit-test fixtures that intentionally embed fake secrets.
           if grep -RInE '(api[_-]?key|secret|token|password)\s*[:=]\s*["'\'']?[A-Za-z0-9_\-]{16,}' \
             --include='*.py' --include='*.yml' --include='*.yaml' --include='*.env' \
-            --exclude-dir=.git classroom/automation .github 2>/dev/null | grep -viE 'example|replace-me|placeholder|getenv|environ'; then
+            --exclude-dir=.git --exclude-dir=tests --exclude-dir=__pycache__ \
+            classroom/automation .github 2>/dev/null \
+            | grep -viE 'example|replace-me|placeholder|getenv|environ|sk-secretvalue|fixture|test_secret'; then
             echo "::error::possible secret material in automation/workflows"
             exit 1
           fi
