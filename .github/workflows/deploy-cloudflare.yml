@@ -1,5 +1,7 @@
 name: Deploy Cloudflare Workers/Pages
 
+# Production deploy ONLY after merge to main.
+# Do NOT use this workflow as a required pull_request check.
 on:
   push:
     branches: [main]
@@ -7,6 +9,7 @@ on:
 
 jobs:
   deploy:
+    name: cloudflare-deploy
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -1,0 +1,17 @@
+[Unit]
+Description=OtaconsKeep Classroom — core lesson batch (3:30 AM Phoenix)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/otaconskeep-site/classroom/automation
+EnvironmentFile=-/etc/otaconskeep-classroom.env
+ExecCondition=/bin/sh -c 'test ! -f /var/lib/otaconskeep-classroom/state/PAUSED'
+ExecStart=/usr/bin/python3 /root/otaconskeep-site/classroom/automation/run_scheduled_batch.py --slot late
+TimeoutStartSec=7200
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

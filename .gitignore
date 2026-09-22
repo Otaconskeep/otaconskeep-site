@@ -6,3 +6,7 @@ node_modules/
 
 __pycache__/
 *.pyc
+
+__pycache__/
+*.pyc
+classroom/automation/**/__pycache__/
