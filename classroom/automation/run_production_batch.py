@@ -331,37 +331,105 @@ def run_production_batch(cfg, slot: str, logger: JsonLogger) -> int:
         save_slot_state(cfg, state)
         prepare_lesson_branch(cfg, class_ids, logger, state)
 
-        bundles = []
-        for item in pending:
+        bundles_path = staging / "bundles.json"
+        bundles: list[dict] = []
+        if bundles_path.is_file():
             try:
-                bundles.append(generate_one(cfg, item["class_id"], item["title"], logger))
-            except (ModelError, WeakModelError) as e:
-                logger.event("writer_failed", error=str(e)[:400], disposition="fail_closed")
-                state.status = "failed"
-                save_slot_state(cfg, state)
-                return 5
-        atomic_write_json(staging / "bundles.json", bundles)
+                bundles = json.loads(bundles_path.read_text(encoding="utf-8"))
+                if [int(b["class_id"]) for b in bundles] != class_ids:
+                    bundles = []
+                else:
+                    logger.event("resume_bundles", count=len(bundles))
+            except Exception:
+                bundles = []
 
+        if not bundles:
+            for item in pending:
+                try:
+                    bundles.append(generate_one(cfg, item["class_id"], item["title"], logger))
+                except (ModelError, WeakModelError) as e:
+                    logger.event("writer_failed", error=str(e)[:400], disposition="fail_closed")
+                    state.status = "failed"
+                    save_slot_state(cfg, state)
+                    return 5
+            atomic_write_json(bundles_path, bundles)
+
+        # Critic with per-class repair (same class numbers — never skip ahead)
         reviews = []
-        for b in bundles:
-            try:
-                rev = llm_review(cfg, b)
-            except Exception as e:
-                logger.event("critic_llm_fallback", error=str(e)[:200])
-                rev = heuristic_review(b)
-            avg = float(rev.get("average") or 0)
-            min_score = float(cfg.critic_min)
-            if "pass" not in rev:
-                rev["pass"] = avg >= min_score
-            if avg < min_score:
-                rev["pass"] = False
-            reviews.append(rev)
-            if not rev.get("pass"):
-                logger.event("critic_rejected", class_id=b["class_id"], review=rev, disposition="fail_closed")
-                state.status = "failed"
-                save_slot_state(cfg, state)
-                return 6
+        for i, b in enumerate(list(bundles)):
+            attempts = 0
+            while True:
+                attempts += 1
+                try:
+                    rev = llm_review(cfg, b)
+                except Exception as e:
+                    logger.event("critic_llm_fallback", error=str(e)[:200], class_id=b["class_id"])
+                    rev = heuristic_review(b)
+                avg = float(rev.get("average") or 0)
+                min_score = float(cfg.critic_min)
+                if "pass" not in rev:
+                    rev["pass"] = avg >= min_score
+                if avg < min_score:
+                    rev["pass"] = False
+                if rev.get("pass"):
+                    reviews.append(rev)
+                    bundles[i] = b
+                    break
+                logger.event(
+                    "critic_rejected",
+                    class_id=b["class_id"],
+                    attempt=attempts,
+                    review=rev,
+                    disposition="repair" if attempts <= cfg.max_repair else "fail_closed",
+                )
+                if attempts > cfg.max_repair:
+                    state.status = "failed"
+                    save_slot_state(cfg, state)
+                    atomic_write_json(staging / "reviews.json", reviews + [rev])
+                    return 6
+                # Regenerate same class_id with critic repair notes
+                repair_notes = json.dumps(rev.get("repairs") or rev, ensure_ascii=False)[:2500]
+                try:
+                    # inject prior errors into generate_one via temporary monkey by calling chat path
+                    from generate_lessons import WRITER_PROMPT as _WP
+
+                    prior = repair_notes
+                    content, resolved = chat(
+                        cfg,
+                        model=cfg.writer_model,
+                        messages=[
+                            {
+                                "role": "system",
+                                "content": "You write rigorous Homelab Academy lessons as pure JSON. No markdown fences.",
+                            },
+                            {
+                                "role": "user",
+                                "content": _WP.format(class_id=b["class_id"], title=b["title"])
+                                + "\nCritic rejected previous draft. Fix ALL of these:\n"
+                                + prior
+                                + "\nEnsure answer_key has one entry per quiz question; no truncated fields.\n",
+                            },
+                        ],
+                        temperature=0.2,
+                        max_tokens=12000,
+                    )
+                    nb = normalize_bundle(extract_json_object(content))
+                    nb["class_id"] = b["class_id"]
+                    nb["title"] = b["title"]
+                    nb["schema_version"] = "1.0"
+                    fails = validate_bundle(cfg, nb, existing_titles=set())
+                    fails.extend(scan_bundle_fields(nb))
+                    if fails:
+                        logger.event("repair_validation_failed", class_id=b["class_id"], failures=fails[:12])
+                        continue
+                    b = nb
+                    bundles[i] = b
+                    atomic_write_json(bundles_path, bundles)
+                except Exception as e:
+                    logger.event("repair_failed", class_id=b["class_id"], error=str(e)[:300])
+                    continue
         atomic_write_json(staging / "reviews.json", reviews)
+        atomic_write_json(bundles_path, bundles)
 
         v = validate_batch(cfg, bundles, expected_ids=class_ids)
         if not v["ok"]:
