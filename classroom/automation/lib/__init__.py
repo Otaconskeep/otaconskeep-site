@@ -210,8 +210,13 @@ def new_run_id(prefix: str = "run") -> str:
 
 @contextmanager
 def publication_lock(cfg: Config, logger: JsonLogger | None = None) -> Iterator[None]:
+    """Global lock shared by AM, late, and news jobs (one publisher at a time)."""
+    from lib.publish_control import clear_lock_owner, recover_stale_lock, write_lock_owner
+
     cfg.lock_file.parent.mkdir(parents=True, exist_ok=True)
-    lock = FileLock(str(cfg.lock_file), timeout=1)
+    recover_stale_lock(cfg, logger)
+    # Non-blocking: concurrent AM/late/news starts must exit cleanly, not queue.
+    lock = FileLock(str(cfg.lock_file), timeout=0)
     try:
         lock.acquire()
     except Timeout as e:
@@ -219,10 +224,12 @@ def publication_lock(cfg: Config, logger: JsonLogger | None = None) -> Iterator[
             logger.event("lock_busy", message="Another classroom publication job holds the lock", disposition="exit_clean")
         raise RuntimeError("publication lock busy") from e
     try:
+        write_lock_owner(cfg)
         if logger:
             logger.event("lock_acquired", lock=str(cfg.lock_file))
         yield
     finally:
+        clear_lock_owner(cfg)
         lock.release()
         if logger:
             logger.event("lock_released")

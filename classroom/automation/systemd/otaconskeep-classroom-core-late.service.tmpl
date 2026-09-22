@@ -6,10 +6,11 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 User=root
-WorkingDirectory=/root/otaconskeep-site/classroom/automation
+WorkingDirectory=@AUTOMATION_ROOT@
 EnvironmentFile=-/etc/otaconskeep-classroom.env
+Environment=CLASSROOM_SITE_REPO=@SITE_REPO@
 ExecCondition=/bin/sh -c 'test ! -f /var/lib/otaconskeep-classroom/state/PAUSED'
-ExecStart=/usr/bin/python3 /root/otaconskeep-site/classroom/automation/run_scheduled_batch.py --slot late
+ExecStart=@PYTHON@ @AUTOMATION_ROOT@/run_scheduled_batch.py --slot late
 TimeoutStartSec=7200
 Nice=10
 

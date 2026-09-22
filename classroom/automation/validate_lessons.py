@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 
 from lib import Config, load_config
 from lib.curriculum import discover_existing_classes, load_roadmap
+from lib.content_security import scan_bundle_fields
 
 DANGEROUS_PATTERNS = [
     (r"\brm\s+(-[^\s]*r[^\s]*f|-[^\s]*f[^\s]*r)", "rm -rf style deletion"),
@@ -100,6 +101,9 @@ def validate_bundle(cfg: Config, bundle: dict[str, Any], *, existing_titles: set
         fails.append("SECRET: possible credential in lesson content")
     if "discord.com/api/webhooks/" in blob:
         fails.append("SECRET: webhook URL in lesson")
+
+    # Unattended-content security gates (eval, curl|sh, iframes, etc.)
+    fails.extend(scan_bundle_fields(bundle))
 
     # references non-empty; fake example.com manufactured claims
     for ref in bundle.get("references") or []:
