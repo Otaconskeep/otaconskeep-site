@@ -1,0 +1,75 @@
+name: classroom-preview
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# PR-only preview/build gate. Not a production deploy.
+concurrency:
+  group: classroom-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  classroom-preview:
+    name: classroom-preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail closed if CI force-fail fixture present
+        run: |
+          if [[ -f ci/FORCE_FAIL ]]; then
+            echo "::error::ci/FORCE_FAIL present — intentional fail fixture for ruleset proof"
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python deps + Playwright
+        run: |
+          python -m pip install --upgrade pip
+          pip install markdown playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Build classroom pages from pack (generator compile)
+        run: |
+          python -m py_compile classroom/_gen_from_pack.py
+          python - <<'PY'
+          from pathlib import Path
+          src = Path("classroom/_gen_from_pack.py").read_text(encoding="utf-8")
+          assert "def _class_count()" in src
+          assert "{nclasses}-class pack" in src
+          assert "free · 15-class pack" not in src
+          print("generator dynamic class-count ok")
+          PY
+
+      - name: Static classroom welcome page present
+        run: |
+          test -f classroom/welcome.html
+          ! grep -qi 'discord.gg' classroom/welcome.html
+          ! grep -qi 'login' classroom/welcome.html
+          ! grep -qi 'accept the rules' classroom/welcome.html
+          echo "welcome page gates ok"
+
+      - name: Playwright smoke (welcome + home)
+        run: |
+          python classroom/automation/ci_preview_smoke.py \
+            --out /tmp/classroom-preview-smoke \
+            --base-dir .
+
+      - name: Upload preview smoke screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: classroom-preview-smoke
+          path: /tmp/classroom-preview-smoke
+          if-no-files-found: warn

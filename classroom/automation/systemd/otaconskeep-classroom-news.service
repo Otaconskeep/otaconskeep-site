@@ -1,0 +1,15 @@
+[Unit]
+Description=OtaconsKeep Classroom — breakthrough news evaluation
+After=network-online.target otaconskeep-classroom-core-late.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/otaconskeep-site/classroom/automation
+EnvironmentFile=-/etc/otaconskeep-classroom.env
+ExecCondition=/bin/sh -c 'test ! -f /var/lib/otaconskeep-classroom/state/PAUSED'
+ExecStart=/usr/bin/python3 /root/otaconskeep-site/classroom/automation/news_scout.py
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target

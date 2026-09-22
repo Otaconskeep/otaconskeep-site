@@ -1,0 +1,96 @@
+name: classroom-validate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# PR-only gate. Production deploy lives in deploy-cloudflare.yml (push to main).
+concurrency:
+  group: classroom-validate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  classroom-validate:
+    name: classroom-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail closed if CI force-fail fixture present
+        run: |
+          if [[ -f ci/FORCE_FAIL ]]; then
+            echo "::error::ci/FORCE_FAIL present — intentional fail fixture for ruleset proof"
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install classroom automation test deps
+        run: |
+          python -m pip install --upgrade pip
+          if [[ -f classroom/automation/requirements.txt ]]; then
+            pip install -r classroom/automation/requirements.txt
+          else
+            pip install jsonschema pyyaml filelock markdown
+          fi
+
+      - name: Classroom automation unit tests
+        working-directory: classroom/automation
+        env:
+          CLASSROOM_STATE_DIR: /tmp/ci-classroom-state
+          CLASSROOM_LOG_DIR: /tmp/ci-classroom-logs
+          CLASSROOM_STAGING_DIR: /tmp/ci-classroom-staging
+          CLASSROOM_ARTIFACT_DIR: /tmp/ci-classroom-artifacts
+          CLASSROOM_LOCK_FILE: /tmp/ci-classroom.lock
+          ALLOW_WEAK_MODELS: "0"
+          ALLOW_DIRECT_MAIN: "0"
+          DRY_RUN: "1"
+          GENERATOR_BACKEND: curated
+        run: |
+          mkdir -p "$CLASSROOM_STATE_DIR" "$CLASSROOM_LOG_DIR" "$CLASSROOM_STAGING_DIR" "$CLASSROOM_ARTIFACT_DIR"
+          python -m tests.test_expanded
+
+      - name: Roadmap + schema sanity
+        working-directory: classroom/automation
+        run: |
+          python - <<'PY'
+          import json, yaml
+          from pathlib import Path
+          rd = yaml.safe_load(Path("roadmap.yaml").read_text())
+          assert int(rd["core_final_class"]) == 123
+          assert rd["classes"][16] == "Linux Filesystem and Navigation"
+          assert rd["classes"][17] == "Shell Pipes and Redirection"
+          schema = json.loads(Path("lesson-schema.json").read_text())
+          assert "properties" in schema
+          print("roadmap/schema ok")
+          PY
+
+      - name: Source-of-truth module import
+        working-directory: classroom/automation
+        run: |
+          python - <<'PY'
+          from lib.source_of_truth import CANONICAL
+          assert CANONICAL == "otaconskeep-site"
+          print("canonical", CANONICAL)
+          PY
+
+      - name: Security — no secrets in workflow tree
+        run: |
+          # Scan real config/code; ignore unit-test fixtures that intentionally embed fake secrets.
+          if grep -RInE '(api[_-]?key|secret|token|password)\s*[:=]\s*["'\'']?[A-Za-z0-9_\-]{16,}' \
+            --include='*.py' --include='*.yml' --include='*.yaml' --include='*.env' \
+            --exclude-dir=.git --exclude-dir=tests --exclude-dir=__pycache__ \
+            classroom/automation .github 2>/dev/null \
+            | grep -viE 'example|replace-me|placeholder|getenv|environ|sk-secretvalue|fixture|test_secret'; then
+            echo "::error::possible secret material in automation/workflows"
+            exit 1
+          fi
+          echo "secret scan ok"
+
+      - name: Wrangler bundle dry-run (non-prod)
+        run: npx --yes wrangler@4.34.0 deploy --dry-run --outdir /tmp/wrangler-ci-dry
