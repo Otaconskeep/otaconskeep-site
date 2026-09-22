@@ -33,21 +33,21 @@ jobs:
           python-version: "3.12"
       - name: Evaluate path policy (informational)
         run: |
-          set -euo pipefail
+          set +e
           BASE="${{ github.event.pull_request.base.sha }}"
           HEAD="${{ github.event.pull_request.head.sha }}"
-          set +e
           python classroom/automation/check_automergable.py --base "$BASE" --head "$HEAD" --json > policy.json
           rc=$?
-          set -e
+          if [[ ! -s policy.json ]]; then
+            echo '{"automergable":false,"reason":"policy evaluation failed","denied":[],"allowed":[],"paths":[]}' > policy.json
+          fi
           cat policy.json
-          auto=$(python -c 'import json; print(json.load(open("policy.json"))["automergable"])')
+          auto=$(python -c 'import json; print(json.load(open("policy.json")).get("automergable"))')
           if [[ "$auto" == "True" ]]; then
             echo "::notice::Lesson-content PR — eligible for auto-merge after required checks"
           else
             echo "::notice::Non-lesson paths — auto-merge will not be enabled (manual merge required)"
           fi
-          # Informational only — never fail the check (infra PRs must stay manually mergeable)
           exit 0
 
   maybe-automerge:
