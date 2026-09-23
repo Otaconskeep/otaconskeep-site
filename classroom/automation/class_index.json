@@ -41,7 +41,31 @@
     },
     "27": {
       "redirect": "08-docker-storage/topics/01-docker-engine-installation-and-daemon-fundamenta/lesson.html"
+    },
+    "28": {
+      "redirect": "08-docker-storage/topics/02-docker-images-tags-registries/lesson.html",
+      "title": "Docker Images, Tags, Registries, and Provenance"
+    },
+    "29": {
+      "redirect": "08-docker-storage/topics/03-container-lifecycle-resource-controls/lesson.html",
+      "title": "Container Lifecycle and Resource Controls"
+    },
+    "30": {
+      "redirect": "08-docker-storage/topics/04-docker-volumes-and-bind-mounts/lesson.html",
+      "title": "Docker Volumes and Bind Mounts"
+    },
+    "31": {
+      "redirect": "08-docker-storage/topics/05-linux-disks-partitions-filesystems/lesson.html",
+      "title": "Linux Disks, Partitions, and Filesystems"
+    },
+    "32": {
+      "redirect": "08-docker-storage/topics/06-mounts-uuids-and-fstab/lesson.html",
+      "title": "Mounts, UUIDs, and fstab"
+    },
+    "33": {
+      "redirect": "08-docker-storage/topics/07-puid-pgid-acls-file-access/lesson.html",
+      "title": "PUID, PGID, ACLs, and Container File Access"
     }
   },
-  "updated_at": "2026-09-22T21:31:33Z"
+  "updated_at": "2026-09-23T03:40:00Z"
 }
