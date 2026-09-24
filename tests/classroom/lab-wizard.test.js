@@ -152,6 +152,14 @@ const shop = wiz.topicBoard(base({ side: 'linux', role: 'everyday', job: ['ai', 
 assert.ok(shop.topics.some(function (topic) { return topic.id === 'ai' && topic.tone === 'go' && topic.covers.indexOf('Local AI') !== -1; }));
 assert.ok(shop.topics.some(function (topic) { return topic.id === 'games' && topic.tone === 'wait' && topic.covers.indexOf('Games') !== -1; }));
 assert.ok(shop.extras.some(function (item) { return item.name === 'NAS'; }));
+const shelf = wiz.topicBoard(base({ job: ['files'], storage: 8000 }));
+const storageTopic = shelf.topics.filter(function (topic) { return topic.id === 'storage'; })[0];
+assert.ok(storageTopic.layers.map(function (layer) { return layer.name; }).join(' ').indexOf('SSD and hard drive') !== -1);
+assert.ok(storageTopic.layers.some(function (layer) { return layer.name.indexOf('NAS') !== -1 && layer.lines.join(' ').indexOf('separate shelf') !== -1; }));
+assert.ok(storageTopic.layers.some(function (layer) { return layer.name.indexOf('M.2') !== -1; }));
+assert.ok(!shelf.extras.some(function (item) { return item.name === 'NAS'; }));
+const smallFiles = wiz.topicBoard(base({ job: ['files'], storage: 256 }));
+assert.ok(smallFiles.topics.filter(function (topic) { return topic.id === 'storage'; })[0].layers[0].lines.join(' ').indexOf('system disk') !== -1);
 const clash = wiz.checkParts({ cpu: 'r5-7600', board: 'b550', ram: 'd5-32', gpu: 'none', psu: 'p650', case: 'atx' });
 assert.strictEqual(clash.tone, 'stop');
 const fit = wiz.checkParts({ cpu: 'r5-7600', board: 'b650', ram: 'd5-32', gpu: 'g12', psu: 'p750', case: 'atx' });
