@@ -22,6 +22,12 @@ function ids(partial) {
 }
 
 assert.deepStrictEqual(wiz.stepsFor({}).map(function (s) { return s.id; })[0], 'side');
+
+const jobStep = wiz.stepsFor({}).filter(function (s) { return s.id === 'job'; })[0];
+assert.strictEqual(jobStep.multi, true);
+assert.ok(jobStep.choices.some(function (choice) { return choice.value === 'games'; }));
+assert.ok(!wiz.stepsFor(base({ job: ['photos', 'video'] })).some(function (s) { return s.id === 'games'; }));
+assert.ok(wiz.stepsFor(base({ job: ['games', 'photos'] })).some(function (s) { return s.id === 'games'; }));
 assert.ok(!wiz.stepsFor({ side: 'mac' }).some(function (s) { return s.id === 'gpu'; }), 'Mac skips the NVIDIA card question');
 assert.ok(wiz.stepsFor({ side: 'win' }).some(function (s) { return s.id === 'gpu'; }));
 
@@ -31,6 +37,7 @@ assert.deepStrictEqual(ids({ side: 'linux', role: 'server', skill: 'new', ram: 1
 assert.ok(ids({ side: 'linux', role: 'server', skill: 'ok', ram: 64, job: 'movies' }).includes('proxmox'));
 assert.ok(!ids({ side: 'linux', role: 'server', ram: 16 }).includes('mint'));
 assert.ok(ids({ side: 'linux', role: 'server', skill: 'ok', ram: 8, job: 'smart' }).includes('alpine'));
+assert.ok(!ids({ side: 'linux', role: 'server', skill: 'ok', ram: 8, job: ['smart', 'games'] }).includes('alpine'));
 
 assert.deepStrictEqual(ids({ side: 'win', role: 'everyday' }), ['win', 'winpro']);
 assert.deepStrictEqual(ids({ side: 'mac', role: 'server' }), ['macmini']);
@@ -52,7 +59,10 @@ assert.ok(mac.hardware.models.includes('unified memory'));
 assert.ok(mac.hardware.models.toLowerCase().includes('cuda'));
 assert.ok(mac.profile.next.toLowerCase().includes('next doll'));
 
-const sheet = wiz.explain(base({ side: 'linux', role: 'server', ram: 64, skill: 'ok', job: 'movies', flavor: 'proxmox', storage: 16000 }));
+const many = wiz.explain(base({ job: ['games', 'photos'], storage: 16000, role: 'server', flavor: 'ubuntu' }));
+assert.deepStrictEqual(many.jobs, ['Games', 'Photos']);
+
+const sheet = wiz.explain(base({ side: 'linux', role: 'server', ram: 64, skill: 'ok', job: ['movies', 'games'], flavor: 'proxmox', storage: 16000 }));
 assert.strictEqual(sheet.pick, 'proxmox');
 assert.ok(sheet.profile.first.length >= 3);
 assert.ok(sheet.hardware.storage.includes('TrueNAS') || sheet.hardware.storage.includes('16 TB'));

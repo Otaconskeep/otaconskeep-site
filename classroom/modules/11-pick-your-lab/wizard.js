@@ -316,6 +316,26 @@
     more: 'More than $1,200 can be two machines. That is the calm plan: one daily computer, and one closet server.'
   };
 
+  var JOB_LABELS = {
+    games: 'Games',
+    photos: 'Photos',
+    video: 'Video',
+    movies: 'Movies and TV',
+    smart: 'Smart home',
+    ai: 'Local AI',
+    learn: 'Learning',
+    files: 'Files and backups'
+  };
+
+  function jobList(a) {
+    if (!a || a.job == null || a.job === '') return [];
+    return Array.isArray(a.job) ? a.job.slice() : [a.job];
+  }
+
+  function hasJob(a, id) {
+    return jobList(a).indexOf(id) !== -1;
+  }
+
   function flavorChoices(a) {
     var out = [];
     function add(id) {
@@ -342,7 +362,9 @@
     if (a.role !== 'everyday') {
       add('ubuntu');
       if (Number(a.ram) >= 32) add('proxmox');
-      if (Number(a.ram) <= 8 && a.skill === 'ok' && (a.job === 'smart' || a.job === 'learn')) add('alpine');
+      var jobs = jobList(a);
+      var onlySmallJobs = jobs.length > 0 && jobs.every(function (id) { return id === 'smart' || id === 'learn'; });
+      if (Number(a.ram) <= 8 && a.skill === 'ok' && onlySmallJobs) add('alpine');
     }
     if (!out.length) add('mint');
     return out;
@@ -359,7 +381,7 @@
     var gpu = GPU_TEXT[a.gpu] || GPU_TEXT.none;
     var ramLine = (a.side === 'mac' ? MAC_RAM_TEXT : RAM_TEXT)[Number(a.ram)] || RAM_TEXT[16];
     var storage = STORAGE_TEXT[Number(a.storage)] || STORAGE_TEXT[256];
-    if ((a.job === 'movies' || a.job === 'files' || a.job === 'photos') && Number(a.storage) >= 4000 && a.role !== 'everyday' && pick !== 'mac') {
+    if ((hasJob(a, 'movies') || hasJob(a, 'files') || hasJob(a, 'photos')) && Number(a.storage) >= 4000 && a.role !== 'everyday' && pick !== 'mac') {
       storage += ' If the pile is the real job, TrueNAS can be the shelf. It is free. Unraid does a similar job and costs money. The shelf keeps disks. It is not your game desk.';
     }
     var labLine = '';
@@ -368,9 +390,11 @@
         ? 'The lab box in this build is Proxmox, because 32 GB or more was on the table. The Mac stays macOS.'
         : 'The lab box in this build is Ubuntu Server or Debian. Step up to Proxmox only after that box has 32 GB.';
     }
+    var pickedJobs = jobList(a).map(function (id) { return JOB_LABELS[id] || id; });
     return {
       pick: pick,
       choices: choices,
+      jobs: pickedJobs,
       because: profile.why,
       profile: profile,
       labLine: labLine,
@@ -434,9 +458,11 @@
     },
     {
       id: 'job',
-      title: 'What job matters most?',
-      hint: 'You can do more later. Pick the job you would be sad to get wrong.',
+      multi: true,
+      title: 'What jobs matter most?',
+      hint: 'Tap every job you care about. Games can sit next to photos, video, or a house server. Then press continue.',
       choices: [
+        { value: 'games', label: 'Games', detail: 'Play on this computer. New games, or a smaller library.' },
         { value: 'photos', label: 'Photos', detail: 'Sort, edit, and keep pictures.' },
         { value: 'video', label: 'Video', detail: 'Edit movies, or try AI video.' },
         { value: 'movies', label: 'Movies and TV', detail: 'A library the house can watch.' },
@@ -482,14 +508,14 @@
     },
     {
       id: 'games',
+      when: function (a) { return hasJob(a, 'games'); },
       titleFor: function (a) {
-        return a.side === 'mac' ? 'Will you play games on this Mac?' : 'Will you play games on this same computer?';
+        return a.side === 'mac' ? 'What kind of games on this Mac?' : 'What kind of games on this computer?';
       },
       hint: 'Anti-cheat means the game checks that you are not cheating. Many of those games only trust Windows.',
       choices: [
-        { value: 'aaa', label: 'Yes. New games', detail: 'Including online games that use anti-cheat.' },
-        { value: 'some', label: 'Some games', detail: 'Older games, indie games, or a store library is enough.' },
-        { value: 'no', label: 'No games', detail: 'This computer is for work, files, or the house.' }
+        { value: 'aaa', label: 'New games', detail: 'Including online games that use anti-cheat.' },
+        { value: 'some', label: 'Some games', detail: 'Older games, indie games, or a store library is enough.' }
       ]
     },
     {
@@ -601,14 +627,32 @@
       rootEl.appendChild(el('h2', 'wiz-title', field(step, answers, 'title')));
       rootEl.appendChild(el('p', 'wiz-hint', field(step, answers, 'hint') || ''));
       var list = el('div', 'wiz-choices');
+      var picked = Array.isArray(answers[step.id]) ? answers[step.id] : [];
       choices.forEach(function (choice) {
         var button = document.createElement('button');
         button.type = 'button';
-        button.className = 'wiz-choice';
-        if (String(answers[step.id]) === String(choice.value)) button.classList.add('is-on');
-        button.appendChild(el('strong', '', choice.label));
+        button.className = 'wiz-choice' + (step.multi ? ' wiz-multi' : '');
+        button.setAttribute('aria-pressed', 'false');
+        var on = step.multi
+          ? picked.indexOf(choice.value) !== -1
+          : String(answers[step.id]) === String(choice.value);
+        if (on) {
+          button.classList.add('is-on');
+          button.setAttribute('aria-pressed', 'true');
+        }
+        button.appendChild(el('strong', '', (on && step.multi ? 'Yes · ' : '') + choice.label));
         button.appendChild(el('span', '', choice.detail));
         button.addEventListener('click', function () {
+          if (step.multi) {
+            var current = Array.isArray(answers[step.id]) ? answers[step.id].slice() : [];
+            var at = current.indexOf(choice.value);
+            if (at === -1) current.push(choice.value);
+            else current.splice(at, 1);
+            answers[step.id] = current;
+            if (current.indexOf('games') === -1) delete answers.games;
+            draw();
+            return;
+          }
           answers[step.id] = choice.value;
           index += 1;
           draw();
@@ -616,6 +660,19 @@
         list.appendChild(button);
       });
       rootEl.appendChild(list);
+      if (step.multi) {
+        var keep = document.createElement('button');
+        keep.type = 'button';
+        keep.className = 'btn btn-primary wiz-next';
+        keep.textContent = 'Continue';
+        keep.disabled = picked.length === 0;
+        keep.addEventListener('click', function () {
+          if (!Array.isArray(answers[step.id]) || !answers[step.id].length) return;
+          index += 1;
+          draw();
+        });
+        rootEl.appendChild(keep);
+      }
       if (index > 0) {
         var back = document.createElement('button');
         back.type = 'button';
@@ -636,6 +693,9 @@
       rootEl.appendChild(el('p', 'wiz-progress', 'Your build'));
       rootEl.appendChild(el('h2', 'wiz-title', profile.build));
       rootEl.appendChild(el('p', 'wiz-hint', profile.name + '. ' + profile.plain));
+      if (report.jobs.length) {
+        rootEl.appendChild(section('The jobs you picked', ['This build is for ' + report.jobs.join(', ') + '.']));
+      }
       rootEl.appendChild(section('Why this is the one', [report.because, report.labLine]));
       rootEl.appendChild(listSection('What this build is good at', profile.good));
       rootEl.appendChild(listSection('What this build should not pretend to be', profile.poor));
