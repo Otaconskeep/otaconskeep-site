@@ -83,7 +83,25 @@
     },
     "39": {
       "redirect": "09-arr-data-compose/topics/06-configuration-backups-and-recovery/lesson.html"
+    },
+    "40": {
+      "redirect": "10-sonarr-radarr/topics/01-sonarr-installation-and-first-configuration/lesson.html"
+    },
+    "41": {
+      "redirect": "10-sonarr-radarr/topics/02-sonarr-series-monitoring-and-availability/lesson.html"
+    },
+    "42": {
+      "redirect": "10-sonarr-radarr/topics/03-sonarr-quality-profiles-searching-and-importing/lesson.html"
+    },
+    "43": {
+      "redirect": "10-sonarr-radarr/topics/04-sonarr-naming-and-library-hygiene/lesson.html"
+    },
+    "44": {
+      "redirect": "10-sonarr-radarr/topics/05-anime-absolute-numbering-and-multi-episode/lesson.html"
+    },
+    "45": {
+      "redirect": "10-sonarr-radarr/topics/06-radarr-installation-and-first-configuration/lesson.html"
     }
   },
-  "updated_at": "2026-09-24T08:49:06Z"
+  "updated_at": "2026-09-24T12:20:00Z"
 }
