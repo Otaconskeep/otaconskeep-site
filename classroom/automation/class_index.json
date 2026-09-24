@@ -66,6 +66,24 @@
       "redirect": "08-docker-storage/topics/07-puid-pgid-acls-file-access/lesson.html",
       "title": "PUID, PGID, ACLs, and Container File Access"
     },
+    "34": {
+      "redirect": "09-arr-data-compose/topics/01-arr-stack-data-architecture-and-the/lesson.html"
+    },
+    "35": {
+      "redirect": "09-arr-data-compose/topics/02-hardlinks-atomic-moves-and-import-efficiency/lesson.html"
+    },
+    "36": {
+      "redirect": "09-arr-data-compose/topics/03-docker-compose-fundamentals/lesson.html"
+    },
+    "37": {
+      "redirect": "09-arr-data-compose/topics/04-health-checks-dependencies-and-restart-policies/lesson.html"
+    },
+    "38": {
+      "redirect": "09-arr-data-compose/topics/05-environment-variables-secrets-and-configuration/lesson.html"
+    },
+    "39": {
+      "redirect": "09-arr-data-compose/topics/06-configuration-backups-and-recovery/lesson.html"
+    },
     "40": {
       "redirect": "10-sonarr-radarr/topics/01-sonarr-installation-and-first-configuration/lesson.html"
     },
@@ -85,5 +103,5 @@
       "redirect": "10-sonarr-radarr/topics/06-radarr-installation-and-first-configuration/lesson.html"
     }
   },
-  "updated_at": "2026-09-24T11:09:21Z"
+  "updated_at": "2026-09-24T12:20:00Z"
 }
