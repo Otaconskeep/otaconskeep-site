@@ -62,7 +62,7 @@ def preview_build(cfg, staging_pack: Path, run_id: str) -> dict:
             continue
         n = int(m.group(1))
         title_line = class_md.read_text(encoding="utf-8").splitlines()[0]
-        title = title_line.split(", ", 1)[-1].strip() if ", " in title_line else title_line
+        title = title_line.split(": ", 1)[-1].strip() if ": " in title_line else title_line
         mod = module_for_class(roadmap, n)
         if not mod:
             continue
@@ -172,7 +172,7 @@ def main() -> int:
                 "expected_class_ids": expected,
                 "titles": [b["title"] for b in bundles],
                 "validation": validation,
-                "review_scores": [{"class_id": r["class_id"] if "class_id" in r else reviews[i]: **reviews[i]} for i, r in enumerate(reviews)],
+                "review_scores": [{"class_id": r["class_id"] if "class_id" in r else reviews[i], **reviews[i]} for i, r in enumerate(reviews)],
                 "redirects_would_be": redirects,
                 "zip": str(zpath),
                 "preview_build": {"ok": build["ok"], "path": build["preview_path"], "stderr_tail": build["stderr"][-500:]},
