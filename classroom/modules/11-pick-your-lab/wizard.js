@@ -404,7 +404,7 @@
     }
     if (a.role !== 'server' && hasJob(a, 'games')) add('bazzite');
     if (a.role !== 'server') add('mint');
-    if (a.role !== 'server' && a.skill === 'ok' && !hasJob(a, 'games')) add('omarchy');
+    if (a.role !== 'server' && a.skill === 'ok') add('omarchy');
     if (a.role !== 'everyday') {
       add('ubuntu');
       if (Number(a.ram) >= 32) add('proxmox');
@@ -521,11 +521,12 @@
         'Add one extra tool. Use it for a week before you add another.'
       ];
     } else if (pick === 'omarchy') {
-      use = 'Use Omarchy only if you already fix Linux problems. It is a keyboard desk, not a game machine and not a closet server.';
+      use = 'Use Omarchy. It is a good daily Linux desk: Arch, already set up, keyboard first. Pick it when you can fix an update. It is a poor first Linux and a poor closet server. New anti-cheat games still want Windows or Bazzite.';
       setup = [
-        'Read the install notes before you erase a disk.',
+        'Read the install notes on the Omarchy site before you erase a disk.',
         'Keep a second computer nearby for the first week.',
-        'Do not put the only copy of family photos here.'
+        'Do not put the only copy of family photos here.',
+        'Add Ollama from Ollama’s own download if you want a local model. The OtaconsKeep Lite installer is not written for Arch.'
       ];
     } else if (pick === 'proxmox') {
       use = 'Use Proxmox VE. It is free for a home. You drive it from a web page in the house. Each job gets its own small computer, called a guest. The host is Proxmox itself, and it must keep some memory.';
@@ -663,7 +664,107 @@
       later.unshift('One job only. Alpine stays small. Move the rest of this list to Ubuntu Server when you want more than one app.');
     }
 
-    return { use: use, setup: setup, now: now, later: later };
+    var built = buildGuide(a, pick, ram, card);
+    return {
+      use: use,
+      setup: setup,
+      now: now,
+      later: later,
+      path: built.path,
+      keep: built.keep,
+      guides: built.guides
+    };
+  }
+
+  function buildGuide(a, pick, ram, card) {
+    var guides = [];
+    function g(name, detail, href) { guides.push({ name: name, detail: detail, href: href }); }
+    var liteMachine = pick === 'win' || pick === 'winpro' || pick === 'ubuntu';
+    var smallCard = card > 0 && card <= 2;
+    var wantsMedia = hasJob(a, 'movies') || pick === 'proxmox' || pick === 'ubuntu' || pick === 'maclab';
+    var path = [
+      'Install the system from Use this. Stop when it boots and you can sign in.',
+      'Run updates. Keep one admin account. Do not open the admin pages to the public internet.'
+    ];
+    var keep = '';
+
+    if (liteMachine) {
+      keep = 'OtaconsKeep Lite fits this computer. It is free. The installer sets up the Keep, Ollama, and Piper voice for the agents. Premium is a one-dollar seat after Lite already works. Premium adds the five-agent crew and Video Studio. Premium does not install Plex, Sonarr, Radarr, or Prowlarr.';
+      if (smallCard) keep += ' A 1 or 2 GB card can still run Lite, with a very small chat model. Video Studio wants a bigger card.';
+      path.push('Install OtaconsKeep Lite. On Windows, download Setup from the Lite page and watch the install video once. On Ubuntu Server, use the Ubuntu steps on that same page. When it says ready, open localhost:5757 on that computer.');
+      path.push('Add Premium only after Lite works, and only if you want the larger crew or Video Studio.');
+      g('OtaconsKeep Lite', 'Free installer. It includes Ollama and Piper for the agents.', '/otacon/');
+      if (pick === 'win' || pick === 'winpro') {
+        g('Lite install video', 'Watch the Windows install from download to the ready screen.', 'https://youtu.be/OitYjPlbTng');
+      }
+      g('OtaconsKeep Premium', 'After Lite. The crew and Video Studio. Not Plex, and not the arr apps.', '/premium/');
+    } else if (pick === 'mint') {
+      keep = 'OtaconsKeep Lite’s Linux installer is written for Ubuntu or Debian. Mint can follow the Ubuntu steps on the Lite page. If a step does not match, stop and use Ollama’s own download. Premium does not install Plex or the arr apps.';
+      path.push('Try OtaconsKeep Lite from the Ubuntu steps on the Lite page. If the steps assume Ubuntu and yours do not match, install Ollama from Ollama’s download page instead.');
+      g('OtaconsKeep Lite', 'Free. Use the Ubuntu or Debian steps. It is the path that installs Ollama and Piper for the agents.', '/otacon/');
+      g('Ollama download', 'Use this if the Lite Linux steps do not match Mint.', 'https://ollama.com/download');
+      g('OtaconsKeep Premium', 'After Lite is already running on Windows or Ubuntu. It does not install Plex or the arr apps.', '/premium/');
+    } else if (pick === 'proxmox' || pick === 'maclab') {
+      keep = 'Do not install OtaconsKeep Lite on the Proxmox host. Install Lite on the Windows computer you sit at, or inside an Ubuntu guest. Lite brings Ollama and Piper for the agents. Plex and the arr apps are separate. Premium does not install them.';
+      path.push('Leave the Proxmox host as the boss. Install OtaconsKeep Lite on your Windows desk, or in one Ubuntu guest, when you want the Keep’s Ollama and Piper.');
+      g('OtaconsKeep Lite', 'Install it on Windows or in an Ubuntu guest. Not on the Proxmox host.', '/otacon/');
+      g('Lite install video', 'The Windows install, if the Keep goes on a Windows desk.', 'https://youtu.be/OitYjPlbTng');
+      g('OtaconsKeep Premium', 'After Lite works. Not a Plex installer, and not an arr installer.', '/premium/');
+    } else if (pick === 'mac' || pick === 'macmini') {
+      keep = 'OtaconsKeep Lite’s installer is Windows, plus Ubuntu or Debian. It is not a Mac installer. On this Mac, install Ollama from Ollama’s download page. House Piper is the classroom voice lesson. Premium does not install Plex or the arr apps.';
+      path.push('Install Ollama from Ollama’s Mac download. Lite will not set this Mac up for you.');
+      g('Ollama for Mac', 'The chat model app for this Mac. Lite does not cover macOS.', 'https://ollama.com/download');
+      g('OtaconsKeep Lite', 'Read this if you also have a Windows or Ubuntu computer that should run the Keep.', '/otacon/');
+    } else if (pick === 'bazzite') {
+      keep = 'Bazzite is the game desk. OtaconsKeep Lite targets Windows and Ubuntu or Debian, not Bazzite. Install Ollama from Ollama’s site if you want a local model here. Put Lite on a Windows or Ubuntu computer when you want the Keep’s Piper voice. Premium does not install Plex or the arr apps.';
+      path.push('Open Steam first, from the Bazzite setup above. Add Ollama from Ollama’s download only after games already launch.');
+      g('Bazzite docs', 'The game-desk install notes, including the NVIDIA image.', 'https://docs.bazzite.gg/');
+      g('Ollama download', 'Lite does not target Bazzite. Use Ollama’s own install here.', 'https://ollama.com/download');
+      g('OtaconsKeep Lite', 'Put the Keep on a Windows or Ubuntu machine, not on this game desk.', '/otacon/');
+    } else if (pick === 'omarchy') {
+      keep = 'Omarchy is a good daily Linux desk. Lite’s installer is not written for Arch, so do not force that setup script onto Omarchy. Use Ollama’s download for the chat model. Use Piper’s project and Classroom Module 4 for voice. Premium does not install Plex or the arr apps.';
+      path.push('Install Omarchy from its own site. Then add Ollama from Ollama’s download. Do not run the OtaconsKeep Lite installer here.');
+      g('Omarchy', 'The install notes for this desk.', 'https://omarchy.org/');
+      g('Ollama download', 'The chat model install for Arch. Lite does not cover Omarchy.', 'https://ollama.com/download');
+      g('Piper', 'Voice on this desk. The Keep’s automatic Piper install is the Lite installer, which is not for Arch.', 'https://github.com/rhasspy/piper');
+    } else if (pick === 'alpine') {
+      keep = 'Alpine is one small job. OtaconsKeep Lite, Plex, and the arr stack are too many apps for this box. Put that stack on Ubuntu Server. The guides below are for that next computer.';
+      path.push('Give Alpine the one job you wrote down. Stop there.');
+      g('OtaconsKeep Lite', 'For the Ubuntu or Windows computer, not for this Alpine box.', '/otacon/');
+    } else {
+      keep = 'OtaconsKeep Lite installs Ollama and Piper on Windows and on Ubuntu or Debian. It does not install Plex or the arr apps. Premium does not install them either.';
+      g('OtaconsKeep Lite', 'Free Keep, Ollama, and Piper on Windows or Ubuntu.', '/otacon/');
+    }
+
+    g('Classroom: local voice', 'Whisper hears and Piper speaks for the house. This is separate from the Keep’s agent voice.', '/classroom/modules/04-local-voice/');
+    if (!liteMachine && pick !== 'omarchy') {
+      g('Piper project', 'The voice engine itself, when the Lite installer is not the right computer.', 'https://github.com/rhasspy/piper');
+    }
+
+    if (wantsMedia || hasJob(a, 'movies')) {
+      path.push('Install Jellyfin or Plex yourself and play one video on a TV in the house. OtaconsKeep Lite will not install this. Premium will not install it either.');
+      path.push('Then add the arr apps in this order: Prowlarr, Sonarr, Radarr. One app, prove it opens, then the next. Classroom Module 10 walks the Sonarr and Radarr part.');
+    } else {
+      path.push('When you want movies, install Jellyfin or Plex yourself, play one video, then add Prowlarr, Sonarr, and Radarr. Lite and Premium do not install those.');
+    }
+    g('Plex install article', 'Official Plex install. Use this or Jellyfin, not both at first.', 'https://support.plex.tv/articles/200288586-installation/');
+    g('Jellyfin downloads', 'The free movie server, if you do not want Plex.', 'https://jellyfin.org/downloads/');
+    g('Classroom: Sonarr and Radarr', 'The arr lesson for shows and movies. Take this after one video already plays.', '/classroom/modules/10-sonarr-radarr/');
+    g('Servarr wiki', 'Install notes for Sonarr, Radarr, and Prowlarr.', 'https://wiki.servarr.com/');
+    g('TRaSH Guides', 'The article set for quality profiles, so the arr apps grab a good file instead of a random one.', 'https://trash-guides.info/');
+
+    if (hasJob(a, 'smart') || pick === 'proxmox' || pick === 'ubuntu') {
+      path.push('Install Home Assistant only after the machine is calm. Keep its page inside the house.');
+      g('Home Assistant install', 'Official install guide for the smart-home box.', 'https://www.home-assistant.io/installation/');
+      g('Classroom: Home Assistant', 'The house-brain lesson, before you open anything to the internet.', '/classroom/modules/03-home-assistant/');
+    }
+
+    if (a.side === 'linux' && a.role !== 'server' && pick !== 'omarchy') {
+      g('Omarchy', 'A good Linux desk when you can fix an update. Arch, keyboard first. Not your first Linux, and not the closet server.', 'https://omarchy.org/');
+    }
+
+    path.push('Add one service. Open it from another computer in the house. Then add the next.');
+    return { path: path, keep: keep, guides: guides };
   }
 
   function macModels(ram) {
@@ -946,6 +1047,11 @@
       rootEl.appendChild(section('Why this is the one', [report.because, report.labLine]));
       rootEl.appendChild(section('Use this', [report.plan.use]));
       rootEl.appendChild(listSection('Set it up', report.plan.setup));
+      rootEl.appendChild(listSection('How to build it', report.plan.path));
+      rootEl.appendChild(section('OtaconsKeep on this build', [report.plan.keep]));
+      if (report.plan.guides.length) {
+        rootEl.appendChild(linkSection('Guides and videos', report.plan.guides));
+      }
       if (report.plan.now.length) {
         rootEl.appendChild(listSection('What you can run', report.plan.now));
       }
@@ -1004,6 +1110,27 @@
       var ul = document.createElement('ul');
       items.forEach(function (item) {
         ul.appendChild(el('li', '', item));
+      });
+      box.appendChild(ul);
+      return box;
+    }
+
+    function linkSection(title, items) {
+      var box = el('section', 'wiz-block');
+      box.appendChild(el('h3', '', title));
+      var ul = document.createElement('ul');
+      items.forEach(function (item) {
+        var li = document.createElement('li');
+        var link = document.createElement('a');
+        link.href = item.href;
+        link.textContent = item.name;
+        if (item.href.indexOf('http') === 0) {
+          link.target = '_blank';
+          link.rel = 'noopener';
+        }
+        li.appendChild(link);
+        li.appendChild(document.createTextNode('. ' + item.detail));
+        ul.appendChild(li);
       });
       box.appendChild(ul);
       return box;
