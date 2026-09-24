@@ -159,13 +159,31 @@ assert.strictEqual(lab.title, 'Your lab');
 assert.ok(lab.children.some(function (child) { return child.title === 'Compute'; }));
 assert.ok(lab.children.some(function (child) { return child.title === 'Storage'; }));
 const labNames = walkTree(lab, []).map(function (node) { return node.title; }).join(' ');
+const rank = { L1: 1, L2: 2, L3: 3, L4: 4, L5: 5 };
+function assertLevels(node) {
+  (node.children || []).forEach(function (child) {
+    assert.strictEqual(rank[child.level], rank[node.level] + 1, node.title + ' to ' + child.title);
+    var levels = {};
+    node.children.forEach(function (peer) { levels[peer.level] = true; });
+    assert.strictEqual(Object.keys(levels).length, 1, node.title + ' peers');
+    assertLevels(child);
+  });
+}
+assertLevels(lab);
 const hypervisor = walkTree(lab, []).filter(function (node) { return node.title === 'Hypervisor'; })[0];
 assert.ok(hypervisor);
-assert.ok(hypervisor.children.some(function (child) { return child.title === 'Proxmox' && child.line.indexOf('virtual computers') !== -1; }));
+assert.strictEqual(hypervisor.level, 'L4');
+assert.ok(hypervisor.children.some(function (child) { return child.title === 'Proxmox VE' && child.level === 'L5' && child.line.indexOf('virtual computers') !== -1; }));
 assert.ok(labNames.indexOf('Windows') === -1);
 const drives = walkTree(lab, []).filter(function (node) { return node.title === 'Hard drives'; })[0];
-assert.ok(drives.sections.some(function (item) { return item.name === 'Trade study' && item.study.decision.indexOf('IronWolf') !== -1; }));
+assert.strictEqual(drives.level, 'L4');
+assert.ok(drives.children[0].sections.some(function (item) { return item.name === 'Trade study' && item.study.decision.indexOf('IronWolf') !== -1; }));
+const aiLab = wiz.labBreakdown(base({ side: 'linux', role: 'everyday', job: ['ai'], flavor: 'mint' }));
+assertLevels(aiLab);
+const ollama = walkTree(aiLab, []).filter(function (node) { return node.title === 'Ollama'; })[0];
+assert.strictEqual(ollama.level, 'L5');
 const deskLab = wiz.labBreakdown(base({ side: 'win', role: 'everyday', job: ['games'], flavor: 'win' }));
+assertLevels(deskLab);
 const deskNames = walkTree(deskLab, []).map(function (node) { return node.title; }).join(' ');
 assert.ok(deskNames.indexOf('Windows 11 Home') !== -1);
 assert.ok(deskNames.indexOf('Proxmox') === -1);
