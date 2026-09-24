@@ -126,4 +126,14 @@ const tiny = wiz.explain(base({ side: 'win', role: 'everyday', job: ['ai'], flav
 assert.ok(tiny.plan.later.some(function (line) { return line.startsWith('Ollama'); }));
 assert.ok(!tiny.plan.now.some(function (line) { return line.startsWith('Ollama'); }));
 
+const deep = wiz.explain(base({ side: 'linux', role: 'everyday', job: ['games'], skill: 'ok', gpu: 8, flavor: 'bazzite' }));
+assert.ok(deep.plan.advanced.some(function (item) { return item.title.indexOf('Proton') !== -1 && item.paragraphs.join(' ').indexOf('opt-in') !== -1; }));
+assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('Nouveau') !== -1; }));
+assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('Red Plus') !== -1 && item.paragraphs.join(' ').indexOf('SMR') !== -1; }));
+assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('IP hash') !== -1 && item.paragraphs.join(' ').indexOf('LACP') !== -1; }));
+const adam = deep.plan.advanced.filter(function (item) { return item.title.indexOf('Adam') !== -1; })[0];
+assert.ok(adam.paragraphs.join(' ').indexOf('not a setting inside Ollama') !== -1);
+assert.ok(adam.paragraphs.join(' ').indexOf('0.999') !== -1);
+assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('802.3at') !== -1; }));
+
 console.log('lab wizard tests ok');

@@ -673,7 +673,8 @@
       path: built.path,
       keep: built.keep,
       guides: built.guides,
-      lessons: built.lessons
+      lessons: built.lessons,
+      advanced: built.advanced
     };
   }
 
@@ -730,10 +731,14 @@
 
     path.push('Add one service. Open it from another computer in the house. Then add the next.');
     lessons = serviceLessons(a, pick, ram, card, liteMachine);
+    var advanced = advancedLayer(a, pick, ram, card);
     lessons.forEach(function (item) {
       (item.links || []).forEach(function (link) { guides.push(link); });
     });
-    return { path: path, keep: keep, guides: guides, lessons: lessons };
+    advanced.forEach(function (item) {
+      (item.links || []).forEach(function (link) { guides.push(link); });
+    });
+    return { path: path, keep: keep, guides: guides, lessons: lessons, advanced: advanced };
   }
 
   function serviceLessons(a, pick, ram, card, liteMachine) {
@@ -943,6 +948,194 @@
     }
 
     return lessons;
+  }
+
+  function advancedLayer(a, pick, ram, card) {
+    var out = [];
+    function lesson(title, paragraphs, steps, links) {
+      out.push({ title: title, paragraphs: paragraphs, steps: steps || [], links: links || [] });
+    }
+    var linuxDesk = a.side === 'linux' && (pick === 'bazzite' || pick === 'mint' || pick === 'omarchy' || pick === 'maclab');
+    lesson('Proton, and what actually breaks Linux games', [
+      'Proton is Valve’s compatibility layer. It is Wine, plus DXVK and VKD3D, which turn DirectX calls into Vulkan so a Windows game can draw on Linux. Steam installs Proton. A native Linux build of a game does not need it.',
+      'Use Valve’s Proton first: a numbered Proton, Proton Experimental, or Proton Hotfix. Proton-GE is a community build from GloriousEggroll. It can fix a game Valve’s build has not patched yet. It is not Valve support, and it is not required for every game.',
+      'Easy Anti-Cheat and BattlEye have a Proton mode, and it is opt-in per game. The studio has to turn that mode on. If they do not, the game tries to load a Windows kernel driver, Proton cannot load that driver, and the game refuses to start. Support can also be removed later. In September 2026 Ubisoft turned off the Linux Easy Anti-Cheat runtime for For Honor, and the game stopped launching on Steam Deck and on desktop Linux.',
+      'Kernel anti-cheat is a harder wall. Systems such as Riot Vanguard and Ricochet expect a Windows kernel driver. Proton does not emulate that. There is no driver setting that fixes it. Those games stay on Windows.',
+      'Some games allow a Steam Deck and block other desktop Linux. Steam Deck Verified is a useful hint, not a promise for your Mint or Bazzite PC. Check ProtonDB for crowd reports, and AreWeAntiCheatYet for the anti-cheat column. A report from last year can be wrong this month.',
+      'In the Steam tools list, install Proton EasyAntiCheat Runtime and Proton BattlEye Runtime. Without those, a game that did opt in can still fail the handshake.',
+      linuxDesk
+        ? 'This build is a Linux desk, so Proton is part of the plan if you play Windows games. New anti-cheat games that did not opt in still want a Windows computer beside this one.'
+        : 'If this computer is Windows, you do not need Proton here. Proton matters when the game machine is Linux or a Steam Deck. Keep Windows for the games whose anti-cheat has no Linux runtime.'
+    ], [
+      'Install Steam. In Steam, open the tools list and install both Proton runtimes named above.',
+      'Try the game on Valve’s Proton before you add a community Proton.',
+      'Look the game up on ProtonDB and on AreWeAntiCheatYet before you blame the graphics card.',
+      'The first launch can stutter while shaders compile. That cache is normal. A second launch should be calmer.',
+      'If the game is black or crashes, change the Proton version for that game, then reboot once. Reinstalling the whole system is not the first fix.',
+      'A 1 or 2 GB card does not become a new-game card because Proton is installed. Proton does not add memory.'
+    ], [
+      { name: 'Valve Proton', detail: 'The compatibility project Steam uses.', href: 'https://github.com/ValveSoftware/Proton' },
+      { name: 'ProtonDB', detail: 'Crowd reports for one game at a time. Read the date.', href: 'https://www.protondb.com/' },
+      { name: 'AreWeAntiCheatYet', detail: 'Which anti-cheat a game uses, and whether Linux is in or out.', href: 'https://areweanticheatyet.com/' },
+      { name: 'GamingOnLinux anti-cheat check', detail: 'How to read Steam Deck status versus desktop Linux.', href: 'https://www.gamingonlinux.com/guides/view/anticheat-check-which-competitive-games-actually-work-on-linux-steamos/' }
+    ]);
+
+    lesson('Linux graphics drivers, and the failures that look like a dead game', [
+      'NVIDIA and AMD are different installs. Mixing them up is how a desk ends up with a black screen.',
+      'NVIDIA games want the current proprietary driver. Nouveau, the open basic driver, will show a desktop and will not carry new games. On Bazzite, download the NVIDIA image only when the card is NVIDIA. On Mint or Ubuntu, install the driver from the distro’s driver tool, not from a random .run file off a forum.',
+      'After a kernel update, a DKMS NVIDIA module has to rebuild. If it does not, the next boot has no NVIDIA driver. An image-based system such as Bazzite ships the driver inside the image, so you update the image instead of compiling a module by hand. Secure Boot can refuse an unsigned module. Either enroll the key the distro shows you, or turn Secure Boot off while you learn. Do not disable it and then forget why the disk is less protected.',
+      'AMD’s normal path is the amdgpu driver in the kernel plus Mesa in userspace. You usually do not install a separate AMD “game driver” the way NVIDIA’s panel works. A brand-new AMD card can need a newer kernel than an old Ubuntu LTS has. If the card is missing, check the kernel version before you conclude the card is dead.',
+      'Wayland is the modern display server. A few games, capture tools, and overlays still misbehave on it. A Proton version change is the smaller experiment. Switching the whole desk back to X11 is the later one.',
+      'One card, one heavy job. A game and a local model at the same time fight over the same memory. Close one before you start the other.'
+    ], [
+      'Confirm the card in a terminal the distro documents: NVIDIA’s nvidia-smi, or AMD’s listing in the kernel log. If the tool is missing, the driver is missing.',
+      'On Bazzite, match the image to the card. NVIDIA image for NVIDIA. The other image for AMD or Intel.',
+      'On Mint or Ubuntu, install the packaged driver and reboot once. Do not stack a second driver on top.',
+      'After the next kernel update, reboot and check the same tool again before you launch a game.',
+      'If only one game fails anti-cheat, stop changing drivers. That failure is the studio’s runtime, not the card.'
+    ], [
+      { name: 'Bazzite docs', detail: 'Which image matches NVIDIA, AMD, and Intel.', href: 'https://docs.bazzite.gg/' },
+      { name: 'Valve Proton', detail: 'Driver problems and Proton problems are different bugs.', href: 'https://github.com/ValveSoftware/Proton' }
+    ]);
+
+    lesson('LAN, WAN, VLANs, and the firewall', [
+      'The LAN is the house network. The WAN is the internet side of the gateway. Your laptop should live on a private address, the ranges 10.x, 172.16 through 172.31, or 192.168.x. The address your internet provider gives the gateway is the WAN address. Do not put a server on the WAN address by forwarding every port.',
+      'A VLAN is an 802.1Q tag, a number on the Ethernet frame. One cable can carry several networks because each frame says which network it belongs to. An access port is untagged: a PC, a camera, or a console gets one network and never sees the tag. A trunk is tagged: the link to a server, a hypervisor, or another switch carries many VLANs, and both ends must agree on the numbers.',
+      'Creating a VLAN does not isolate it. On a UniFi gateway the default is often that VLANs can still route to each other until you write firewall rules. Isolation is the rule, not the checkbox that created the network. A guest network is the pattern that starts closer to “internet only.”',
+      'The UniFi Dream Machine Pro is a gateway, not a magic switch. Ubiquiti’s tech specs list a stateful firewall, application filtering, VLAN segmentation, intrusion detection and prevention, multi-WAN load balancing, and LACP. Read the current tech-spec page for the ports on the unit you buy. The Pro is the edge. Cameras and access points still need a switch that can feed them power.',
+      'A stateful firewall remembers a connection you started, so the reply is allowed home. A new connection from the internet is dropped unless you forwarded it. Do not forward the Proxmox page, the ESXi page, the NAS admin page, Remote Desktop, or the arr apps. If you need to reach home from outside, use a VPN into the house, then reach the admin page from inside.',
+      'A practical split is four networks: people you trust, servers, cameras and smart devices, and guests. Guests get the internet and nothing else. Cameras do not get a path to your laptop except the one viewer you allow. Servers can see the disk share. They do not need to see the camera web page.'
+    ], [
+      'Draw the four networks on paper before you click. Write the VLAN number and the subnet next to each name.',
+      'On the UDM Pro, create the networks in the UniFi Network app. There is no EdgeRouter-style command line on UniFi OS.',
+      'Set each wall port to one untagged network. Set the port that feeds the server to a trunk of only the VLANs that server should carry.',
+      'Add firewall rules that deny the paths you do not want, then test from a laptop: a guest phone should not open the NAS.',
+      'Leave IDS on only after the network already passes traffic. A threat filter that is too heavy can slow the gateway. Read the spec for the throughput with IDS on, and do not guess it.'
+    ], [
+      { name: 'UDM Pro tech specs', detail: 'Firewall, VLAN, multi-WAN, and LACP as Ubiquiti lists them today.', href: 'https://techspecs.ui.com/unifi/cloud-gateways/udm-pro' },
+      { name: 'Western Digital CMR and SMR note', detail: 'Not a network page. Use it when you buy the disks in the next lesson.', href: 'https://support-en.wd.com/app/answers/detailweb/a_id/29458' }
+    ]);
+
+    lesson('Switches: Layer 2, Layer 3, PoE, and smart ports', [
+      'A Layer 2 switch forwards frames by MAC address. It can separate VLANs. It does not, by itself, route between those VLANs. Routing is a Layer 3 job. Your UDM Pro can do that routing. A Layer 3 switch can also route, in hardware, so two servers on different VLANs do not have to hairpin through the gateway. A small house does not need a Layer 3 switch. A lab with fast storage and many VLANs might.',
+      'An unmanaged switch has no VLAN screen. If you plug a trunk into it, tags get stripped or leaked and two networks become one. Any link that carries more than one VLAN needs a managed switch, sometimes sold as a smart switch. On that switch you mark access ports and trunk ports. The names must match the gateway.',
+      'PoE means the switch feeds power down the same cable as the data. The standards, at the switch port, are about 15.4 watts for 802.3af, about 30 watts for 802.3at (PoE+), and about 60 or 90 watts for 802.3bt (PoE++). The device receives less after the cable. A phone is often af. A Wi-Fi 6 access point or a moving camera may want at or bt. Add the watts of every device. The switch’s total budget is smaller than “maximum per port times every port.”',
+      'Buy the PoE class you measured. A non-PoE switch plus a pile of injectors works, and it is messier. Do not power a camera from a port that cannot supply its class.'
+    ], [
+      'List every powered device and its PoE class before you pick the switch.',
+      'Use a managed switch on every trunk. Leave unmanaged switches for single-network rooms only.',
+      'Label the ports: access VLAN number, or trunk. Future you will not remember.',
+      'If the gateway already routes between VLANs, do not also turn on routing on the switch unless you have drawn which device owns the gateway address. Two routers on one VLAN fight.'
+    ], [
+      { name: 'UDM Pro tech specs', detail: 'What the gateway does, separate from what the switch must do.', href: 'https://techspecs.ui.com/unifi/cloud-gateways/udm-pro' }
+    ]);
+
+    lesson('Load balancing, including the ESXi screen people misread', [
+      'Three different features share this name. They do not replace each other.',
+      'First, multi-WAN load balancing on a gateway such as the UDM Pro. That spreads the house across two internet lines. It does not make one VM faster, and it does not split one download across both lines in a magical way. A single connection still picks one path.',
+      'Second, an application load balancer. That is a program such as HAProxy in its own virtual machine. It has an address, and it forwards web requests to two or more app servers. You build this only when you already have two healthy copies of the same app. It is not a checkbox on the hypervisor.',
+      'Third, NIC teaming on ESXi, which VMware’s screen calls load balancing. A standard vSwitch can spread virtual machines across physical cables. The default, route based on the originating virtual port, is the safe one: each VM sticks to one uplink, and the switch does not need a special channel. Route based on IP hash is the one that needs a matching static EtherChannel on the physical switch, with every uplink active. Broadcom’s note on KB 2006129: the hash is the source and destination IP. One pair of addresses stays on one uplink, so one copy to one server does not use both cables. A VM talking to several servers can land on more than one uplink. If the switch is not channeled, IP hash drops traffic. Beacon probing is not supported with IP hash. Only link status counts.',
+      'Dynamic LACP is not that standard-switch screen. Broadcom’s vSphere docs put LACP on a vSphere Distributed Switch, in a link aggregation group, with the physical switch set to LACP active. A distributed switch is not included with every ESXi license. If you turn LACP on at the switch and the host is not in the same mode, the link looks plugged in and passes the wrong traffic or none. Beacon probing is not the failure detector you use with LACP.',
+      'ESXi VLAN ID 4095 means “pass every tag into the guest.” Use it only when that guest is itself a firewall or a router. A normal VM should get one VLAN number that matches the access network you intended.',
+      pick === 'proxmox'
+        ? 'This build is Proxmox, not ESXi. The same rule still holds. A Linux bond in LACP mode (802.3ad) works only when the switch side is also LACP. Active-backup is the calm choice until the switch is configured. Do not mix the modes.'
+        : 'If you are on Proxmox instead of ESXi, use a Linux bond. Active-backup is the calm mode. LACP (802.3ad) only after the switch is in LACP too.'
+    ], [
+      'Decide which of the three you mean before you change a port.',
+      'Leave ESXi on “route based on originating virtual port” until you have drawn the port channel.',
+      'If you choose IP hash, configure the static EtherChannel on the switch first, then the vSwitch, with all those uplinks active. Test from a second computer before you walk away.',
+      'Do not enable LACP on only one side.',
+      'An application load balancer comes last, after two real copies of the app already answer.'
+    ], [
+      { name: 'Broadcom: dynamic LACP', detail: 'The distributed-switch LAG, not the standard vSwitch checkbox.', href: 'https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/7-0/vsan-network-design-7-0/advanced-nic-teaming/nic-teaming-configuration-examples/configuration-3-dynamic-lacp.html' },
+      { name: 'VMware KB 2006129', detail: 'What IP-hash load balancing actually requires on the switch.', href: 'https://knowledge.broadcom.com/external/article?legacyId=2006129' }
+    ]);
+
+    lesson('NAS disks: the colors, CMR, SSD, and M.2', [
+      'A NAS is a computer whose job is the disks. TrueNAS, Unraid, or a Ubuntu server can be that computer. The color of a Western Digital sticker is a product line, not a promise. Read the datasheet for the exact model. Lines change.',
+      'WD Blue is an everyday desktop disk. WD Black is a performance desktop disk. Neither is the pick for a RAID or ZFS box. WD Purple, and Seagate SkyHawk, are for cameras: a stream of writes, few reads. They are the wrong disk for Plex libraries and for ZFS. WD Gold is an enterprise disk, CMR, for harder duty. Seagate IronWolf and IronWolf Pro are the NAS lines. Seagate Exos is the enterprise line. A Barracuda has shipped as SMR in some sizes. Do not assume.',
+      'CMR writes tracks beside each other. SMR overlaps them like roof shingles, so a rewrite can stall while the drive rewrites a whole band. WD’s own note says many plain WD Red drives in the 2 TB to 6 TB sizes used SMR, and that ZFS resilver, the rebuild, does not give an SMR drive the idle time it wants. WD Red Plus and WD Red Pro are the CMR NAS drives they point at for that work. “Red” on the shelf is not enough. Read the label.',
+      'A mirror or RAIDZ survives one disk dying. It does not survive fire, theft, or a delete. A backup is a second copy somewhere else.',
+      'A hard drive is bad at random small files. Virtual machines, the Keep, databases, and a game library that stutters belong on an SSD. Hard-drive cons: the head has to seek, many spinning disks vibrate each other, a huge drive takes a long time to rebuild, and SMR makes that rebuild worse. NAS-rated drives are built for that vibration. A loose desktop drive in a four-bay box is a gamble.',
+      'An SSD has no seek, so it is the right place for the operating system and for apps. Flash wears out. The datasheet’s TBW number is the endurance. A disk that is rewritten all day needs a higher endurance part, not the cheapest QLC stick.',
+      'M.2 is a shape, the gumstick connector. It is not a speed. An M.2 drive can be SATA, which is the same speed class as a 2.5 inch SATA SSD, or NVMe, which talks PCIe and is the fast one. A motherboard slot might accept only one of those. Read the slot. “M.2” on the box is not the answer.'
+    ], [
+      'Put the operating system on an SSD or NVMe. Put movies and photos on CMR hard drives.',
+      'Before you buy, open the model’s datasheet and find CMR or SMR. Skip the disk if the sheet will not say.',
+      'For ZFS or a RAID rebuild, buy the CMR NAS line: Red Plus, Red Pro, IronWolf, or the enterprise CMR disks. Not Purple. Not a mystery Red.',
+      'Match the bay. A 3.5 inch NAS disk does not fit an M.2 slot, and an M.2 does not replace a pile of movie disks.',
+      'Keep a second copy of anything you would cry about. The RAID light is not that copy.'
+    ], [
+      { name: 'WD Red: SMR and CMR', detail: 'Western Digital’s own split of Red, Red Plus, and Red Pro.', href: 'https://support-en.wd.com/app/answers/detailweb/a_id/29458' },
+      { name: 'How to check CMR or SMR', detail: 'WD’s steps, including where the datasheet says it.', href: 'https://support-en.wd.com/app/answers/detailweb/a_id/50697' },
+      { name: 'WD color lines', detail: 'The current marketing page. The datasheet still wins.', href: 'https://www.westerndigital.com/solutions/color-drives' }
+    ]);
+
+    lesson('A Plex layout, and what the GPU is actually for', [
+      'Ideal Plex is boring. The player app and its database sit on an SSD. The video files sit on CMR disks in the NAS. The TV plays the original file when it can. That is direct play. Transcoding is the expensive path: the server converts the file because the phone or the TV cannot play it.',
+      'Hardware transcode uses a video encoder, which is not the same circuit as the chip that runs an AI model. NVIDIA calls theirs NVENC. Intel calls theirs Quick Sync. AMD calls theirs VCN. A card can be large for games and still a poor encoder, or small and still able to transcode. A 1 or 2 GB card often cannot convert video for a phone. Prefer direct play, or let the TV do the work.',
+      'Do not put the only Plex database on a hard drive that is also rebuilding a RAID. The database wants the SSD. The movies want the CMR pile. One disk dying should not take the only copy of the family videos. RAID is not the off-site copy.',
+      'The arr apps file new videos into that same folder. They do not play them. Get one file playing before you turn automatic grabs on. The simple lessons above still own that order.'
+    ], [
+      'SSD for the system and the Plex data. CMR NAS disks for the library.',
+      'Play one file on a TV with transcode forced off. If it plays, you are in the good path.',
+      'Turn a hardware encoder on only for the clients that cannot direct-play.',
+      'Keep Plex’s admin page on the server VLAN. Do not forward it to the internet. Use the Plex account features or a VPN, and read Plex’s own install article before you open a port.'
+    ], [
+      { name: 'Plex install article', detail: 'The official install, including where the server should live.', href: 'https://support.plex.tv/articles/200288586-installation/' },
+      { name: 'Jellyfin downloads', detail: 'The free player if you skip Plex.', href: 'https://jellyfin.org/downloads/' }
+    ]);
+
+    var gpuWork = card >= 24
+      ? 'About 24 GB of card memory is the class for a 32-billion-parameter chat model in a 4-bit copy, for picture models, and for short AI video experiments. A 70-billion model still wants more, or it borrows system RAM and gets slow. It is not a movie studio.'
+      : (card >= 16
+        ? 'About 16 GB fits 14-billion chat models more comfortably. A 32-billion model is tight. A 70-billion model does not belong here. Picture models fit better than on an 8 GB card. AI video is still a short experiment, not a pipeline.'
+        : (card >= 12
+          ? 'About 12 GB is where a 14-billion-parameter chat model in a 4-bit copy can fit, and where 4K editing starts to be reasonable. Short AI video can start, slowly. Do not game and run the model together.'
+          : (card >= 8
+            ? 'About 8 GB fits a 7 to 8 billion parameter chat model in a 4-bit copy. Older picture models fit. The larger SDXL picture model is tight. AI video does not fit well.'
+            : (card >= 6
+              ? 'About 6 GB fits a 7-billion chat model in a 4-bit copy, and a small Whisper hearing model. A 14-billion chat model is too big to feel good. Picture work is light. AI video does not fit.'
+              : 'Under about 6 GB, do not plan on a useful chat model on the card. A 1 or 2 GB card can show a desktop and play old games. A 3 or 4 GB card can try a tiny model. The 7-billion class wants more once the conversation memory is counted.'))));
+    if (a.side === 'mac') {
+      gpuWork = 'This is a Mac. There is no separate NVIDIA card. The unified memory is the pool. At 16 GB a small 7-billion model can run if the Mac is quiet. At 32 GB local chat is a real tool. NVIDIA-style AI video still wants a PC card. CUDA guides do not apply.';
+    }
+    lesson('GPUs for chat, pictures, and video', [
+      'The number that matters for a model is the card’s own memory, the VRAM. The marketing name matters less. A parameter is one note the model memorized. A 4-bit copy stores those notes in less memory and is a little less sharp than a fuller copy.',
+      gpuWork,
+      'Chat is inference: the model is already trained, and you ask it questions. Picture models such as Stable Diffusion 1.5 are the smaller image job. SDXL is the heavier image job. AI video is heavier than both and wants the 12 GB class before it is even a slow experiment, and the 24 GB class before it is a fair experiment.',
+      'Video editing is a different job from AI video. DaVinci or Resolve on a desk uses the card to draw frames. A NAS does not edit the wedding. The desk edits. The NAS stores.',
+      'One heavy job at a time. The encoder that helps Plex, the cores that draw a game, and the memory that holds a model are sharing one card.'
+    ], [
+      'Write down the card memory in GB before you download a model.',
+      'Start with a 7-billion 4-bit chat model only if you have about 6 GB or more, or a quiet 16 GB Mac.',
+      'Add a picture model only after chat already answers.',
+      'Leave AI video until the card is in the 12 GB class or better, and keep the clips short.',
+      'Do not run that model on the Plex box at the same time you transcode a movie, unless the card is the 24 GB class and you have watched the memory.'
+    ], [
+      { name: 'Ollama download', detail: 'Inference, the chat runtime. Not a training suite.', href: 'https://ollama.com/download' }
+    ]);
+
+    lesson('Adam, and the knobs people confuse with it', [
+      'Adam is a training optimizer from Kingma and Ba, 2014, “Adam: A Method for Stochastic Optimization.” It is how a model learns. It is not a setting inside Ollama, and turning it does not make a downloaded chat model smarter.',
+      'Training looks at the gradient, the direction that reduces the error. Adam keeps two running averages for every parameter. The first moment is a moving average of the gradient, the mean. The second moment is a moving average of the squared gradient, the uncentered variance. The step is the first, bias-corrected, divided by the square root of the second.',
+      'Those averages start at zero, so the early steps are biased toward zero. Bias correction divides that startup error out. The paper shows that skipping the correction hurts most when the second-moment decay is aggressive, because the early steps get huge. RMSProp is the close cousin without that correction. AdaGrad is the older method that keeps a growing sum of squared gradients and can stall. AdamW, from Loshchilov and Hutter, moves weight decay outside the adaptive step so the decay is not shrunk by the second moment. Modern language-model fine-tunes usually say AdamW, not the 2014 Adam alone.',
+      'The defaults people cite from the published method are a learning rate of 0.001, beta1 of 0.9, beta2 of 0.999, and epsilon of 1e-8. An early preprint writes the decays in a confusing way. Do not type numbers from a random screenshot. If you train, use the defaults your training tool documents, then change one number.',
+      'The learning rate is the size of the step. Too high and the loss explodes. Too low and the model barely moves. You watch the loss. You do not guess a heroic rate.',
+      'Inference is the other job, the one Ollama does. Temperature is randomness in the answer. Top-p cuts the unlikely words. Context length is how much conversation fits. Quantization, the Q4 or Q8 in a model name, shrinks a trained file so it fits in less memory. Q4 is smaller and a bit less sharp. Q8 is closer to the original weights and heavier. None of those train the model. None of them are Adam.',
+      'Full training stores the weights plus Adam’s two moment vectors, so it needs much more memory than chatting. That is why a 6 GB card can answer with a 7-billion 4-bit model and still cannot train that model from scratch. LoRA trains a small adapter beside a frozen model. QLoRA keeps the base model quantized and trains the adapter, which is how a smaller card fine-tunes. It is still training. It wants a real card, a dataset you have the rights to, and a run you can stop. A 1 or 2 GB card is not that card. Training a model from nothing is a datacenter job, not this lab.'
+    ], [
+      'If you only want answers, stay on inference. Install Ollama or Lite. Do not hunt for an Adam checkbox.',
+      'If you fine-tune, name the optimizer the tool uses. Expect AdamW. Keep the tool’s default learning rate until a run finishes.',
+      'Change one hyperparameter per run. Write down beta1, beta2, the learning rate, and the loss.',
+      'Count memory before you start: weights, plus optimizer state, plus the batch. If it does not fit, use a smaller model or LoRA, or stop.',
+      'Do not point a training run at a disk that is also your only copy of family photos.'
+    ], [
+      { name: 'Adam, Kingma and Ba, 2014', detail: 'The paper. Training only.', href: 'https://arxiv.org/abs/1412.6980' },
+      { name: 'Ollama download', detail: 'Inference. No Adam knob.', href: 'https://ollama.com/download' }
+    ]);
+
+    return out;
   }
 
   function macModels(ram) {
@@ -1230,6 +1423,14 @@
       (report.plan.lessons || []).forEach(function (item) {
         rootEl.appendChild(lessonSection(item));
       });
+      if (report.plan.advanced && report.plan.advanced.length) {
+        rootEl.appendChild(el('p', 'wiz-progress', 'Advanced layer'));
+        rootEl.appendChild(el('h2', 'wiz-title', 'The deep build'));
+        rootEl.appendChild(el('p', 'wiz-hint', 'Proton, drivers, the network, the disks, the GPU, and how a model is trained. Read one lesson, do that piece, then the next.'));
+        report.plan.advanced.forEach(function (item) {
+          rootEl.appendChild(lessonSection(item));
+        });
+      }
       if (report.plan.now.length) {
         rootEl.appendChild(listSection('What you can run', report.plan.now));
       }
