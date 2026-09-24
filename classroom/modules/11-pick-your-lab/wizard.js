@@ -263,6 +263,27 @@
       video: 'Short 1080p edits can work. 4K editing will hurt. AI video is not for this computer.',
       models: 'Only very small chat models, about 1 to 3 billion parameters, on the processor. A parameter is one note the model memorized. Answers will be slow. This is practice AI, not a daily assistant.'
     },
+    1: {
+      label: 'About 1 GB graphics card, or smaller',
+      games: 'This is a very old card. It can show the desktop and play very old games. New 3D games will not run well.',
+      photos: 'You can look through photos. Heavy filters and huge camera files will feel slow.',
+      video: 'Watching a video can work. Editing will hurt. AI video does not fit on 1 GB.',
+      models: '1 GB is too small to hold a chat model on the card. A tiny model can still run on the processor, and it will be slow. This is not a daily AI computer.'
+    },
+    2: {
+      label: 'About 2 GB graphics card',
+      games: 'Old games at low settings can work. New games will struggle, or they will not start.',
+      photos: 'Light photo edits fit. Heavy filters will feel slow.',
+      video: 'A short 1080p clip can be tried. 4K editing and AI video do not fit.',
+      models: '2 GB cannot hold a useful chat model. A 7-billion-parameter model needs several times this much card memory. A tiny practice model can use the processor instead, and it will be slow.'
+    },
+    4: {
+      label: 'About 3 or 4 GB graphics card',
+      games: 'Older games at 1080p can work if you turn the settings down. New games want more card memory.',
+      photos: 'Normal photo edits fit. Huge files with many filters will still feel slow.',
+      video: '1080p editing can be tried. 4K editing and AI video do not fit.',
+      models: 'A tiny chat model can try this card. A 7-billion-parameter model does not fit once the conversation memory is counted. That model wants a bigger card.'
+    },
     6: {
       label: 'About 6 GB graphics card',
       games: 'Older games and many current games at 1080p. Turn some settings down.',
@@ -554,7 +575,10 @@
       hint: 'The GPU draws games and can run AI. The GB here is the card’s own memory, not the computer’s RAM. A Mac does not get this question, because its graphics share system memory.',
       choices: [
         { value: 'none', label: 'No extra card', detail: 'Only the graphics built into the processor.' },
-        { value: 6, label: 'About 6 GB', detail: 'An older gaming card, like a 2060.' },
+        { value: 1, label: '1 GB or less', detail: 'A very old card. It shows the desktop. It is not for new games or AI.' },
+        { value: 2, label: 'About 2 GB', detail: 'An old card. Old games at low settings. Not a chat-model card.' },
+        { value: 4, label: 'About 3 or 4 GB', detail: 'A common older card. Light 1080p games. Still small for AI.' },
+        { value: 6, label: 'About 6 GB', detail: 'A card like a 2060. 1080p games and a small chat model.' },
         { value: 8, label: 'About 8 GB', detail: 'A common recent card.' },
         { value: 12, label: 'About 12 GB', detail: 'Room for bigger models and 4K video.' },
         { value: 16, label: 'About 16 GB', detail: 'Strong for 1440p and mid-size models.' },
