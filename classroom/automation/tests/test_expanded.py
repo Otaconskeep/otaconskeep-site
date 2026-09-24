@@ -58,7 +58,13 @@ class ExpandedTests(unittest.TestCase):
         existing = discover_existing_classes(self.cfg.pack_dir)
         batch = next_core_batch(self.cfg)
         ids = [b["class_id"] for b in batch]
-        if all(n in existing for n in range(28, 34)):
+        if all(n in existing for n in range(34, 46)):
+            self.assertEqual(ids, [46, 47, 48, 49, 50, 51])
+            self.assertIn("Radarr Monitoring", batch[0]["title"])
+        elif all(n in existing for n in range(34, 40)):
+            self.assertEqual(ids, [40, 41, 42, 43, 44, 45])
+            self.assertIn("Sonarr Installation", batch[0]["title"])
+        elif all(n in existing for n in range(28, 34)):
             self.assertEqual(ids, [34, 35, 36, 37, 38, 39])
             self.assertIn("ARR Stack", batch[0]["title"])
         elif all(n in existing for n in range(22, 28)):
