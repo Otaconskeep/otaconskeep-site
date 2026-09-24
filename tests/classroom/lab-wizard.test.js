@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const wiz = require('../../classroom/modules/11-pick-your-lab/wizard.js');
+const wiz = require('../../classroom/modules/00-pick-your-lab/wizard.js');
 
 function base(partial) {
   return Object.assign({
