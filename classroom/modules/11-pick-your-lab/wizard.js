@@ -74,6 +74,30 @@
       ],
       next: 'The next doll is Omarchy, after you can fix a broken update, or Proxmox on a second box when the house needs its own computer.'
     },
+    bazzite: {
+      name: 'Bazzite',
+      build: 'Linux game desk',
+      plain: 'A Linux system already set up for Steam, controllers, and graphics cards.',
+      why: 'Bazzite is the game doll inside Linux. Universal Blue builds it so Steam and the graphics drivers are part of the plan. You sit at it and play. New anti-cheat games can still refuse to run. Those stay on Windows.',
+      good: [
+        'A computer you sit at and play on.',
+        'Steam, plus many older and indie games.',
+        'An NVIDIA card or an AMD card, when you download the matching image.',
+        'A normal desk for the web and files between games.'
+      ],
+      poor: [
+        'A closet full of house apps. Movies, backups, and Home Assistant belong on a second computer.',
+        'The only copy of family photos.',
+        'Brand-new anti-cheat games that only trust Windows.',
+        'A first lesson in every Linux command. Bazzite stays in a fixed shape so the game desk does not break.'
+      ],
+      first: [
+        'Download the Desktop image. Pick the NVIDIA image only if the card is NVIDIA.',
+        'Copy your files off the disk before you install.',
+        'Open Steam after the first boot. That is the point of this doll.'
+      ],
+      next: 'The next doll is a separate Ubuntu or Proxmox box for movies, backups, and Home Assistant. This computer stays the game desk.'
+    },
     omarchy: {
       name: 'Omarchy',
       build: 'Keyboard Linux desk',
@@ -378,8 +402,9 @@
       if (a.role === 'everyday' && a.skill !== 'lab') add('macmini');
       return out;
     }
+    if (a.role !== 'server' && hasJob(a, 'games')) add('bazzite');
     if (a.role !== 'server') add('mint');
-    if (a.role !== 'server' && a.skill === 'ok') add('omarchy');
+    if (a.role !== 'server' && a.skill === 'ok' && !hasJob(a, 'games')) add('omarchy');
     if (a.role !== 'everyday') {
       add('ubuntu');
       if (Number(a.ram) >= 32) add('proxmox');
@@ -416,6 +441,7 @@
       pick: pick,
       choices: choices,
       jobs: pickedJobs,
+      plan: buildPlan(a, pick),
       because: profile.why,
       profile: profile,
       labLine: labLine,
@@ -441,6 +467,203 @@
         return { name: FLAVORS[choice.value].name, plain: FLAVORS[choice.value].plain };
       })
     };
+  }
+
+  function gpuGb(a) {
+    if (!a || a.side === 'mac' || a.gpu === 'none' || a.gpu == null || a.gpu === '') return 0;
+    var n = Number(a.gpu);
+    return n > 0 ? n : 0;
+  }
+
+  function buildPlan(a, pick) {
+    var ram = Number(a.ram) || 16;
+    var card = gpuGb(a);
+    var disk = Number(a.storage) || 0;
+    var server = pick === 'proxmox' || pick === 'ubuntu' || pick === 'alpine' || pick === 'macmini';
+    var desk = pick === 'win' || pick === 'winpro' || pick === 'mint' || pick === 'bazzite' || pick === 'omarchy' || pick === 'mac';
+    var now = [];
+    var later = [];
+    function add(list, name, detail) { list.push(name + '. ' + detail); }
+    function ollamaReady() {
+      if (a.side === 'mac' || pick === 'mac' || pick === 'macmini') return ram >= 16;
+      if (card >= 6) return true;
+      return ram >= 32 && card === 0;
+    }
+
+    var use = '';
+    var setup = [];
+    if (pick === 'win' || pick === 'winpro') {
+      use = 'Use Windows 11. Download it from Microsoft. When the installer asks for a product key, choose I don’t have a product key. Windows runs without activation. A small watermark can sit on the screen, and some wallpaper settings stay locked until you buy a real key from Microsoft. You do not need a borrowed key.';
+      setup = [
+        'Use Microsoft’s own Windows 11 installer.',
+        'On the product-key screen, choose I don’t have a product key.',
+        'Finish Windows Update before you add Steam or house apps.',
+        'Put games and photos on a second disk when you have one. Leave the first disk for Windows.'
+      ];
+      if (pick === 'winpro') {
+        setup.push('Pro adds BitLocker, Remote Desktop, and Hyper-V. Write the BitLocker recovery key on paper before you turn BitLocker on. Use Remote Desktop only inside the house.');
+      }
+    } else if (pick === 'bazzite') {
+      use = 'Use Bazzite. It is a Linux game desk with Steam already in the plan. Download the Desktop image. Pick the NVIDIA download only if your card is NVIDIA. AMD and Intel graphics use the other image.';
+      setup = [
+        'Copy your files off the target disk first.',
+        'Write the Bazzite image to a USB and install it.',
+        'Open Steam after the first boot and sign in.',
+        'Keep movies, backups, and Home Assistant on a second computer if you have one. This one is the game desk.'
+      ];
+    } else if (pick === 'mint') {
+      use = hasJob(a, 'games')
+        ? 'You can install Linux Mint Cinnamon for a familiar desk. If games are the main job, use Bazzite instead. Bazzite already includes the game setup. Mint is the better doll when you want to learn the normal Linux desk.'
+        : 'Use Linux Mint Cinnamon. Download it from the Linux Mint site. It is the friendly desk, with a menu and a taskbar.';
+      setup = [
+        'Write Mint to a USB. Keep your old files on another disk until the new desk is open.',
+        'Add programs from the Software Manager first.',
+        'Add one extra tool. Use it for a week before you add another.'
+      ];
+    } else if (pick === 'omarchy') {
+      use = 'Use Omarchy only if you already fix Linux problems. It is a keyboard desk, not a game machine and not a closet server.';
+      setup = [
+        'Read the install notes before you erase a disk.',
+        'Keep a second computer nearby for the first week.',
+        'Do not put the only copy of family photos here.'
+      ];
+    } else if (pick === 'proxmox') {
+      use = 'Use Proxmox VE. It is free for a home. You drive it from a web page in the house. Each job gets its own small computer, called a guest. The host is Proxmox itself, and it must keep some memory.';
+      setup = ram >= 64
+        ? [
+          'Install Proxmox VE on its own SSD. Leave the big disks for files and movies.',
+          'Leave 8 GB of memory for the Proxmox host. Do not give that 8 GB to guests.',
+          'Start with the guests that match your jobs. A movie guest gets 4 GB. A smart-home guest gets 4 GB. A files guest gets 4 GB.',
+          'Give the graphics card to one guest only, and only if that guest runs AI. The other guests use the processor.',
+          'Open the Proxmox web page only from inside the house. Add one guest, prove it opens, then add the next.'
+        ]
+        : [
+          'Install Proxmox VE on its own SSD. Leave the big disks for files and movies.',
+          'Leave 4 GB of memory for the Proxmox host.',
+          'Start with two guests. Give each one 4 GB. A 32 GB machine cannot hold a crowd.',
+          'Give the graphics card to one guest only, and only if that guest runs AI.',
+          'Open the Proxmox web page only from inside the house.'
+        ];
+    } else if (pick === 'ubuntu') {
+      use = 'Use Ubuntu Server LTS. LTS means this edition stays supported for years. Install Docker, then add house apps one at a time. Most homelab instructions assume Ubuntu, so you will not fight the guide.';
+      setup = [
+        'Install Ubuntu Server LTS and turn on SSH so you can control it from another computer.',
+        'Install Docker Engine using Docker’s Ubuntu instructions.',
+        'Add one app. Open it from another computer in the house. Then add the next.',
+        'Keep the admin pages off the public internet.',
+        'Put Ubuntu on an SSD. Put movies and photos on a bigger disk.'
+      ];
+    } else if (pick === 'alpine') {
+      use = 'Use Alpine for one job only. It is small on purpose. A second app means this was the wrong system. Ubuntu Server is the stack doll.';
+      setup = [
+        'Write the one job on paper before you install.',
+        'Keep another computer you can type from.',
+        'Do not add a pile of Docker apps here. Many of them assume Ubuntu.'
+      ];
+    } else if (pick === 'mac' || pick === 'macmini') {
+      use = pick === 'mac'
+        ? 'Stay on macOS. Do not erase the Mac to build a server. Add one house helper only after normal Mac life feels calm.'
+        : 'Use the Mac mini as the always-on helper. Leave macOS on the internal drive. Plug the big file disk in beside it.';
+      setup = [
+        'Turn on Time Machine to a disk that is not the only copy of your photos.',
+        'Turn on Remote Login for yourself. Do not open it to the public internet.',
+        'Add one app. Leave it alone for a week before you add another.'
+      ];
+    } else if (pick === 'maclab') {
+      use = ram >= 32
+        ? 'Keep the Mac on macOS. The second computer should be Proxmox, because 32 GB or more was on the table. Edit on the Mac. Run the house on the lab box.'
+        : 'Keep the Mac on macOS. The second computer should be Ubuntu Server until it has 32 GB. Then it can become Proxmox. Edit on the Mac. Run the house on the lab box.';
+      setup = [
+        'Do not erase the Mac.',
+        'Install the lab system on the other computer.',
+        'Point Time Machine at a disk on the lab box, and keep another copy of photos somewhere else.'
+      ];
+    }
+
+    if (hasJob(a, 'games')) {
+      if (pick === 'bazzite' || pick === 'win' || pick === 'winpro' || pick === 'mac') {
+        add(now, 'Steam', pick === 'mac'
+          ? 'Install Steam from the Mac App Store or the Steam site. Some big PC games have no Mac version.'
+          : 'Install Steam and play here. New anti-cheat games are most at home on Windows.');
+      } else if (pick === 'mint') {
+        add(now, 'Steam', 'Mint can run many Steam games. If the game library is the real job, switch this desk to Bazzite.');
+      } else {
+        add(later, 'A game desk', 'This computer should not be the game machine. Play on Windows, or on a Linux desk called Bazzite. Leave this box for the house.');
+      }
+    }
+
+    if (hasJob(a, 'movies') || (server && disk >= 4000)) {
+      var movieWhere = server || pick === 'maclab' || pick === 'macmini' ? now : later;
+      if (hasJob(a, 'movies') && desk && pick !== 'bazzite') movieWhere = now;
+      if (pick === 'bazzite') movieWhere = later;
+      add(movieWhere, 'Jellyfin or Plex', card > 0 && card <= 2
+        ? 'Either one can serve movies to the TVs in the house. A 1 or 2 GB card often cannot convert video for a phone. Play the original file, or let the TV do that work. Start with one of these apps, not both.'
+        : 'Either one can serve movies and TV to the house. Jellyfin is free. Plex is the other famous choice and has paid extras. Start with one, not both. The computer that runs it has to stay on.');
+    } else if (server || pick === 'maclab') {
+      add(later, 'Jellyfin or Plex', 'When the movie pile shows up, one of these becomes the house player. Jellyfin is free. Plex is the paid-extras choice. A few terabytes of disk makes this real.');
+    }
+
+    if (hasJob(a, 'photos')) {
+      if (pick === 'win' || pick === 'winpro' || pick === 'mac' || pick === 'maclab') {
+        add(now, 'Photos or Lightroom', 'Edit on the desk you sit at. Keep the library on a second disk.');
+      } else if (pick === 'mint' || pick === 'bazzite' || pick === 'omarchy') {
+        add(now, 'digiKam or Darktable', 'These are the free photo desks. Edit here. Store the pile on a second disk.');
+      }
+      if (server || pick === 'macmini' || pick === 'maclab' || disk >= 4000) {
+        add(disk >= 1000 ? now : later, 'Immich', 'Immich is a private photo library for the whole house, like a photo cloud you own. It wants a big disk and a computer that stays on.');
+      }
+    } else if (server && disk >= 4000) {
+      add(later, 'Immich', 'Immich can hold the family photo library in the house when you are ready. It is not a public cloud.');
+    }
+
+    if (hasJob(a, 'video') && (desk || pick === 'maclab' || pick === 'win' || pick === 'winpro')) {
+      add(now, pick === 'mac' || pick === 'maclab' ? 'Final Cut or DaVinci' : 'DaVinci Resolve or Kdenlive', 'Edit on the desk. Let a server store the footage if you add one later. Do not edit the movie inside Proxmox.');
+    }
+
+    if (hasJob(a, 'smart') || server || pick === 'maclab') {
+      var smartList = hasJob(a, 'smart') && pick !== 'alpine' ? now : (hasJob(a, 'smart') ? now : later);
+      if (pick === 'bazzite' || ((pick === 'win' || pick === 'mint' || pick === 'omarchy' || pick === 'mac') && a.role === 'everyday')) {
+        smartList = later;
+      }
+      add(smartList, 'Home Assistant', pick === 'alpine'
+        ? 'This can be the one Alpine job. It runs lights, sensors, and switches. Do not add a second app beside it.'
+        : (pick === 'proxmox' || pick === 'maclab'
+          ? 'Home Assistant runs the lights and sensors. Give it a 4 GB guest of its own. Keep its page inside the house.'
+          : 'Home Assistant runs the lights and sensors. Install it with Docker. Keep its page inside the house.'));
+    }
+
+    if (hasJob(a, 'ai') || card >= 6 || ((a.side === 'mac' || pick === 'mac' || pick === 'macmini') && ram >= 16)) {
+      var aiNow = hasJob(a, 'ai') && ollamaReady() && pick !== 'alpine';
+      var aiDetail = 'Ollama is how a house runs its own chat model. This card or this amount of memory is too small for a useful one. The install waits for a bigger card, or for 32 GB and a lot of patience.';
+      if (ollamaReady() && card >= 6 && pick === 'proxmox') {
+        aiDetail = 'Ollama runs a chat model here. Put it in the one guest that owns the graphics card. Run one model at a time.';
+      } else if (ollamaReady() && card >= 6) {
+        aiDetail = 'Ollama runs a chat model on the graphics card. Run one model at a time, and close heavy games or a video export first.';
+      } else if (ollamaReady() && (a.side === 'mac' || pick === 'mac' || pick === 'macmini')) {
+        aiDetail = 'Ollama runs a chat model in the Mac’s unified memory. Close big apps first. Run one model at a time.';
+      } else if (ollamaReady()) {
+        aiDetail = 'Ollama can run a small model on the processor. It will be slow. This is practice, not a daily assistant.';
+      }
+      add(aiNow ? now : later, 'Ollama', aiDetail);
+    }
+
+    if (hasJob(a, 'files') || (server && disk >= 4000) || pick === 'maclab') {
+      add(hasJob(a, 'files') || disk >= 4000 ? now : later, 'A shared folder', pick === 'proxmox'
+        ? 'Give one guest the big disks and share a folder with the rest of the house. TrueNAS can be that guest when the pile is huge. A shared folder is not a backup. Keep a second copy somewhere else.'
+        : 'Share one folder with the other computers in the house. Samba does this on Linux. A Mac can share a folder too. One disk is still not a backup.');
+    }
+
+    if (hasJob(a, 'learn') && !now.length) {
+      add(now, 'One practice app', 'Learn this system with a single app. A web page you can open from another computer is enough for week one.');
+    }
+
+    if (pick === 'alpine' && now.length > 1) {
+      later = now.slice(1).concat(later);
+      now = [now[0]];
+      later.unshift('One job only. Alpine stays small. Move the rest of this list to Ubuntu Server when you want more than one app.');
+    }
+
+    return { use: use, setup: setup, now: now, later: later };
   }
 
   function macModels(ram) {
@@ -721,6 +944,14 @@
         rootEl.appendChild(section('The jobs you picked', ['This build is for ' + report.jobs.join(', ') + '.']));
       }
       rootEl.appendChild(section('Why this is the one', [report.because, report.labLine]));
+      rootEl.appendChild(section('Use this', [report.plan.use]));
+      rootEl.appendChild(listSection('Set it up', report.plan.setup));
+      if (report.plan.now.length) {
+        rootEl.appendChild(listSection('What you can run', report.plan.now));
+      }
+      if (report.plan.later.length) {
+        rootEl.appendChild(listSection('What it can grow into', report.plan.later));
+      }
       rootEl.appendChild(listSection('What this build is good at', profile.good));
       rootEl.appendChild(listSection('What this build should not pretend to be', profile.poor));
       rootEl.appendChild(section('Memory', [hw.ram]));

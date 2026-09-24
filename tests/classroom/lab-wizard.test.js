@@ -32,6 +32,8 @@ assert.ok(!wiz.stepsFor({ side: 'mac' }).some(function (s) { return s.id === 'gp
 assert.ok(wiz.stepsFor({ side: 'win' }).some(function (s) { return s.id === 'gpu'; }));
 
 assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'new' }), ['mint']);
+assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'new', job: ['games'] }), ['bazzite', 'mint']);
+assert.ok(!ids({ side: 'linux', role: 'server', ram: 64, job: ['games', 'movies'] }).includes('bazzite'));
 assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'ok' }), ['mint', 'omarchy']);
 assert.deepStrictEqual(ids({ side: 'linux', role: 'server', skill: 'new', ram: 16 }), ['ubuntu']);
 assert.ok(ids({ side: 'linux', role: 'server', skill: 'ok', ram: 64, job: 'movies' }).includes('proxmox'));
@@ -81,5 +83,27 @@ const sheet = wiz.explain(base({ side: 'linux', role: 'server', ram: 64, skill: 
 assert.strictEqual(sheet.pick, 'proxmox');
 assert.ok(sheet.profile.first.length >= 3);
 assert.ok(sheet.hardware.storage.includes('TrueNAS') || sheet.hardware.storage.includes('16 TB'));
+
+const winPlan = wiz.explain(base({ side: 'win', role: 'everyday', job: ['games', 'movies'], flavor: 'win', gpu: 8 }));
+assert.ok(winPlan.plan.use.includes('product key'));
+assert.ok(winPlan.plan.use.includes('without activation'));
+assert.ok(winPlan.plan.now.some(function (line) { return line.includes('Steam'); }));
+assert.ok(winPlan.plan.now.some(function (line) { return line.includes('Jellyfin or Plex'); }));
+
+const gameLinux = wiz.explain(base({ side: 'linux', role: 'everyday', job: ['games'], skill: 'new', gpu: 8 }));
+assert.strictEqual(gameLinux.pick, 'bazzite');
+assert.ok(gameLinux.plan.use.includes('Bazzite'));
+assert.ok(gameLinux.plan.use.includes('NVIDIA'));
+
+const brain = wiz.explain(base({ side: 'linux', role: 'server', ram: 64, skill: 'ok', job: ['movies', 'ai', 'smart'], flavor: 'proxmox', storage: 16000, gpu: 8 }));
+assert.strictEqual(brain.pick, 'proxmox');
+assert.ok(brain.plan.setup.some(function (line) { return line.includes('Leave 8 GB'); }));
+assert.ok(brain.plan.now.some(function (line) { return line.includes('Jellyfin or Plex'); }));
+assert.ok(brain.plan.now.some(function (line) { return line.includes('Ollama'); }));
+assert.ok(brain.plan.now.some(function (line) { return line.includes('Home Assistant'); }));
+
+const tiny = wiz.explain(base({ side: 'win', role: 'everyday', job: ['ai'], flavor: 'win', gpu: 1, ram: 16 }));
+assert.ok(tiny.plan.later.some(function (line) { return line.startsWith('Ollama'); }));
+assert.ok(!tiny.plan.now.some(function (line) { return line.startsWith('Ollama'); }));
 
 console.log('lab wizard tests ok');
