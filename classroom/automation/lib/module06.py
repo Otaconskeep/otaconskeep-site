@@ -15,15 +15,15 @@ def write_complete_module06(pack_root: Path, bundles: list[dict[str, Any]]) -> P
     titles = [b["title"] for b in bundles]
     ids = [int(b["class_id"]) for b in bundles]
 
-    module_md = f"""# Module 06 — Linux Foundations
+    module_md = f"""# Module 06: Linux Foundations
 
 **Design chain:** Backward Design → Bloom’s Taxonomy → Learn / Practice / Test / Reflect → Mastery → Spiral Review  
 **Feynman teach-back is required in every lesson.**  
 **Last reviewed:** {today_iso()}
 
-## Backward design — module outcome
+## Backward design: module outcome
 
-Student can navigate a Linux lab tree safely, compose shell pipelines for investigation, apply least-privilege users/groups/permissions, manage processes with signals and user systemd units, extract evidence with journalctl, and harden SSH with keys using console break-glass — all verified under disposable `/opt/lab-classroom/` paths.
+Student can navigate a Linux lab tree safely, compose shell pipelines for investigation, apply least-privilege users/groups/permissions, manage processes with signals and user systemd units, extract evidence with journalctl, and harden SSH with keys using console break-glass: all verified under disposable `/opt/lab-classroom/` paths.
 
 ## Bloom arc
 
@@ -55,11 +55,11 @@ Do **not** unlock Module 07 until:
         mod / "REQUIRED_READING.md",
         "\n".join(
             [
-                "# Module 06 — Required reading",
+                "# Module 06: Required reading",
                 "",
                 "Complete each topic reading before its lab:",
                 "",
-                *[f"- Class {i}: {t} — `topics/` activity reading.md" for i, t in zip(ids, titles)],
+                *[f"- Class {i}: {t}: `topics/` activity reading.md" for i, t in zip(ids, titles)],
                 "",
                 "Primary references: hier(7), bash(1), chmod/chown/id, systemd.service(5), journalctl(1), sshd_config(5).",
                 "",
@@ -67,9 +67,9 @@ Do **not** unlock Module 07 until:
         ),
     )
 
-    project = f"""# Module project — Linux Foundations
+    project = f"""# Module project: Linux Foundations
 
-**Module:** Module 06 — Linux Foundations  
+**Module:** Module 06: Linux Foundations  
 **Activity type:** Project (integrated Apply/Create)  
 **Classes covered:** {", ".join(str(i) for i in ids)}  
 **Lab risk:** medium (disposable paths + optional user systemd + ssh lab VM only)
@@ -82,10 +82,10 @@ Deliver a single evidence pack proving you can navigate, pipe, permission, super
 
 1. **Lab tree** under `/opt/lab-classroom/module06-project/` with `configs/`, `logs/`, `bin/`.
 2. **Pipeline** that filters ERROR lines from a sample log into `logs/errors.txt` using grep|tee and reports a count.
-3. **Identity** — a lab group and two lab users; shared directory mode proving group-read without world-write (no 777).
-4. **Service** — a user-level oneshot systemd unit that appends a heartbeat line to `logs/heartbeat.log`.
-5. **Journal evidence** — redacted `journalctl --user` excerpt for that unit.
-6. **SSH notes** — screenshot or command transcript of key auth on a lab VM *or* a clearly labeled simulation documenting hardening order and break-glass console plan if no second VM is available.
+3. **Identity**: a lab group and two lab users; shared directory mode proving group-read without world-write (no 777).
+4. **Service**: a user-level oneshot systemd unit that appends a heartbeat line to `logs/heartbeat.log`.
+5. **Journal evidence**: redacted `journalctl --user` excerpt for that unit.
+6. **SSH notes**: screenshot or command transcript of key auth on a lab VM *or* a clearly labeled simulation documenting hardening order and break-glass console plan if no second VM is available.
 
 ## Verification checklist
 
@@ -112,7 +112,7 @@ No production paths. No `chmod 777`. No private keys committed. No sshd changes 
 """
     atomic_write_text(mod / "project.md", project)
 
-    quiz = """# Module quiz — Linux Foundations
+    quiz = """# Module quiz: Linux Foundations
 
 **Target:** ≥80% (at least 8/10)  
 **Closed book preferred.**
@@ -134,7 +134,7 @@ Missed items → return to the matching class reading → redo Feynman Retry →
 """
     atomic_write_text(mod / "module-quiz.md", quiz)
 
-    answer_key = """# Module quiz answer key — Linux Foundations
+    answer_key = """# Module quiz answer key: Linux Foundations
 
 1. Absolute starts at `/` and does not depend on cwd; relative is interpreted from cwd.
 2. `/data` may hold production media; labs must stay disposable under `/opt/lab-classroom`.
@@ -149,26 +149,26 @@ Missed items → return to the matching class reading → redo Feynman Retry →
 """
     atomic_write_text(mod / "ANSWER_KEY.md", answer_key)
 
-    exam = """# Module exam — Linux Foundations (practical)
+    exam = """# Module exam: Linux Foundations (practical)
 
 **Timebox:** 60–90 minutes  
 **Environment:** disposable lab VM/shell; console available if SSH tasks are live.
 
 ## Stations
 
-### Station A — Navigate & evidence (Classes 16–17)
+### Station A: Navigate & evidence (Classes 16–17)
 Create `/opt/lab-classroom/module06-exam/`, write a sample log, and produce `errors.count` via pipeline.  
 **Pass:** absolute paths correct; count accurate; no writes outside lab path.
 
-### Station B — Permissions (Class 18)
+### Station B: Permissions (Class 18)
 Create a shared directory proving group-read without world-write.  
 **Pass:** `namei -l` evidence; write denied for non-group or others as designed; no 777.
 
-### Station C — Process/service (Classes 19–20)
+### Station C: Process/service (Classes 19–20)
 Install a user oneshot that logs a heartbeat; capture `systemctl --user status` and a journal excerpt.  
 **Pass:** unit succeeded; evidence files present; redaction applied.
 
-### Station D — SSH safety (Class 21)
+### Station D: SSH safety (Class 21)
 Either (live) prove key login on lab VM with hardening notes, or (simulation) write a one-page hardening order + lockout recovery plan.  
 **Pass:** order correct; break-glass documented; no unexplained sshd breakage.
 
@@ -189,7 +189,7 @@ If fail: identify weakest station → complete that class lab again → redo Fey
 """
     atomic_write_text(mod / "exam.md", exam)
 
-    remediation = """# Remediation — Module 06
+    remediation = """# Remediation: Module 06
 
 ## Feedback → targeted review → reassess
 

@@ -70,7 +70,7 @@ def normalize_bundle(bundle: dict) -> dict:
                         out.append(str(item[k]))
                         break
                 else:
-                    out.append(" — ".join(str(v) for v in item.values() if v))
+                    out.append(": ".join(str(v) for v in item.values() if v))
             else:
                 out.append(str(item))
         return out
@@ -112,7 +112,7 @@ def normalize_bundle(bundle: dict) -> dict:
             bundle["difficulty"] = cand
             break
     risk = str(bundle.get("lab_risk") or "").strip().lower()
-    for cand in ("high", "medium", "low"):  # high first so "low ... high" doesn't win wrongly — prefer exact token
+    for cand in ("high", "medium", "low"): # high first so "low ... high" doesn't win wrongly: prefer exact token
         pass
     if re_search := __import__("re").search(r"\b(low|medium|high)\b", risk):
         bundle["lab_risk"] = re_search.group(1)

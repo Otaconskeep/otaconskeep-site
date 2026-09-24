@@ -22,7 +22,7 @@ jobs:
       - name: Fail closed if CI force-fail fixture present
         run: |
           if [[ -f ci/FORCE_FAIL ]]; then
-            echo "::error::ci/FORCE_FAIL present — intentional fail fixture for ruleset proof"
+            echo "::error::ci/FORCE_FAIL present: intentional fail fixture for ruleset proof"
             exit 1
           fi
 
@@ -125,7 +125,7 @@ jobs:
           print("canonical", CANONICAL)
           PY
 
-      - name: Security — no secrets in workflow tree
+      - name: Security: no secrets in workflow tree
         run: |
           # Scan real config/code; ignore unit-test fixtures that intentionally embed fake secrets.
           if grep -RInE '(api[_-]?key|secret|token|password)\s*[:=]\s*["'\'']?[A-Za-z0-9_\-]{16,}' \

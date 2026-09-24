@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Critic/reviewer pass — structured rubric; hard gates cannot be overridden."""
+"""Critic/reviewer pass: structured rubric; hard gates cannot be overridden."""
 from __future__ import annotations
 
 import argparse

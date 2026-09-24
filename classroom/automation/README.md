@@ -6,7 +6,7 @@ Fail-closed lesson generation and publication for OtaconsKeep Homelab Academy.
 
 After **activation approval**, systemd timers generate six core lessons twice nightly (America/Phoenix 01:00 and 03:30), validate them, and publish through git only when every hard gate passes. A news evaluator runs after the late batch and creates at most one bonus lesson when a breakthrough clears the quality gate.
 
-Until activation: `DRY_RUN=1` — scheduled jobs no-op publish.
+Until activation: `DRY_RUN=1`: scheduled jobs no-op publish.
 
 ## Repository facts (discovered)
 
@@ -55,4 +55,4 @@ python3 rollback_batch.py --demonstrate-fixture
 ## Publication policy
 
 Preferred: PR branch → checks → merge → Cloudflare deploy.  
-`main` is currently **unprotected** on GitHub — direct-to-main remains blocked unless `ALLOW_DIRECT_MAIN=1` with explicit approval.
+`main` is currently **unprotected** on GitHub: direct-to-main remains blocked unless `ALLOW_DIRECT_MAIN=1` with explicit approval.

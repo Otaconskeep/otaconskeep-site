@@ -130,7 +130,7 @@ class FaultInjectionTests(unittest.TestCase):
     def test_critic_rejection_no_publication(self):
         review = {"ok": False, "score": 40, "reason": "thin"}
         self.assertFalse(review["ok"])
-        # publish_lessons blocks on critic_failed — assert contract
+        # publish_lessons blocks on critic_failed: assert contract
         self.assertLess(review["score"], 85)
 
     def test_github_unavailable_retries_then_fail(self):
@@ -173,7 +173,7 @@ class FaultInjectionTests(unittest.TestCase):
 
     def test_stale_lock_recovery_alive_pid_not_stolen(self):
         write_lock_owner(self.cfg)
-        # Current process is alive — should not steal unless age exceeds threshold.
+        # Current process is alive: should not steal unless age exceeds threshold.
         # Force young timestamp
         owner = Path(str(self.cfg.lock_file) + ".owner")
         owner.write_text(json.dumps({"pid": os.getpid(), "ts": time.time()}), encoding="utf-8")

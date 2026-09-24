@@ -44,9 +44,9 @@ jobs:
           cat policy.json
           auto=$(python -c 'import json; print(json.load(open("policy.json")).get("automergable"))')
           if [[ "$auto" == "True" ]]; then
-            echo "::notice::Lesson-content PR — eligible for auto-merge after required checks"
+            echo "::notice::Lesson-content PR: eligible for auto-merge after required checks"
           else
-            echo "::notice::Non-lesson paths — auto-merge will not be enabled (manual merge required)"
+            echo "::notice::Non-lesson paths: auto-merge will not be enabled (manual merge required)"
           fi
           exit 0
 
@@ -80,7 +80,7 @@ jobs:
           fi
           draft=$(gh pr view "$num" --json isDraft -q .isDraft)
           if [[ "$draft" == "true" ]]; then
-            echo "Draft PR #$num — skip auto-merge"
+            echo "Draft PR #$num: skip auto-merge"
             exit 0
           fi
           base=$(gh pr view "$num" --json baseRefOid -q .baseRefOid)
@@ -122,7 +122,7 @@ jobs:
             gh pr merge "$num" --auto --squash
             echo "Enabled squash auto-merge for lesson-content PR #$num"
           elif [[ $status -eq 2 ]]; then
-            echo "Required checks failed — not enabling auto-merge"
+            echo "Required checks failed: not enabling auto-merge"
           else
-            echo "Required checks not ready — will retry on next workflow_run"
+            echo "Required checks not ready: will retry on next workflow_run"
           fi

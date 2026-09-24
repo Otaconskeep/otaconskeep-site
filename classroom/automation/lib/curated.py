@@ -97,9 +97,9 @@ def lesson_16() -> dict[str, Any]:
             "Demonstrate a verification command that proves access works for the intended identity and fails for another",
         ],
         [
-            "man 7 inode (ownership concepts) — local man page",
-            "chmod(1), chown(1), id(1), getent(1) — local man pages",
-            "Debian Wiki: Permissions — https://wiki.debian.org/Permissions (primary distribution docs)",
+            "man 7 inode (ownership concepts): local man page",
+            "chmod(1), chown(1), id(1), getent(1): local man pages",
+            "Debian Wiki: Permissions: https://wiki.debian.org/Permissions (primary distribution docs)",
         ],
         [
             ("UID/GID", "Numeric identity Linux uses for ownership and process credentials"),
@@ -107,7 +107,7 @@ def lesson_16() -> dict[str, Any]:
             ("group", "A named set of users sharing a GID for shared access"),
             ("mode bits", "Read/write/execute permissions for owner, group, and others"),
             ("umask", "Mask applied when creating new files to strip default permissions"),
-            ("least privilege", "Grant only the access required for the job—nothing more"),
+            ("least privilege", "Grant only the access required for the job, nothing more"),
             ("sudo", "Delegated privilege escalation with an audit trail"),
             ("sticky bit", "Directory bit that restricts deletion to file owner (common on /tmp)"),
         ],
@@ -115,7 +115,7 @@ def lesson_16() -> dict[str, Any]:
 
 ### Identity is not a username sticker
 
-Linux authorization decisions use numbers first: UID and GID. The names in `/etc/passwd` and `/etc/group` are human labels. When a process opens a file, the kernel compares the process credentials to the inode's owner/group/mode. If your container runs as UID 1000 but the bind-mounted library is owned by UID 0 with mode `600`, the container cannot read it—no amount of “but I'm an admin in the UI” changes that.
+Linux authorization decisions use numbers first: UID and GID. The names in `/etc/passwd` and `/etc/group` are human labels. When a process opens a file, the kernel compares the process credentials to the inode's owner/group/mode. If your container runs as UID 1000 but the bind-mounted library is owned by UID 0 with mode `600`, the container cannot read it, no amount of “but I'm an admin in the UI” changes that.
 
 ### Read `ls -l` like a contract
 
@@ -133,7 +133,7 @@ Example line:
 
 ### Users and groups for services
 
-Do not run every homelab service as your login user or as root. Create a dedicated user (or reuse a documented service UID such as 1000:1000 only when you intentionally standardize PUID/PGID across containers—covered later). Prefer:
+Do not run every homelab service as your login user or as root. Create a dedicated user (or reuse a documented service UID such as 1000:1000 only when you intentionally standardize PUID/PGID across containers, covered later). Prefer:
 
 1. A group for shared libraries (example: `media`)
 2. Service users that are members of that group when they must share files
@@ -177,7 +177,7 @@ Homelab implication: Compose `user:` / PUID/PGID must match directory ownership 
 
 **Scope:** only `/opt/lab-classroom/class16` on a lab VM you own.
 
-### WARNING — privileged commands
+### WARNING: privileged commands
 
 The following use `sudo`, create users/groups, and change ownership. Do not point them at `/home`, `/`, or production media trees.
 
@@ -246,7 +246,7 @@ sudo groupdel class16g || true
             ("New files owned by wrong group", "Parent directory missing setgid bit", "Apply `chmod 2770` on the shared directory and recreate a test file"),
             ("Cannot delete lab users", "Processes still running as that UID", "Find with `ps -u class16a` and stop them, then `userdel`"),
         ],
-        """Never use `chmod -R 777` on media or config trees—world-writable paths invite accidental or malicious writes. Do not paste real passwords into labs. Prefer dedicated service accounts over sharing your admin login with containers. Record UIDs you choose so future Compose stacks can match them deliberately.""",
+        """Never use `chmod -R 777` on media or config trees, world-writable paths invite accidental or malicious writes. Do not paste real passwords into labs. Prefer dedicated service accounts over sharing your admin login with containers. Record UIDs you choose so future Compose stacks can match them deliberately.""",
         """Rollback for this lab is deletion of `/opt/lab-classroom/class16` and removal of `class16a`/`class16b`/`class16g` as shown in the lab cleanup block. If you accidentally changed permissions elsewhere, restore from backup; this class intentionally avoids production paths. Snapshot the lab VM before experimenting if you are unsure.""",
         """### Explain
 Describe how UID/GID and mode bits decide access, and why least privilege beats 777.
@@ -282,7 +282,7 @@ Rewrite the explanation after re-reading the worked example.
             "`namei -l` or `ls -l`",
             "Confirm the path with `realpath`, prefer backups/snapshots, stay in a disposable lab directory",
         ],
-        """Open on a terminal screenshot. Narrate reading `ls -l` left to right. Demonstrate a failed access, then a least-privilege fix—never 777. Close with cleanup to emphasize reversible labs.""",
+        """Open on a terminal screenshot. Narrate reading `ls -l` left to right. Demonstrate a failed access, then a least-privilege fix, never 777. Close with cleanup to emphasize reversible labs.""",
         [
             "chmod(1) Linux man page (local)",
             "chown(1) Linux man page (local)",
@@ -331,8 +331,8 @@ def lesson_17() -> dict[str, Any]:
         [
             ("PID", "Process identifier assigned by the kernel"),
             ("signal", "Asynchronous notification to a process (e.g., TERM, KILL, HUP)"),
-            ("SIGTERM", "Polite terminate request—process may clean up"),
-            ("SIGKILL", "Forced kill—cannot be caught; last resort"),
+            ("SIGTERM", "Polite terminate request, process may clean up"),
+            ("SIGKILL", "Forced kill, cannot be caught; last resort"),
             ("systemd unit", "Declarative description of a service, timer, mount, etc."),
             ("systemctl", "Controller for systemd units"),
             ("journald", "systemd journal collecting stdout/stderr and structured logs"),
@@ -349,7 +349,7 @@ Dashboards lie; `ps` and cgroup views show what is actually running. For each cr
 - `SIGTERM` (15): ask it to exit
 - `SIGINT` (2): interrupt (Ctrl+C)
 - `SIGHUP` (1): often reload config (service-dependent)
-- `SIGKILL` (9): force death—skips cleanup; can corrupt state
+- `SIGKILL` (9): force death, skips cleanup; can corrupt state
 
 Prefer TERM, wait, then KILL only if needed.
 
@@ -438,7 +438,7 @@ rm -rf /opt/lab-classroom/class17
             ("Linger issues on some hosts", "User services stop at logout", "For lab, stay logged in; document loginctl enable-linger only with understanding"),
         ],
         """Do not send SIGKILL to databases as a first step. Do not enable linger or system-wide units on production without change control. Avoid editing units under /lib/systemd; use /etc overrides.""",
-        """Disable/remove the user unit and delete `/opt/lab-classroom/class17` as shown. If you used kill on the wrong PID, restart that service via its proper unit—not a reboot-as-fix habit.""",
+        """Disable/remove the user unit and delete `/opt/lab-classroom/class17` as shown. If you used kill on the wrong PID, restart that service via its proper unit, not a reboot-as-fix habit.""",
         """### Explain
 Contrast SIGTERM vs SIGKILL and how systemd uses them on stop.
 
@@ -525,21 +525,21 @@ def lesson_18() -> dict[str, Any]:
 
 ### Logs are evidence, not vibes
 
-When a homelab service fails after reboot, the question is not “did you try restarting again?” — it is “what did the unit say?” The systemd journal stores stdout/stderr and structured fields from units. Learning `journalctl` turns outages into timelines.
+When a homelab service fails after reboot, the question is not “did you try restarting again?”: it is “what did the unit say?” The systemd journal stores stdout/stderr and structured fields from units. Learning `journalctl` turns outages into timelines.
 
 ### Essential filters
 
-- `journalctl -u service.service -b` — this boot only for one unit
-- `--since "1 hour ago"` / `--until` — time windows for change correlation
-- `-p err..alert` — severity band when you need failures fast
-- `-o short-iso` — readable timestamps for workbook paste
-- `-n 200` — cap noise while learning
+- `journalctl -u service.service -b`: this boot only for one unit
+- `--since "1 hour ago"` / `--until`: time windows for change correlation
+- `-p err..alert`: severity band when you need failures fast
+- `-o short-iso`: readable timestamps for workbook paste
+- `-n 200`: cap noise while learning
 
 Always redact tokens, session cookies, and webhook URLs before sharing excerpts.
 
 ### Journal vs classic files
 
-Many stacks still write under `/var/log` (nginx, apt history, auth.log). Professionals can move between both worlds: journal for unit lifecycle, files for app-native formats. On appliances without persistent journals, note that reboot may wipe volatile storage — configure persistence deliberately, not accidentally.
+Many stacks still write under `/var/log` (nginx, apt history, auth.log). Professionals can move between both worlds: journal for unit lifecycle, files for app-native formats. On appliances without persistent journals, note that reboot may wipe volatile storage: configure persistence deliberately, not accidentally.
 
 ### Worked example
 
@@ -626,7 +626,7 @@ def lesson_19() -> dict[str, Any]:
         "intermediate",
         90,
         "high",
-        "SSH is the front door to most homelabs. Students generate keys, restrict logins on a lab VM, and verify access—without locking themselves out.",
+        "SSH is the front door to most homelabs. Students generate keys, restrict logins on a lab VM, and verify access, without locking themselves out.",
         ["Classes 16–18", "Lab VM with sshd", "Console/IPMI/hypervisor console access as break-glass"],
         [
             "Generate an Ed25519 key pair for lab use",
@@ -640,7 +640,7 @@ def lesson_19() -> dict[str, Any]:
         ],
         [
             ("public key", "Key material you can share; placed in authorized_keys"),
-            ("private key", "Secret key—never upload to git or chat"),
+            ("private key", "Secret key, never upload to git or chat"),
             ("authorized_keys", "Server file listing permitted public keys"),
             ("sshd", "SSH daemon accepting remote sessions"),
             ("PasswordAuthentication", "sshd setting allowing password logins"),
@@ -651,7 +651,7 @@ def lesson_19() -> dict[str, Any]:
 
 ### SSH is a front door
 
-Most homelab administration still arrives over SSH. A weak front door (password auth on the public Internet, shared root passwords, unmanaged keys) eventually becomes an incident. This class builds a safe pattern: keys first, prove access, then harden — with console break-glass ready.
+Most homelab administration still arrives over SSH. A weak front door (password auth on the public Internet, shared root passwords, unmanaged keys) eventually becomes an incident. This class builds a safe pattern: keys first, prove access, then harden: with console break-glass ready.
 
 ### Keys
 
@@ -792,7 +792,7 @@ Package upgrades are not “click update.” They change libraries, kernels, and
 3. `apt list --upgradable` and skim high-risk packages (kernel, docker, openssl)
 4. Apply upgrades in a maintenance window
 5. `systemctl --failed` and smoke-test critical services
-6. Reboot only when required — with console available
+6. Reboot only when required: with console available
 
 Avoid adding random third-party repositories for convenience; they expand your supply chain. Do not disable signature verification.
 
@@ -873,7 +873,7 @@ def lesson_21() -> dict[str, Any]:
         "beginner",
         85,
         "low",
-        "Builds on Class 15 addressing literacy with routing tables and multi-subnet thinking for homelab VLANs and dual-homed hosts—without duplicating Class 15's beginner IPv4 primer.",
+        "Builds on Class 15 addressing literacy with routing tables and multi-subnet thinking for homelab VLANs and dual-homed hosts, without duplicating Class 15's beginner IPv4 primer.",
         ["Class 15 IPv4 addressing", "Lab Linux host"],
         [
             "Read a routing table and explain default route vs connected routes",
@@ -892,7 +892,7 @@ def lesson_21() -> dict[str, Any]:
             ("CIDR", "Prefix-length notation like /24"),
             ("next hop", "Next router IP for a route"),
             ("metric", "Tie-breaker cost among routes"),
-            ("asymmetric routing", "Forward and return paths differ—troubleshooting hazard"),
+            ("asymmetric routing", "Forward and return paths differ, troubleshooting hazard"),
         ],
         """## Instruction
 
@@ -939,7 +939,7 @@ rm -rf /opt/lab-classroom/class21
             ("Confusion with Class 15", "Overlapping topics", "Focus on route table literacy here"),
         ],
         """Do not change production routes casually. Avoid publishing full internal network maps if sensitive.""",
-        """Read-only lab—delete captures directory. If you changed routes (not required), delete added routes and restore DHCP.""",
+        """Read-only lab, delete captures directory. If you changed routes (not required), delete added routes and restore DHCP.""",
         """### Explain
 How a host chooses between on-link and gateway delivery.
 
@@ -1018,7 +1018,7 @@ def lesson_filesystem() -> dict[str, Any]:
         "beginner",
         70,
         "low",
-        "Homelab operators must navigate paths confidently: absolute vs relative, home vs /opt lab trees, and where configs and logs live—without touching production media roots.",
+        "Homelab operators must navigate paths confidently: absolute vs relative, home vs /opt lab trees, and where configs and logs live, without touching production media roots.",
         ["A Linux lab shell", "Classes 1–4 recommended"],
         [
             "Distinguish absolute and relative paths and resolve them with realpath/pwd",
@@ -1049,11 +1049,11 @@ Linux stores almost everything as files under a single tree rooted at `/`. Homel
 
 ### Everyday landmarks
 
-- `/etc` — system configuration
-- `/var/log` — classic logs
-- `/home` — user homes
-- `/opt` — optional local software and our disposable classroom labs
-- `/tmp` — temporary; may be cleared on reboot
+- `/etc`: system configuration
+- `/var/log`: classic logs
+- `/home`: user homes
+- `/opt`: optional local software and our disposable classroom labs
+- `/tmp`: temporary; may be cleared on reboot
 
 ### Worked example
 
@@ -1154,7 +1154,7 @@ def lesson_pipes() -> dict[str, Any]:
         "beginner",
         75,
         "low",
-        "Pipes and redirection turn small tools into investigation workflows for logs and configs—essential for ARR and systemd troubleshooting later.",
+        "Pipes and redirection turn small tools into investigation workflows for logs and configs, essential for ARR and systemd troubleshooting later.",
         ["Class 16 filesystem navigation", "Linux lab shell"],
         [
             "Redirect stdout and stderr to files safely under a lab path",
@@ -1185,7 +1185,7 @@ Unix philosophy: each filter does one job. `grep` selects lines, `sort` orders, 
 
 ### stderr matters
 
-Failures often print on stderr. Use `cmd >out 2>err` or merge deliberately with `2>&1` — and document which you used in the workbook.
+Failures often print on stderr. Use `cmd >out 2>err` or merge deliberately with `2>&1`: and document which you used in the workbook.
 
 ### Worked example
 
@@ -1259,7 +1259,7 @@ Draw the stream diagram from memory.
             "To avoid destroying production files",
             "grep, sort, uniq, or wc",
         ],
-        "Demo a growing pipeline live. Show a mistaken > overwrite on a lab file, then fix with recreation—never on real logs.",
+        "Demo a growing pipeline live. Show a mistaken > overwrite on a lab file, then fix with recreation, never on real logs.",
         ["bash(1) REDIRECTION section (local man page)", "grep(1) Linux man page (local)", "tee(1) Linux man page (local)"],
         "bash or POSIX sh with coreutils.",
         [{

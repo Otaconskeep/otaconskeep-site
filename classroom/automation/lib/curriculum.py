@@ -14,7 +14,7 @@ from . import Config, atomic_write_json, utc_now
 
 
 CLASS_FILE_RE = re.compile(r"^(\d{2})_([A-Z0-9_]+)\.md$")
-TITLE_RE = re.compile(r"^#\s+Class\s+(\d+)\s+[—\-]\s+(.+)$", re.I | re.M)
+TITLE_RE = re.compile(r"^#\s+Class\s+(\d+)\s+[:\-]\s+(.+)$", re.I | re.M)
 
 
 def load_roadmap(cfg: Config) -> dict[str, Any]:

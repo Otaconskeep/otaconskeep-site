@@ -138,7 +138,7 @@ class CurriculumTests(unittest.TestCase):
             self.assertEqual(len(files), 1)
 
     def test_curated_batch_validates(self):
-        # Schema/heuristic checks only — overwrite guards intentionally block
+        # Schema/heuristic checks only: overwrite guards intentionally block
         # re-validating already-published pack ids via validate_batch.
         bundles = [get_curated(n) for n in range(16, 22)]
         titles: set[str] = set()

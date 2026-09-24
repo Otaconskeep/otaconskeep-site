@@ -495,7 +495,7 @@ class ExpandedTests(unittest.TestCase):
                 result = preview_build(cfg, Path(td), "buildfail")
                 # if it returns, ok must be false OR path must exist empty
                 if result.get("ok"):
-                    # still no classes — treat as failure for our gate
+                    # still no classes: treat as failure for our gate
                     self.assertFalse((Path(result["preview_path"]) / "classes" / "16.html").exists())
             except Exception:
                 pass  # fail-closed is acceptable

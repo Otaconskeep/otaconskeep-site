@@ -4,7 +4,7 @@
 
 **Source of truth:** `/root/otaconskeep-site` (`https://github.com/Otaconskeep/otaconskeep-site.git`)
 
-**Mirror only:** `/root/Classroom` (`https://github.com/Otaconskeep/Classroom.git`) — one-way after approved publish. Dual dirty packs → fail closed (`lib/source_of_truth.py`).
+**Mirror only:** `/root/Classroom` (`https://github.com/Otaconskeep/Classroom.git`): one-way after approved publish. Dual dirty packs → fail closed (`lib/source_of_truth.py`).
 
 ## ALLOW_DIRECT_MAIN=0
 
@@ -16,7 +16,7 @@ Automation must not push commits straight to `main`.
 |---|---|---|---|---|
 | classroom-validate | `.github/workflows/classroom-validate.yml` | `pull_request` → `main` | **`classroom-validate`** | Unit tests, schema/roadmap, secret scan, wrangler `--dry-run` |
 | classroom-preview | `.github/workflows/classroom-preview.yml` | `pull_request` → `main` | **`classroom-preview`** | Generator sanity, welcome-page gates, Playwright smoke |
-| Deploy Cloudflare | `.github/workflows/deploy-cloudflare.yml` | `push` → `main` only | `cloudflare-deploy` | **Production deploy after merge** — never a required PR check |
+| Deploy Cloudflare | `.github/workflows/deploy-cloudflare.yml` | `push` → `main` only | `cloudflare-deploy` | **Production deploy after merge**: never a required PR check |
 
 ## Required ruleset on `main`
 
@@ -33,7 +33,7 @@ Automation must not push commits straight to `main`.
 - `contents: write` (push branches)
 - `pull-requests: write`
 - `checks: read` / `actions: read`
-- Cloudflare secrets stay in GitHub Actions secrets — never in git
+- Cloudflare secrets stay in GitHub Actions secrets: never in git
 
 ## Evidence retention
 
@@ -46,7 +46,7 @@ Automation must not push commits straight to `main`.
 
 - After merge to `main`: poll `gh pr view --json state,statusCheckRollup` then `gh run list --workflow deploy-cloudflare.yml` → conclusion `success`
 - Workers deploy job name: `cloudflare-deploy` (not a required PR check)
-- Rollback: redeploy prior known-good Worker via Actions/wrangler — **no force-push**
+- Rollback: redeploy prior known-good Worker via Actions/wrangler: **no force-push**
 - Record `known_good=$(git rev-parse HEAD)` before merge for rollback targeting
 
 ## Auto-merge path policy

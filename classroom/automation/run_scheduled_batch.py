@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scheduled entrypoint — global lock; resume existing PR; production when activated.
+"""Scheduled entrypoint: global lock; resume existing PR; production when activated.
 
 AM and late share the same lock with news. Duplicate same-slot starts resume one batch/PR.
 Numbering does not advance until deploy verification is recorded.
@@ -68,7 +68,7 @@ def main() -> int:
                 logger.event(
                     "blocked",
                     disposition="dry_run_blocks_schedule",
-                    message="DRY_RUN=1 — scheduled publish disabled.",
+                    message="DRY_RUN=1: scheduled publish disabled.",
                     batch_ids=class_ids,
                 )
                 save_slot_state(cfg, state)
