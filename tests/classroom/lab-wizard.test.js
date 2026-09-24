@@ -164,6 +164,10 @@ const clash = wiz.checkParts({ cpu: 'r5-7600', board: 'b550', ram: 'd5-32', gpu:
 assert.strictEqual(clash.tone, 'stop');
 const fit = wiz.checkParts({ cpu: 'r5-7600', board: 'b650', ram: 'd5-32', gpu: 'g12', psu: 'p750', case: 'atx' });
 assert.strictEqual(fit.tone, 'go');
+const picture = wiz.checkParts({ cpu: 'r5-7600', board: 'b650', ram: 'd5-32', gpu: 'none', psu: 'p650', case: 'atx' });
+assert.strictEqual(picture.tone, 'go');
+const noPicture = wiz.checkParts({ cpu: 'i5-12400f', board: 'b760-d5', ram: 'd5-32', gpu: 'none', psu: 'p750', case: 'atx' });
+assert.strictEqual(noPicture.tone, 'stop');
 const tight = wiz.checkParts({ cpu: 'r5-7600', board: 'b650', ram: 'd4-32', gpu: 'none', psu: 'p650', case: 'atx' });
 assert.strictEqual(tight.tone, 'stop');
 
