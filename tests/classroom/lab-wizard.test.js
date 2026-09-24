@@ -149,8 +149,8 @@ assert.ok(deep.plan.advanced.some(function (item) {
 assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('802.3at') !== -1; }));
 
 const shop = wiz.topicBoard(base({ side: 'linux', role: 'everyday', job: ['ai', 'games'], gpu: 8, games: 'aaa' }));
-assert.ok(shop.topics.some(function (topic) { return topic.id === 'ai' && topic.tone === 'go'; }));
-assert.ok(shop.topics.some(function (topic) { return topic.id === 'games' && topic.tone === 'wait'; }));
+assert.ok(shop.topics.some(function (topic) { return topic.id === 'ai' && topic.tone === 'go' && topic.covers.indexOf('Local AI') !== -1; }));
+assert.ok(shop.topics.some(function (topic) { return topic.id === 'games' && topic.tone === 'wait' && topic.covers.indexOf('Games') !== -1; }));
 assert.ok(shop.extras.some(function (item) { return item.name === 'NAS'; }));
 const clash = wiz.checkParts({ cpu: 'r5-7600', board: 'b550', ram: 'd5-32', gpu: 'none', psu: 'p650', case: 'atx' });
 assert.strictEqual(clash.tone, 'stop');
