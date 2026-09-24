@@ -88,7 +88,7 @@ jobs:
           cfg = load_config()
           existing = discover_existing_classes(cfg.pack_dir)
           idx = (site / "index.html").read_text(encoding="utf-8")
-          ids = sorted({int(n) for n in re.findall(r"classes/(\d{1,3})", idx)})
+          ids = sorted(n for n in {int(x) for x in re.findall(r"classes/(\d{1,3})", idx)} if n != 0)
           assert set(range(1, max(existing)+1)).issubset(set(existing.keys()))
           assert max(ids) == max(existing), (max(ids), max(existing))
           assert len(ids) == len(existing), (len(ids), len(existing))
