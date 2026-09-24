@@ -148,6 +148,27 @@ assert.ok(deep.plan.advanced.some(function (item) {
 }));
 assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('802.3at') !== -1; }));
 
+function walkTree(node, acc) {
+  acc.push(node);
+  (node.children || []).forEach(function (child) { walkTree(child, acc); });
+  return acc;
+}
+const lab = wiz.labBreakdown(base({ side: 'linux', role: 'server', job: ['files'], ram: 32, storage: 8000, flavor: 'proxmox', skill: 'ok' }));
+assert.strictEqual(lab.level, 'L1');
+assert.strictEqual(lab.title, 'Your lab');
+assert.ok(lab.children.some(function (child) { return child.title === 'Compute'; }));
+assert.ok(lab.children.some(function (child) { return child.title === 'Storage'; }));
+const labNames = walkTree(lab, []).map(function (node) { return node.title; }).join(' ');
+const hypervisor = walkTree(lab, []).filter(function (node) { return node.title === 'Hypervisor'; })[0];
+assert.ok(hypervisor);
+assert.ok(hypervisor.children.some(function (child) { return child.title === 'Proxmox' && child.line.indexOf('virtual computers') !== -1; }));
+assert.ok(labNames.indexOf('Windows') === -1);
+const drives = walkTree(lab, []).filter(function (node) { return node.title === 'Hard drives'; })[0];
+assert.ok(drives.sections.some(function (item) { return item.name === 'Trade study' && item.study.decision.indexOf('IronWolf') !== -1; }));
+const deskLab = wiz.labBreakdown(base({ side: 'win', role: 'everyday', job: ['games'], flavor: 'win' }));
+const deskNames = walkTree(deskLab, []).map(function (node) { return node.title; }).join(' ');
+assert.ok(deskNames.indexOf('Windows 11 Home') !== -1);
+assert.ok(deskNames.indexOf('Proxmox') === -1);
 const shop = wiz.topicBoard(base({ side: 'linux', role: 'everyday', job: ['ai', 'games'], gpu: 8, games: 'aaa' }));
 assert.ok(shop.topics.some(function (topic) { return topic.id === 'ai' && topic.tone === 'go' && topic.covers.indexOf('Local AI') !== -1; }));
 assert.ok(shop.topics.some(function (topic) { return topic.id === 'games' && topic.tone === 'wait' && topic.covers.indexOf('Games') !== -1; }));
