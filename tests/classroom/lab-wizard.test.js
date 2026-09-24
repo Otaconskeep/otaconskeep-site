@@ -95,6 +95,10 @@ assert.ok(winPlan.plan.keep.includes('does not install Plex'));
 assert.ok(winPlan.plan.path.some(function (line) { return line.includes('OtaconsKeep Lite'); }));
 assert.ok(winPlan.plan.guides.some(function (item) { return item.href.indexOf('youtu.be/OitYjPlbTng') !== -1; }));
 assert.ok(winPlan.plan.guides.some(function (item) { return item.href.indexOf('wiki.servarr.com') !== -1; }));
+assert.ok(winPlan.plan.lessons.filter(function (item) { return item.title.indexOf('Ollama') !== -1; })[0].steps.length >= 4);
+assert.ok(winPlan.plan.lessons.some(function (item) { return item.title.indexOf('Piper') !== -1 && item.paragraphs.join(' ').indexOf('two different jobs') !== -1; }));
+assert.ok(winPlan.plan.lessons.some(function (item) { return item.title.indexOf('Prowlarr') !== -1; }));
+assert.ok(winPlan.plan.lessons.some(function (item) { return item.steps.join(' ').indexOf('OTACON IS READY') !== -1; }));
 
 const gameLinux = wiz.explain(base({ side: 'linux', role: 'everyday', job: ['games'], skill: 'new', gpu: 8 }));
 assert.strictEqual(gameLinux.pick, 'bazzite');
