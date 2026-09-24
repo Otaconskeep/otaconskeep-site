@@ -1023,6 +1023,7 @@ def gen_hub():
  <p class="tag">01 // Stage gates</p>
  <h2>Pass each gate before the next unit</h2>
  <pre class="cr-diagram"><span class="hi">COURSE FLOW</span>
+Lesson 00     Build your own lab
 Classes 1–4   Infrastructure (Compose, networks, ops)
 Classes 5–7   ARR / Prowlarr / TRaSH / config sync
 Classes 8–10  Home Assistant + secure remote access
@@ -1043,7 +1044,7 @@ Class 15       IPv4 addressing → mask, gateway, usable hosts
   <a class="btn btn-ghost" href="modules/01-infrastructure/topics/01-virtualization/">Topic 1.1 path</a>
  </div>
  <div class="cr-course-grid" style="margin-top:22px;">
-{''.join(cards)}
+<a class="cr-course-card" href="classes/00.html"><div class="num">00</div><div><h3>Build your own lab</h3><p>Start here. Pick Windows, Linux, or Mac, then the build.</p><div class="meta">Lesson 00</div></div></a>{''.join(cards)}
  </div>
  </section>
 </div>
