@@ -387,7 +387,7 @@ def run_production_batch(cfg, slot: str, logger: JsonLogger) -> int:
                     return 5
             atomic_write_json(bundles_path, bundles)
 
-        # Critic with per-class repair (same class numbers — never skip ahead)
+        # Critic with per-class repair (same class numbers: never skip ahead)
         reviews = []
         for i, b in enumerate(list(bundles)):
             attempts = 0

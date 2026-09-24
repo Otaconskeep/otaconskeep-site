@@ -16,8 +16,8 @@ ALLOWED_GLOBS: tuple[str, ...] = (
     "classroom/pack/classes/**",
     "classroom/pack/modules/**",
     "classroom/pack/class_index.json",
-    "classroom/automation/class_index.json",  # approved index only
-    "classroom/automation/curriculum_manifest.json",  # approved manifest only
+    "classroom/automation/class_index.json", # approved index only
+    "classroom/automation/curriculum_manifest.json", # approved manifest only
     "classroom/classes/**",
     "classroom/modules/**",
     "classroom/references/**",
@@ -42,7 +42,7 @@ ALLOWED_GLOBS: tuple[str, ...] = (
     "classroom/classroom.js",
 )
 
-# Hard deny — even if somehow overlapping an allow pattern.
+# Hard deny: even if somehow overlapping an allow pattern.
 DENIED_GLOBS: tuple[str, ...] = (
     ".github/**",
     ".github/workflows/**",
@@ -118,7 +118,7 @@ def evaluate_paths(paths: list[str]) -> PathPolicyResult:
     """Return whether a PR touching exactly these paths may be auto-merged."""
     cleaned = sorted({_norm(p) for p in paths if p and p not in {".", "./"}})
     if not cleaned:
-        return PathPolicyResult(False, [], [], "empty diff — refuse auto-merge")
+        return PathPolicyResult(False, [], [], "empty diff: refuse auto-merge")
     allowed: list[str] = []
     denied: list[str] = []
     for p in cleaned:
@@ -131,9 +131,9 @@ def evaluate_paths(paths: list[str]) -> PathPolicyResult:
             False,
             allowed,
             denied,
-            "forbidden paths present — manual merge required",
+            "forbidden paths present: manual merge required",
         )
-    return PathPolicyResult(True, allowed, [], "lesson-content paths only — auto-merge permitted")
+    return PathPolicyResult(True, allowed, [], "lesson-content paths only: auto-merge permitted")
 
 
 def evaluate_git_diff_name_only(diff_text: str) -> PathPolicyResult:

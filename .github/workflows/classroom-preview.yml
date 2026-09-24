@@ -22,7 +22,7 @@ jobs:
       - name: Fail closed if CI force-fail fixture present
         run: |
           if [[ -f ci/FORCE_FAIL ]]; then
-            echo "::error::ci/FORCE_FAIL present — intentional fail fixture for ruleset proof"
+            echo "::error::ci/FORCE_FAIL present: intentional fail fixture for ruleset proof"
             exit 1
           fi
 

@@ -28,7 +28,7 @@ _SECRETISH = re.compile(
 _DANGEROUS_RM = re.compile(r"\brm\s+(-[a-zA-Z]*f[a-zA-Z]*|--force).*[/\*]|\bmkfs\b|\bdd\s+if=", re.I)
 # Allowed script src prefixes (same-origin relative or known site assets).
 _ALLOWED_WIDGET_MARKERS = (
-    "data-os=",  # existing OS command toggles in classroom chrome
+    "data-os=", # existing OS command toggles in classroom chrome
     "help_widget",
     "cr-osbar",
     "classroom.js",

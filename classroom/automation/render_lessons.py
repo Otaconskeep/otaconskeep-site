@@ -30,7 +30,7 @@ def render_class_markdown(bundle: dict[str, Any]) -> str:
     title = bundle["title"]
     obj = "; ".join(bundle["learning_objectives"])
     parts = [
-        f"# Class {n} — {title}",
+        f"# Class {n}: {title}",
         "",
         f"**Learning objective:** {obj}",
         f"**Bloom level:** Understand / Apply",
@@ -155,7 +155,7 @@ def render_module_activities(bundle: dict[str, Any], module_title: str, topic_co
     objective = bundle["learning_objectives"][0]
     reading = "\n".join(
         [
-            f"# Reading — {title}",
+            f"# Reading: {title}",
             "",
             f"**Module:** {module_title}",
             f"**Activity type:** Reading (Learn)",
@@ -185,7 +185,7 @@ def render_module_activities(bundle: dict[str, Any], module_title: str, topic_co
     )
     lesson = "\n".join(
         [
-            f"# Lesson {topic_code} — {title}",
+            f"# Lesson {topic_code}: {title}",
             "",
             f"**Module:** {module_title}",
             f"**Activity type:** Lesson (Orient → Recall → Learn → Explain → Reflect)",
@@ -231,7 +231,7 @@ def render_module_activities(bundle: dict[str, Any], module_title: str, topic_co
     )
     lab = "\n".join(
         [
-            f"# Lab — {title}",
+            f"# Lab: {title}",
             "",
             f"**Module:** {module_title}",
             f"**Activity type:** Lab (Practice)",
@@ -270,7 +270,7 @@ def render_module_activities(bundle: dict[str, Any], module_title: str, topic_co
     )
     homework = "\n".join(
         [
-            f"# Homework — {title}",
+            f"# Homework: {title}",
             "",
             f"**Module:** {module_title}",
             f"**Activity type:** Homework / independent application",
@@ -290,7 +290,7 @@ def render_module_activities(bundle: dict[str, Any], module_title: str, topic_co
     )
     quiz = "\n".join(
         [
-            f"# Quiz — {title}",
+            f"# Quiz: {title}",
             "",
             f"**Module:** {module_title}",
             f"**Activity type:** Quiz / retrieval practice",
@@ -347,7 +347,7 @@ def write_bundle_to_pack(cfg: Config, bundle: dict[str, Any], pack_root: Path) -
                 module_md,
                 "\n".join(
                     [
-                        f"# Module {int(mod['id'])} — {mod['title']}",
+                        f"# Module {int(mod['id'])}: {mod['title']}",
                         "",
                         "**Design chain:** Backward Design → Bloom’s Taxonomy → Learn / Practice / Test / Reflect → Mastery → Spiral Review",
                         "**Feynman teach-back is required in every lesson.**",
@@ -374,7 +374,7 @@ def write_bundle_to_pack(cfg: Config, bundle: dict[str, Any], pack_root: Path) -
                     ap,
                     "\n".join(
                         [
-                            f"# {heading} — {mod['title']}",
+                            f"# {heading}: {mod['title']}",
                             "",
                             f"**Module:** {mod['title']}",
                             "",

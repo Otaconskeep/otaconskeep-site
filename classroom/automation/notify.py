@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Operator notifications — never log webhook URLs or secrets."""
+"""Operator notifications: never log webhook URLs or secrets."""
 from __future__ import annotations
 
 import argparse

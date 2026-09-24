@@ -56,7 +56,7 @@ def desktop_mobile_checks(cfg, class_ids: list[int]) -> dict:
     """Heuristic page checks (chromium optional). Fail on missing files / obvious overflow CSS absences."""
     fails = []
     for n in class_ids:
-        # prefer module redirect target existence after build — class html redirect
+        # prefer module redirect target existence after build: class html redirect
         p = cfg.classroom_dir / "classes" / f"{n:02d}.html"
         if not p.is_file():
             # during dry-run before integrate, check staging only
@@ -222,14 +222,14 @@ def main() -> int:
                         message="Integrated locally for dry-run evidence; not committing/pushing",
                         changed=changed[:20],
                     )
-                    # For dry-run evidence we may integrate into a temp copy instead — if integrated live, warn
+                    # For dry-run evidence we may integrate into a temp copy instead: if integrated live, warn
                     if args.integrate and cfg.dry_run:
                         logger.event(
                             "note",
                             message="DRY_RUN integrate modified local pack workspace; review git status; do not push",
                         )
 
-            # manifest update ONLY when not dry-run and git success — skip here
+            # manifest update ONLY when not dry-run and git success: skip here
             report = {
                 "run_id": run_id,
                 "expected": expected,

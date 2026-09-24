@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Breakthrough news evaluator — fail closed; News Lab only; never touches core numbering."""
+"""Breakthrough news evaluator: fail closed; News Lab only; never touches core numbering."""
 from __future__ import annotations
 
 import argparse
@@ -49,7 +49,7 @@ def append_reject(cfg, fingerprint: str, reason: str, title: str) -> None:
 
 
 def news_lab_dir(cfg) -> Path:
-    """Separate dated News Lab / Breaking Lab area — not numbered core classes."""
+    """Separate dated News Lab / Breaking Lab area: not numbered core classes."""
     return cfg.classroom_dir / "news-lab"
 
 
@@ -77,7 +77,7 @@ def qualify_candidate(item: dict) -> tuple[bool, str]:
         return False, "not_ai_selfhost_or_homelab"
     if not item.get("practical_relevance"):
         return False, "missing_practical_relevance"
-    # Never invent significance — caller must set significant=True from verified evidence
+    # Never invent significance: caller must set significant=True from verified evidence
     if not item.get("significant"):
         return False, "not_marked_significant"
     sec = scan_text(blob, path="news_candidate")

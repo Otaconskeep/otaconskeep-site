@@ -23,7 +23,7 @@ def main() -> int:
     cfg = load_config()
 
     if args.demonstrate_fixture:
-        # Disposable fixture rollback demo — does not touch classroom pack
+        # Disposable fixture rollback demo: does not touch classroom pack
         demo = Path("/tmp/otaconskeep-classroom-dryrun/rollback_demo")
         demo.mkdir(parents=True, exist_ok=True)
         good = demo / "good.txt"
