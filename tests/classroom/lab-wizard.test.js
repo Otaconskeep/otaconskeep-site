@@ -134,6 +134,18 @@ assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(
 const adam = deep.plan.advanced.filter(function (item) { return item.title.indexOf('Adam') !== -1; })[0];
 assert.ok(adam.paragraphs.join(' ').indexOf('not a setting inside Ollama') !== -1);
 assert.ok(adam.paragraphs.join(' ').indexOf('0.999') !== -1);
+assert.ok(adam.paragraphs.join(' ').indexOf('m-hat') !== -1);
+assert.ok(deep.plan.advanced.some(function (item) {
+  return item.paragraphs.join(' ').indexOf('exp(z_i / T)') !== -1 && item.paragraphs.join(' ').indexOf('0.87') !== -1;
+}));
+assert.ok(deep.plan.advanced.some(function (item) {
+  var text = item.paragraphs.join(' ');
+  return text.indexOf('num_ctx') !== -1 && text.indexOf('2048') !== -1 && text.indexOf('0.045') !== -1;
+}));
+assert.ok(deep.plan.advanced.some(function (item) {
+  var text = item.paragraphs.join(' ') + ' ' + (item.steps || []).join(' ');
+  return text.indexOf('ollama create') !== -1 && text.indexOf('SYSTEM') !== -1 && text.indexOf('few-shot') !== -1;
+}));
 assert.ok(deep.plan.advanced.some(function (item) { return item.paragraphs.join(' ').indexOf('802.3at') !== -1; }));
 
 console.log('lab wizard tests ok');
