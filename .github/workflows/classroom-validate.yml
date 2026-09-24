@@ -125,7 +125,7 @@ jobs:
           print("canonical", CANONICAL)
           PY
 
-      - name: Security: no secrets in workflow tree
+      - name: "Security. no secrets in workflow tree"
         run: |
           # Scan real config/code; ignore unit-test fixtures that intentionally embed fake secrets.
           if grep -RInE '(api[_-]?key|secret|token|password)\s*[:=]\s*["'\'']?[A-Za-z0-9_\-]{16,}' \
