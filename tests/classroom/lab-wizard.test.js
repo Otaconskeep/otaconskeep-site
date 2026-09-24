@@ -54,6 +54,21 @@ const card = wiz.explain(base({ side: 'linux', gpu: 6, flavor: 'mint' }));
 assert.ok(card.hardware.models.includes('7-billion'));
 assert.ok(!card.hardware.models.includes('70-billion'));
 
+const gpuStep = wiz.stepsFor({ side: 'win' }).filter(function (s) { return s.id === 'gpu'; })[0];
+assert.deepStrictEqual(gpuStep.choices.map(function (choice) { return choice.value; }).slice(0, 4), ['none', 1, 2, 4]);
+
+const oneGig = wiz.explain(base({ side: 'win', gpu: 1, flavor: 'win' }));
+assert.ok(oneGig.hardware.gpuLabel.includes('1 GB'));
+assert.ok(!oneGig.hardware.models.includes('7-billion'));
+
+const twoGig = wiz.explain(base({ side: 'win', gpu: 2, flavor: 'win' }));
+assert.ok(twoGig.hardware.models.includes('2 GB cannot'));
+assert.ok(twoGig.hardware.models.includes('several times'));
+
+const fourGig = wiz.explain(base({ side: 'win', gpu: 4, flavor: 'win' }));
+assert.ok(fourGig.hardware.gpuLabel.includes('3 or 4'));
+assert.ok(fourGig.hardware.models.includes('does not fit'));
+
 const mac = wiz.explain(base({ side: 'mac', role: 'everyday', ram: 16, flavor: 'mac' }));
 assert.ok(mac.hardware.models.includes('unified memory'));
 assert.ok(mac.hardware.models.toLowerCase().includes('cuda'));
