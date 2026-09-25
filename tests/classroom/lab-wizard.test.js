@@ -190,6 +190,15 @@ const tightLab = wiz.labBreakdown(base({ side: 'linux', role: 'server', job: ['f
 assert.ok(tightLab.model.conflict);
 assert.ok(tightLab.model.conflict.minimum > 200);
 assert.ok(tightLab.model.conflict.lines.join(' ').indexOf('cannot be built') !== -1);
+assert.strictEqual(tightLab.model.switchPick.decision, 'Managed PoE');
+assert.strictEqual(tightLab.model.switchPick.demand.poeClients, 1);
+assert.strictEqual(tightLab.model.switchPick.demand.poeWatts, 15.4);
+assert.ok(tightLab.model.switchPick.demand.ports >= 3);
+assert.ok(tightLab.model.switchPick.demand.lines.join(' ').indexOf('Cameras are not in this count') !== -1);
+assert.strictEqual(tightLab.model.fit.tone, 'go');
+assert.strictEqual(tightLab.model.fit.cpu.name, 'AMD Ryzen 5 7600');
+assert.ok(walkTree(tightLab, []).some(function (node) { return node.title === 'AMD Ryzen 5 7600' && node.level === 'L5'; }));
+assert.ok(walkTree(tightLab, []).some(function (node) { return node.title === 'Managed PoE' && node.line.indexOf('15.4') !== -1; }));
 assert.strictEqual(lab.model.raid.pick, 'Mirror pairs');
 assert.strictEqual(lab.model.raid.disks, 2);
 const big = wiz.labBreakdown(base({ side: 'linux', role: 'server', job: ['files'], storage: 16000, ram: 32, flavor: 'proxmox', skill: 'ok' }));
