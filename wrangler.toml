@@ -1,7 +1,12 @@
 name = "otaconskeep-site"
 compatibility_date = "2026-09-15"
 workers_dev = true
+main = "worker.js"
 
 [assets]
 directory = "."
+binding = "ASSETS"
 not_found_handling = "404-page"
+
+[ai]
+binding = "AI"
