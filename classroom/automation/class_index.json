@@ -102,6 +102,24 @@
     "45": {
       "redirect": "10-sonarr-radarr/topics/06-radarr-installation-and-first-configuration/lesson.html"
     },
+    "46": {
+      "redirect": "10-sonarr-radarr/topics/07-radarr-monitoring-and-availability/lesson.html"
+    },
+    "47": {
+      "redirect": "10-sonarr-radarr/topics/08-radarr-quality-profiles-searching-and-importing/lesson.html"
+    },
+    "48": {
+      "redirect": "10-sonarr-radarr/topics/09-radarr-naming-and-movie-library-hygiene/lesson.html"
+    },
+    "49": {
+      "redirect": "11-downloaders/topics/01-qbittorrent-installation-and-safe-configuration/lesson.html"
+    },
+    "50": {
+      "redirect": "11-downloaders/topics/02-download-categories-paths-and-arr-integration/lesson.html"
+    },
+    "51": {
+      "redirect": "11-downloaders/topics/03-vpn-binding-kill-switches-and-leak/lesson.html"
+    },
     "52": {
       "redirect": "11-downloaders/topics/04-sabnzbd-and-usenet-downloading/lesson.html"
     },
@@ -121,5 +139,5 @@
       "redirect": "12-media-servers/topics/02-plex-installation-and-library-design/lesson.html"
     }
   },
-  "updated_at": "2026-09-25T11:11:00Z"
+  "updated_at": "2026-09-25T11:55:00Z"
 }
