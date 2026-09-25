@@ -248,4 +248,41 @@ assert.strictEqual(noPicture.tone, 'stop');
 const tight = wiz.checkParts({ cpu: 'r5-7600', board: 'b650', ram: 'd4-32', gpu: 'none', psu: 'p650', case: 'atx' });
 assert.strictEqual(tight.tone, 'stop');
 
+const emptyBuild = wiz.settleBuild(tightLab, { version: 1, items: {} });
+assert.strictEqual(emptyBuild.actualBuild.items.length, 0);
+assert.ok(emptyBuild.recommendedBuild.items.some(function (item) { return item.title.indexOf('7600') !== -1 && item.state === 'recommended'; }));
+assert.strictEqual(emptyBuild.budget.known, 0);
+assert.strictEqual(emptyBuild.budget.unpriced, 0);
+assert.strictEqual(emptyBuild.budget.status, 'complete');
+assert.ok(emptyBuild.budget.line.indexOf('Known remaining') === 0);
+assert.ok(emptyBuild.readiness.missing.indexOf('CPU') !== -1);
+assert.ok(emptyBuild.readiness.unresolved.indexOf('Backup target not equipped') !== -1);
+assert.ok(emptyBuild.readiness.percent < 100);
+
+const unpriced = wiz.settleBuild(tightLab, { version: 1, items: { 'drive-pick': { state: 'equipped', quantity: 1, actual: null } } });
+assert.strictEqual(unpriced.budget.unpriced, 1);
+assert.strictEqual(unpriced.budget.known, 0);
+assert.strictEqual(unpriced.budget.status, 'incomplete');
+assert.ok(unpriced.budget.line.indexOf('At least $') === 0);
+assert.ok(unpriced.budget.line.indexOf('not yet priced') !== -1);
+assert.ok(unpriced.budget.line.indexOf('Known remaining') === -1);
+assert.ok(unpriced.actualBuild.items.some(function (item) { return item.id === 'drive-pick' && item.state === 'equipped'; }));
+assert.ok(!unpriced.recommendedBuild.items.some(function (item) { return item.id === 'drive-pick'; }));
+
+const cpu = walkTree(tightLab, []).filter(function (node) { return node.title.indexOf('7600') !== -1; })[0];
+const equippedCpu = wiz.settleBuild(tightLab, { version: 1, items: { [cpu.id]: { state: 'equipped', quantity: 1, actual: null } } });
+assert.ok(equippedCpu.budget.known >= 100);
+assert.strictEqual(equippedCpu.budget.unpriced, 0);
+assert.strictEqual(equippedCpu.budget.status, 'complete');
+assert.ok(equippedCpu.readiness.missing.indexOf('CPU') === -1);
+const ownedCpu = wiz.settleBuild(tightLab, { version: 1, items: { [cpu.id]: { state: 'owned', quantity: 1, actual: null } } });
+assert.strictEqual(ownedCpu.budget.known, 0);
+assert.strictEqual(ownedCpu.budget.unpriced, 0);
+assert.ok(ownedCpu.actualBuild.items.some(function (item) { return item.id === cpu.id && item.state === 'owned'; }));
+const restored = wiz.settleBuild(tightLab, { version: 1, name: 'PROJECT WARDEN', items: { [cpu.id]: { state: 'owned', quantity: 1, actual: null }, 'drive-pick': { state: 'equipped', quantity: 1, actual: 180 } } });
+assert.strictEqual(restored.name, 'PROJECT WARDEN');
+assert.strictEqual(restored.budget.known, 180);
+assert.strictEqual(restored.budget.unpriced, 0);
+assert.strictEqual(restored.budget.status, 'complete');
+
 console.log('lab wizard tests ok');
