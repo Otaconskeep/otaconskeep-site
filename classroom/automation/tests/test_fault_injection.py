@@ -185,7 +185,17 @@ class FaultInjectionTests(unittest.TestCase):
         self.assertGreaterEqual(max(existing), 21)
         nxt = next_core_batch(self.cfg)
         ids = [b["class_id"] for b in nxt]
-        if all(n in existing for n in range(34, 46)):
+        if all(n in existing for n in range(52, 58)):
+            self.assertEqual(ids, [58, 59, 60, 61, 62, 63])
+            batches = next_expected_batches(57)
+            self.assertEqual(batches["next"], [58, 59, 60, 61, 62, 63])
+            self.assertEqual(batches["following"], [64, 65, 66, 67, 68, 69])
+        elif all(n in existing for n in range(46, 52)):
+            self.assertEqual(ids, [52, 53, 54, 55, 56, 57])
+            batches = next_expected_batches(51)
+            self.assertEqual(batches["next"], [52, 53, 54, 55, 56, 57])
+            self.assertEqual(batches["following"], [58, 59, 60, 61, 62, 63])
+        elif all(n in existing for n in range(34, 46)):
             self.assertEqual(ids, [46, 47, 48, 49, 50, 51])
             batches = next_expected_batches(45)
             self.assertEqual(batches["next"], [46, 47, 48, 49, 50, 51])

@@ -58,7 +58,13 @@ class ExpandedTests(unittest.TestCase):
         existing = discover_existing_classes(self.cfg.pack_dir)
         batch = next_core_batch(self.cfg)
         ids = [b["class_id"] for b in batch]
-        if all(n in existing for n in range(34, 46)):
+        if all(n in existing for n in range(52, 58)):
+            self.assertEqual(ids, [58, 59, 60, 61, 62, 63])
+            self.assertIn("Jellyfin", batch[0]["title"])
+        elif all(n in existing for n in range(46, 52)):
+            self.assertEqual(ids, [52, 53, 54, 55, 56, 57])
+            self.assertIn("SABnzbd", batch[0]["title"])
+        elif all(n in existing for n in range(34, 46)):
             self.assertEqual(ids, [46, 47, 48, 49, 50, 51])
             self.assertIn("Radarr Monitoring", batch[0]["title"])
         elif all(n in existing for n in range(34, 40)):
