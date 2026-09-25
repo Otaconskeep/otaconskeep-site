@@ -31,19 +31,19 @@ assert.ok(wiz.stepsFor(base({ job: ['games', 'photos'] })).some(function (s) { r
 assert.ok(!wiz.stepsFor({ side: 'mac' }).some(function (s) { return s.id === 'gpu'; }), 'Mac skips the NVIDIA card question');
 assert.ok(wiz.stepsFor({ side: 'win' }).some(function (s) { return s.id === 'gpu'; }));
 
-assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'new' }), ['mint']);
-assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'new', job: ['games'] }), ['bazzite', 'mint']);
-assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'ok', job: ['games'] }), ['bazzite', 'mint', 'omarchy']);
+assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'new' }), ['mint', 'omarchy', 'proxmox', 'esxi', 'virtualbox']);
+assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'new', job: ['games'] }), ['bazzite', 'mint', 'omarchy', 'proxmox', 'esxi', 'virtualbox']);
+assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'ok', job: ['games'] }), ['bazzite', 'mint', 'omarchy', 'proxmox', 'esxi', 'virtualbox']);
 assert.ok(!ids({ side: 'linux', role: 'server', ram: 64, job: ['games', 'movies'] }).includes('bazzite'));
-assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'ok' }), ['mint', 'omarchy']);
-assert.deepStrictEqual(ids({ side: 'linux', role: 'server', skill: 'new', ram: 16 }), ['ubuntu']);
+assert.deepStrictEqual(ids({ side: 'linux', role: 'everyday', skill: 'ok' }), ['mint', 'omarchy', 'proxmox', 'esxi', 'virtualbox']);
+assert.deepStrictEqual(ids({ side: 'linux', role: 'server', skill: 'new', ram: 16 }), ['ubuntu', 'omarchy', 'proxmox', 'esxi', 'virtualbox']);
 assert.ok(ids({ side: 'linux', role: 'server', skill: 'ok', ram: 64, job: 'movies' }).includes('proxmox'));
 assert.ok(!ids({ side: 'linux', role: 'server', ram: 16 }).includes('mint'));
 assert.ok(ids({ side: 'linux', role: 'server', skill: 'ok', ram: 8, job: 'smart' }).includes('alpine'));
 assert.ok(!ids({ side: 'linux', role: 'server', skill: 'ok', ram: 8, job: ['smart', 'games'] }).includes('alpine'));
 
-assert.deepStrictEqual(ids({ side: 'win', role: 'everyday' }), ['win', 'winpro']);
-assert.deepStrictEqual(ids({ side: 'mac', role: 'server' }), ['macmini']);
+assert.deepStrictEqual(ids({ side: 'win', role: 'everyday' }), ['win', 'winpro', 'virtualbox']);
+assert.deepStrictEqual(ids({ side: 'mac', role: 'server' }), ['macmini', 'virtualbox']);
 assert.ok(ids({ side: 'mac', role: 'both', skill: 'lab' }).includes('maclab'));
 
 const mint = wiz.explain(base({ flavor: 'mint' }));
@@ -51,7 +51,9 @@ assert.strictEqual(mint.pick, 'mint');
 assert.ok(mint.profile.build.includes('Friendly'));
 
 const forced = wiz.explain(base({ side: 'linux', role: 'server', ram: 16, flavor: 'proxmox' }));
-assert.strictEqual(forced.pick, 'ubuntu', 'a 16 GB closet box cannot sneak into Proxmox');
+assert.strictEqual(forced.pick, 'proxmox', 'Proxmox stays available at 16 GB when the user chooses it');
+assert.ok(forced.labLine.indexOf('tight') !== -1);
+assert.strictEqual(wiz.explain(base({ side: 'linux', role: 'server', ram: 16, skill: 'new' })).pick, 'ubuntu');
 
 const card = wiz.explain(base({ side: 'linux', gpu: 6, flavor: 'mint' }));
 assert.ok(card.hardware.models.includes('7-billion'));
