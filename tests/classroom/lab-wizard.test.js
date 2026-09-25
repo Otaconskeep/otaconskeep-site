@@ -177,7 +177,11 @@ assert.ok(hypervisor.children.some(function (child) { return child.title === 'Pr
 assert.ok(labNames.indexOf('Windows') === -1);
 const drives = walkTree(lab, []).filter(function (node) { return node.title === 'Hard drives'; })[0];
 assert.strictEqual(drives.level, 'L4');
-assert.ok(drives.children[0].sections.some(function (item) { return item.name === 'Trade study' && item.study.decision.indexOf('IronWolf') !== -1; }));
+assert.ok(drives.children[0].sections.some(function (item) {
+  return item.name === 'Trade study' && item.study.decision === 'Red Pro 8TB' && item.study.rows.some(function (row) {
+    return row.name.indexOf('IronWolf') !== -1 && row.result === 'Qualifies';
+  });
+}));
 const aiLab = wiz.labBreakdown(base({ side: 'linux', role: 'everyday', job: ['ai'], flavor: 'mint' }));
 assertLevels(aiLab);
 const ollama = walkTree(aiLab, []).filter(function (node) { return node.title === 'Ollama'; })[0];
@@ -253,9 +257,10 @@ assert.strictEqual(emptyBuild.actualBuild.items.length, 0);
 assert.ok(emptyBuild.recommendedBuild.items.some(function (item) { return item.title.indexOf('7600') !== -1 && item.state === 'recommended'; }));
 assert.strictEqual(emptyBuild.budget.known, 0);
 assert.strictEqual(emptyBuild.budget.unpriced, 0);
-assert.strictEqual(emptyBuild.budget.status, 'complete');
+assert.strictEqual(emptyBuild.budget.status, 'priced');
 assert.ok(emptyBuild.budget.line.indexOf('Known remaining') === 0);
-assert.ok(emptyBuild.readiness.missing.indexOf('CPU') !== -1);
+assert.ok(emptyBuild.readiness.missing.indexOf('cpu') !== -1);
+assert.ok(emptyBuild.readiness.missing.indexOf('storage-layout') !== -1);
 assert.ok(emptyBuild.readiness.unresolved.indexOf('Backup target not equipped') !== -1);
 assert.ok(emptyBuild.readiness.percent < 100);
 
@@ -263,9 +268,10 @@ const unpriced = wiz.settleBuild(tightLab, { version: 1, items: { 'drive-pick': 
 assert.strictEqual(unpriced.budget.unpriced, 1);
 assert.strictEqual(unpriced.budget.known, 0);
 assert.strictEqual(unpriced.budget.status, 'incomplete');
-assert.ok(unpriced.budget.line.indexOf('At least $') === 0);
-assert.ok(unpriced.budget.line.indexOf('not yet priced') !== -1);
-assert.ok(unpriced.budget.line.indexOf('Known remaining') === -1);
+assert.ok(unpriced.budget.line.indexOf('$200 remains before unpriced items.') === 0);
+assert.ok(unpriced.budget.line.indexOf('Final remaining: UNKNOWN.') !== -1);
+assert.ok(unpriced.budget.line.indexOf('At least') === -1);
+assert.strictEqual(unpriced.budget.finalRemaining, null);
 assert.ok(unpriced.actualBuild.items.some(function (item) { return item.id === 'drive-pick' && item.state === 'equipped'; }));
 assert.ok(!unpriced.recommendedBuild.items.some(function (item) { return item.id === 'drive-pick'; }));
 
@@ -273,7 +279,7 @@ const cpu = walkTree(tightLab, []).filter(function (node) { return node.title.in
 const equippedCpu = wiz.settleBuild(tightLab, { version: 1, items: { [cpu.id]: { state: 'equipped', quantity: 1, actual: null } } });
 assert.ok(equippedCpu.budget.known >= 100);
 assert.strictEqual(equippedCpu.budget.unpriced, 0);
-assert.strictEqual(equippedCpu.budget.status, 'complete');
+assert.strictEqual(equippedCpu.budget.status, 'priced');
 assert.ok(equippedCpu.readiness.missing.indexOf('CPU') === -1);
 const ownedCpu = wiz.settleBuild(tightLab, { version: 1, items: { [cpu.id]: { state: 'owned', quantity: 1, actual: null } } });
 assert.strictEqual(ownedCpu.budget.known, 0);
@@ -283,6 +289,35 @@ const restored = wiz.settleBuild(tightLab, { version: 1, name: 'PROJECT WARDEN',
 assert.strictEqual(restored.name, 'PROJECT WARDEN');
 assert.strictEqual(restored.budget.known, 180);
 assert.strictEqual(restored.budget.unpriced, 0);
-assert.strictEqual(restored.budget.status, 'complete');
+assert.strictEqual(restored.budget.status, 'priced');
+const four = wiz.labBreakdown(base({ side: 'linux', role: 'server', job: ['files'], storage: 16000, ram: 32, flavor: 'proxmox', skill: 'ok', budget: 1200 }));
+const diskBuy = wiz.settleBuild(four, { version: 1, items: { 'datadisks-pick': { state: 'equipped' } } });
+const diskRow = diskBuy.actualBuild.items.filter(function (item) { return item.id === 'datadisks-pick'; })[0];
+assert.strictEqual(diskRow.quantity, 4);
+assert.strictEqual(diskRow.planning, 150);
+assert.strictEqual(diskBuy.budget.known, 600);
+const twoDisks = wiz.settleBuild(four, { version: 1, items: { 'datadisks-pick': { state: 'equipped', quantity: 2 } } });
+assert.strictEqual(twoDisks.budget.known, 300);
+const deskReady = wiz.settleBuild(deskLab, { version: 1, items: {} });
+assert.ok(deskReady.readiness.missing.indexOf('storage-layout') === -1);
+assert.strictEqual(deskReady.readiness.percent, 100);
+const sized = wiz.sizeSwitch({ wired: 8, cameras: 4, aps: 2, otherPoe: 1, speed: '2.5', uplink10: true });
+assert.strictEqual(sized.minimumPorts, 17);
+assert.strictEqual(sized.recommendedPorts, 24);
+assert.strictEqual(sized.poePorts, 7);
+assert.strictEqual(sized.poeWatts, 107.8);
+assert.strictEqual(sized.poeReserveWatts, 135);
+assert.strictEqual(sized.vlans, true);
+const catalog = require('../../classroom/modules/00-pick-your-lab/catalog/hdd.json');
+assert.deepStrictEqual(catalog.map(function (item) { return item.id; }), wiz.hddCatalog().map(function (item) { return item.id; }));
+assert.ok(catalog.every(function (item) { return item.price_per_unit == null; }));
+assert.strictEqual(wiz.acceptImport({ version: 1, answers: { side: 'linux' }, items: {} }), '');
+assert.ok(wiz.acceptImport({ version: 2, answers: {}, items: {} }));
+assert.ok(wiz.acceptImport({ version: 1, answers: {}, items: { cpu: { state: 'bought' } } }));
+const mixed = wiz.settleBuild(tightLab, { version: 1, items: { 'drive-pick': { state: 'equipped' }, 'cat6-pick': { state: 'equipped' } } });
+assert.strictEqual(mixed.groups.Storage.unpriced, 1);
+assert.strictEqual(mixed.groups.Storage.known, 0);
+assert.ok(mixed.groups.Networking.known >= 15);
+assert.strictEqual(mixed.groups.Networking.unpriced, 0);
 
 console.log('lab wizard tests ok');
