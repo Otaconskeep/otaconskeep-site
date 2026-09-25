@@ -101,7 +101,25 @@
     },
     "45": {
       "redirect": "10-sonarr-radarr/topics/06-radarr-installation-and-first-configuration/lesson.html"
+    },
+    "52": {
+      "redirect": "11-downloaders/topics/04-sabnzbd-and-usenet-downloading/lesson.html"
+    },
+    "53": {
+      "redirect": "11-downloaders/topics/05-indexers-trackers-and-usenet-providers/lesson.html"
+    },
+    "54": {
+      "redirect": "11-downloaders/topics/06-prowlarr-installation-and-indexer-management/lesson.html"
+    },
+    "55": {
+      "redirect": "11-downloaders/topics/07-connecting-prowlarr-to-sonarr-and-radarr/lesson.html"
+    },
+    "56": {
+      "redirect": "12-media-servers/topics/01-jellyseerr-or-overseerr-request-management/lesson.html"
+    },
+    "57": {
+      "redirect": "12-media-servers/topics/02-plex-installation-and-library-design/lesson.html"
     }
   },
-  "updated_at": "2026-09-24T12:20:00Z"
+  "updated_at": "2026-09-25T11:11:00Z"
 }
