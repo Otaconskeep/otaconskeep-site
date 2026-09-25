@@ -190,6 +190,11 @@ const tightLab = wiz.labBreakdown(base({ side: 'linux', role: 'server', job: ['f
 assert.ok(tightLab.model.conflict);
 assert.ok(tightLab.model.conflict.minimum > 200);
 assert.ok(tightLab.model.conflict.lines.join(' ').indexOf('cannot be built') !== -1);
+assert.strictEqual(tightLab.model.gateway.decision, 'TP-Link Omada gateway');
+assert.strictEqual(tightLab.model.gateway.ideal, 'UniFi Dream Machine Pro');
+assert.ok(tightLab.model.forecast.some(function (rung) { return rung.spend === 350 && rung.fits === false && rung.line.indexOf('UniFi') !== -1; }));
+assert.ok(tightLab.model.forecast.some(function (rung) { return rung.spend === 150 && rung.fits === true && rung.line.indexOf('Omada') !== -1; }));
+assert.ok(tightLab.model.forecast.some(function (rung) { return rung.spend === 200 && rung.line.indexOf('closed until you can fix') !== -1; }));
 assert.strictEqual(tightLab.model.switchPick.decision, 'Managed PoE');
 assert.strictEqual(tightLab.model.switchPick.demand.poeClients, 1);
 assert.strictEqual(tightLab.model.switchPick.demand.poeWatts, 15.4);
