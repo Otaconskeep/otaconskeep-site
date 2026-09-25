@@ -75,12 +75,18 @@ async function handleChat(request, env) {
   ];
 
   try {
-    const result = await env.AI.run("@cf/meta/llama-3.1-8b-instruct-fp8", {
+    const stream = await env.AI.run("@cf/meta/llama-3.1-8b-instruct-fp8", {
       messages,
       max_tokens: 400,
+      stream: true,
     });
-    const reply = result?.response || "Sorry, I didn't get a response — try again in a moment.";
-    return new Response(JSON.stringify({ reply }), { status: 200, headers });
+    // Workers AI streaming already returns OpenAI-style SSE
+    // ("data: {...}\n\n" chunks, "data: [DONE]\n\n" at the end) — pass it
+    // straight through instead of buffering the whole reply first.
+    return new Response(stream, {
+      status: 200,
+      headers: { ...headers, "Content-Type": "text/event-stream" },
+    });
   } catch (err) {
     return new Response(JSON.stringify({ error: "ai_error", detail: String(err) }), { status: 502, headers });
   }
