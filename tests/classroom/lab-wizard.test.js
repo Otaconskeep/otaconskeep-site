@@ -21,7 +21,7 @@ function ids(partial) {
   return wiz.flavorChoices(base(partial)).map(function (choice) { return choice.value; });
 }
 
-assert.deepStrictEqual(wiz.stepsFor({}).map(function (s) { return s.id; })[0], 'side');
+assert.deepStrictEqual(wiz.stepsFor({}).map(function (s) { return s.id; })[0], 'mode');
 
 const jobStep = wiz.stepsFor({}).filter(function (s) { return s.id === 'job'; })[0];
 assert.strictEqual(jobStep.multi, true);
@@ -60,7 +60,7 @@ assert.ok(card.hardware.models.includes('7-billion'));
 assert.ok(!card.hardware.models.includes('70-billion'));
 
 const gpuStep = wiz.stepsFor({ side: 'win' }).filter(function (s) { return s.id === 'gpu'; })[0];
-assert.deepStrictEqual(gpuStep.choices.map(function (choice) { return choice.value; }).slice(0, 4), ['none', 1, 2, 4]);
+assert.deepStrictEqual(gpuStep.choices.map(function (choice) { return choice.value; }).slice(0, 5), ['unsure', 'none', 1, 2, 4]);
 
 const oneGig = wiz.explain(base({ side: 'win', gpu: 1, flavor: 'win' }));
 assert.ok(oneGig.hardware.gpuLabel.includes('1 GB'));
