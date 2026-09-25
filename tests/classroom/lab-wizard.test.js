@@ -182,6 +182,15 @@ const aiLab = wiz.labBreakdown(base({ side: 'linux', role: 'everyday', job: ['ai
 assertLevels(aiLab);
 const ollama = walkTree(aiLab, []).filter(function (node) { return node.title === 'Ollama'; })[0];
 assert.strictEqual(ollama.level, 'L5');
+assert.strictEqual(ollama.kind, 'free-software');
+assert.ok(!ollama.sections.some(function (item) { return item && item.slot === 'buy'; }));
+assert.strictEqual(lab.model.gateway.decision, 'OPNsense appliance');
+assert.strictEqual(lab.model.raid.pick, 'Mirror pairs');
+assert.strictEqual(lab.model.raid.disks, 2);
+const big = wiz.labBreakdown(base({ side: 'linux', role: 'server', job: ['files'], storage: 16000, ram: 32, flavor: 'proxmox', skill: 'ok' }));
+assert.strictEqual(big.model.raid.pick, 'RAIDZ2');
+assert.strictEqual(big.model.raid.disks, 4);
+assert.ok(big.model.summary.join(' ').indexOf('does not invent') !== -1);
 const deskLab = wiz.labBreakdown(base({ side: 'win', role: 'everyday', job: ['games'], flavor: 'win' }));
 assertLevels(deskLab);
 const deskNames = walkTree(deskLab, []).map(function (node) { return node.title; }).join(' ');
