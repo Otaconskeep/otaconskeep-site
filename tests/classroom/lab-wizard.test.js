@@ -196,6 +196,11 @@ assert.ok(tightLab.model.forecast.some(function (rung) { return rung.spend === 3
 assert.ok(tightLab.model.forecast.some(function (rung) { return rung.spend === 150 && rung.fits === true && rung.line.indexOf('Omada') !== -1; }));
 assert.ok(tightLab.model.forecast.some(function (rung) { return rung.spend === 200 && rung.line.indexOf('closed until you can fix') !== -1; }));
 assert.strictEqual(tightLab.model.switchPick.decision, 'Managed PoE');
+assert.strictEqual(tightLab.sheet.klass, 'Closet server');
+assert.ok(tightLab.sheet.slots.some(function (slot) { return slot.slot === 'CPU' && slot.item.indexOf('7600') !== -1 && slot.status === 'selected'; }));
+assert.ok(tightLab.sheet.slots.some(function (slot) { return slot.slot === 'Gateway' && slot.item.indexOf('Omada') !== -1; }));
+assert.ok(tightLab.sheet.slots.some(function (slot) { return slot.slot === 'Wi-Fi' && slot.noteOnly; }));
+assert.ok(tightLab.sheet.priceNote.indexOf('do not change when a store changes its price') !== -1);
 assert.strictEqual(tightLab.model.switchPick.demand.poeClients, 1);
 assert.strictEqual(tightLab.model.switchPick.demand.poeWatts, 15.4);
 assert.ok(tightLab.model.switchPick.demand.ports >= 3);
