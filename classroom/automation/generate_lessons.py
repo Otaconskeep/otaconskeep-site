@@ -35,6 +35,7 @@ Array typing rules (strict):
 - lab_risk: exactly one of low|medium|high (lowercase single word)
 If the lesson mentions sshd_config, rm -rf, chmod 777, firewall tools, or curl|sh, include a complete
 dangerous_commands entry for each controlled use. Labs mutate ONLY /opt/lab-classroom/class{class_id}/.
+Style: never use an em dash (—). Use a comma, period, colon, or a plain hyphen instead.
 """
 
 
@@ -126,7 +127,18 @@ def normalize_bundle(bundle: dict) -> dict:
         m = __import__("re").search(r"(\d{4}-\d{2}-\d{2})", lr)
         if m:
             bundle["last_reviewed"] = m.group(1)
-    return bundle
+    return _strip_em_dashes(bundle)
+
+
+def _strip_em_dashes(obj):
+    """Writers drift back to em dashes despite the style rule; scrub them as a safety net."""
+    if isinstance(obj, str):
+        return obj.replace(" — ", " - ").replace("—", "-")
+    if isinstance(obj, list):
+        return [_strip_em_dashes(item) for item in obj]
+    if isinstance(obj, dict):
+        return {k: _strip_em_dashes(v) for k, v in obj.items()}
+    return obj
 
 
 def generate_one(cfg, class_id: int, title: str, logger: JsonLogger) -> dict:
