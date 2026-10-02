@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05-tailscale-for-homelab-remote-access: Lab · Classroom</title>
+<meta name="description" content="05-tailscale-for-homelab-remote-access: Lab">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/13-access-edge/topics/05-tailscale-for-homelab-remote-access/lab.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M13 LAB<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M13 LAB<small>lab</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-lab">Hands-on</span> 05-tailscale-for-homelab-remote-access: Lab</h1>
+ <p class="lede">Guided practice + break/fix + lab gate.</p>
+ <div class="cr-osbar" role="group" aria-label="Command host">
+ <span>Show commands for:</span>
+ <button type="button" class="win" data-os="win" aria-pressed="false">Windows</button>
+ <button type="button" class="lin" data-os="lin" aria-pressed="true">Linux / macOS</button>
+</div>
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Edge Access &amp; VPN<br />
+<strong>Activity type:</strong> Lab (Practice)<br />
+<strong>Lab risk:</strong> low<br />
+<strong>Objective:</strong> Explain how Tailscale separates its coordination control plane from its encrypted data plane</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Before you start</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Basic understanding of IPv4 addressing, private subnets, routing, DNS, and network ports</li>
+<li>Basic Linux command-line experience</li>
+<li>Ability to distinguish authentication from authorization</li>
+<li>Familiarity with JSON and simple Python commands</li>
+<li>A conceptual understanding of remote-access VPNs</li>
+<li>Optional access to an existing Tailscale account for comparing the lesson design with a real tailnet; no account is required for the lab</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An IP address is how devices find each other on a network. The mask tells which part is the ‘street’ and which part is the ‘house number.’</div>
+ 
+</div></div></div><div class="cr-box cr-box-lab" id="lab"><div class="cr-box-head"><span class="cr-chip cr-chip-lab">Hands-on</span><h3>Guided lab</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do these steps in order, one time, without skipping. Each step should leave proof you can show later.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> If a step fails, stop and use Break/fix instead of inventing a new path.</div>
+</div><div class="cr-lab-path"><h4>name</h4><p>Design and validate a least-privilege Tailscale rollout</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Design and validate a least-privilege Tailscale rollout</div>
+ 
+</div></div><div class="cr-lab-path"><h4>objective</h4><p>Create a local architecture manifest, access test matrix, and rollout checklist without enrolling the host or changing networking.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create a local architecture manifest, access test matrix, and rollout checklist without enrolling the host or changing networking.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>scope_guard</h4><p>Every file created or modified by this lab is under /opt/lab-classroom/class68/. The lab does not authenticate to Tailscale, create a tailnet, alter routes, alter DNS, start a daemon, or change a remote policy.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Use the container’s name like a phone contact, not “localhost,” unless they truly share one network bubble.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>steps</h4><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do this carefully, then check that it worked before moving on. (steps)</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>1</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 1</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Create the isolated workspace</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create the isolated workspace</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>sudo install -d -o "$USER" -g "$(id -gn)" /opt/lab-classroom/class68</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: sudo install -d -o &quot;$USER&quot; -g &quot;$(id -gn)&quot; /opt/lab-classroom/class68</div>
+ 
+</div></div><div class="cr-lab-path"><h4>explanation</h4><p>This creates only the class workspace and assigns it to the current learner.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: This creates only the class workspace and assigns it to the current learner.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>2</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 2</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Generate the architecture and test documents</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Generate the architecture and test documents</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cd /opt/lab-classroom/class68 &amp;&amp; python3 - &lt;&lt;'PY'<br />
+import json<br />
+from pathlib import Path<br />
+root = Path('/opt/lab-classroom/class68')<br />
+architecture = {<br />
+  'design_name': 'homelab-remote-access',<br />
+  'administrative_clients': ['admin-laptop'],<br />
+  'direct_nodes': [<br />
+    {'name': 'backup-server', 'role': 'backup administration', 'services': ['tcp/443']},<br />
+    {'name': 'monitoring-server', 'role': 'monitoring dashboard', 'services': ['tcp/443']}<br />
+  ],<br />
+  'subnet_router': {<br />
+    'name': 'lan-router-node',<br />
+    'proposed_routes': ['192.168.50.0/24'],<br />
+    'purpose': 'Reach appliances that cannot run Tailscale',<br />
+    'requires_explicit_route_approval': True<br />
+  },<br />
+  'exit_node_required': False,<br />
+  'dns': {<br />
+    'magicdns_for_tailnet_nodes': True,<br />
+    'internal_zone_dependency': 'home.arpa',<br />
+    'validate_name_and_address_separately': True<br />
+  },<br />
+  'safety': {<br />
+    'retain_existing_management_path': True,<br />
+    'start_with_one_noncritical_node': True,<br />
+    'test_expected_denials': True<br />
+  }<br />
+}<br />
+tests = [<br />
+  {'id': 'T01', 'source': 'admin-laptop', 'destination': 'backup-server:443', 'expected': 'allow', 'reason': 'Approved backup administration'},<br />
+  {'id': 'T02', 'source': 'admin-laptop', 'destination': 'monitoring-server:443', 'expected': 'allow', 'reason': 'Approved monitoring administration'},<br />
+  {'id': 'T03', 'source': 'media-user', 'destination': 'backup-server:443', 'expected': 'deny', 'reason': 'No backup administration role'},<br />
+  {'id': 'T04', 'source': 'admin-laptop', 'destination': '192.168.50.10:443', 'expected': 'allow', 'reason': 'Approved appliance management through subnet route'},<br />
+  {'id': 'T05', 'source': 'media-user', 'destination': '192.168.50.10:443', 'expected': 'deny', 'reason': 'Management subnet is not available to media users'},<br />
+  {'id': 'T06', 'source': 'admin-laptop', 'destination': 'internet-default-route', 'expected': 'deny', 'reason': 'The design does not require an exit node'}<br />
+]<br />
+rollout = {<br />
+  'ordered_checks': [<br />
+    'Record the current independent management path',<br />
+    'Enroll one noncritical device through an approved administrative process',<br />
+    'Confirm device owner, device identity, and expiry settings',<br />
+    'Apply the smallest intended access rule',<br />
+    'Test every expected allow result',<br />
+    'Test every expected deny result',<br />
+    'Validate IP reachability separately from DNS resolution',<br />
+    'Determine whether the peer path is direct or relayed',<br />
+    'Approve only the intended subnet route',<br />
+    'Review logs and remove obsolete identities'<br />
+  ],<br />
+  'rollback_triggers': [<br />
+    'Unexpected management loss',<br />
+    'An unauthorized identity reaches a protected destination',<br />
+    'A broader route is advertised or approved than intended',<br />
+    'DNS changes disrupt local clients'<br />
+  ]<br />
+}<br />
+(root / 'architecture.json').write_text(json.dumps(architecture, indent=2) + '\n')<br />
+(root / 'access-tests.json').write_text(json.dumps(tests, indent=2) + '\n')<br />
+(root / 'rollout.json').write_text(json.dumps(rollout, indent=2) + '\n')<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Make a safety copy first so a mistake does not erase your work.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>explanation</h4><p>The generated files describe a proposed deployment. They are not a live Tailscale configuration and are not submitted to a control plane.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The generated files describe a proposed deployment.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>3</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 3</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Validate document structure and safety assumptions</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Validate document structure and safety assumptions</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cd /opt/lab-classroom/class68 &amp;&amp; python3 - &lt;&lt;'PY'<br />
+import json<br />
+from pathlib import Path<br />
+root = Path('/opt/lab-classroom/class68')<br />
+a = json.loads((root / 'architecture.json').read_text())<br />
+t = json.loads((root / 'access-tests.json').read_text())<br />
+r = json.loads((root / 'rollout.json').read_text())<br />
+assert a['safety']['retain_existing_management_path'] is True<br />
+assert a['subnet_router']['requires_explicit_route_approval'] is True<br />
+assert a['exit_node_required'] is False<br />
+assert a['subnet_router']['proposed_routes'] == ['192.168.50.0/24']<br />
+assert any(x['expected'] == 'allow' for x in t)<br />
+assert any(x['expected'] == 'deny' for x in t)<br />
+assert len({x['id'] for x in t}) == len(t)<br />
+assert len(r['rollback_triggers']) &gt;= 3<br />
+print('PASS: architecture, access tests, and rollback criteria are internally consistent')<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: cd /opt/lab-classroom/class68 &amp;&amp; python3 - &lt;&lt;&#x27;PY&#x27;
+import json
+from pathlib import Path
+root = Path(&#x27;/opt/lab-classroom/class68&#x27;)
+a = json.loads((root / &#x27;arch…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>explanation</h4><p>Assertions check key safety decisions and ensure the plan includes positive and negative authorization tests.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Assertions check key safety decisions and ensure the plan includes positive and negative authorization tests.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>4</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 4</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Produce a human-readable review report</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Produce a human-readable review report</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cd /opt/lab-classroom/class68 &amp;&amp; python3 - &lt;&lt;'PY'<br />
+import json<br />
+from pathlib import Path<br />
+root = Path('/opt/lab-classroom/class68')<br />
+a = json.loads((root / 'architecture.json').read_text())<br />
+t = json.loads((root / 'access-tests.json').read_text())<br />
+lines = [<br />
+  'Class 68 Tailscale Design Review',<br />
+  '================================',<br />
+  f"Proposed subnet routes: {', '.join(a['subnet_router']['proposed_routes'])}",<br />
+  f"Exit node required: {a['exit_node_required']}",<br />
+  f"Retain independent management: {a['safety']['retain_existing_management_path']}",<br />
+  '',<br />
+  'Access test matrix:'<br />
+]<br />
+for item in t:<br />
+    lines.append(f"{item['id']} {item['expected'].upper():5} {item['source']} -&gt; {item['destination']} | {item['reason']}")<br />
+(root / 'review.txt').write_text('\n'.join(lines) + '\n')<br />
+print((root / 'review.txt').read_text())<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: cd /opt/lab-classroom/class68 &amp;&amp; python3 - &lt;&lt;&#x27;PY&#x27;
+import json
+from pathlib import Path
+root = Path(&#x27;/opt/lab-classroom/class68&#x27;)
+a = json.loads((root / &#x27;arch…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>explanation</h4><p>The report gives reviewers a concise list of proposed routes, safety assumptions, and access expectations.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The report gives reviewers a concise list of proposed routes, safety assumptions, and access expectations.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>success_condition</h4><p>The validator prints a PASS result, review.txt lists six access tests, both allow and deny outcomes are represented, only 192.168.50.0/24 is proposed for subnet routing, and no live system or tailnet setting has changed.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The validator prints a PASS result, review.txt lists six access tests, both allow and deny outcomes are represented, only 192.168.50.0/24 is proposed for sub…</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Expected results</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>The directory /opt/lab-classroom/class68/ exists and contains architecture.json, access-tests.json, rollout.json, and review.txt.</li>
+<li>The validation command prints: PASS: architecture, access tests, and rollback criteria are internally consistent</li>
+<li>architecture.json proposes exactly one subnet route, 192.168.50.0/24.</li>
+<li>architecture.json records that no exit node is required for the stated design.</li>
+<li>access-tests.json contains six uniquely identified tests with both allowed and denied outcomes.</li>
+<li>rollout.json preserves an independent management path and defines rollback triggers.</li>
+<li>No device is enrolled, no route is advertised or approved, no DNS setting is changed, and no remote access policy is applied.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Use the container’s name like a phone contact, not “localhost,” unless they truly share one network bubble.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Verification</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>[ ] Run: find /opt/lab-classroom/class68 -maxdepth 1 -type f -printf '%f\n' | sort ; verify that the output lists access-tests.json, architecture.json, review.txt, and rollout.json.</li>
+<li>[ ] Run: python3 -m json.tool /opt/lab-classroom/class68/architecture.json &gt;/dev/null &amp;&amp; echo architecture-valid ; verify that architecture-valid is printed.</li>
+<li>[ ] Run: python3 -m json.tool /opt/lab-classroom/class68/access-tests.json &gt;/dev/null &amp;&amp; echo tests-valid ; verify that tests-valid is printed.</li>
+<li>[ ] Run: python3 -m json.tool /opt/lab-classroom/class68/rollout.json &gt;/dev/null &amp;&amp; echo rollout-valid ; verify that rollout-valid is printed.</li>
+<li>[ ] Run: grep -E 'ALLOW|DENY' /opt/lab-classroom/class68/review.txt ; verify that both ALLOW and DENY appear.</li>
+<li>[ ] Run: grep '192.168.50.0/24' /opt/lab-classroom/class68/review.txt ; verify that the proposed subnet appears once in the summary.</li>
+<li>[ ] Review the host and tailnet manually and confirm that the lab did not enroll a device, advertise a route, approve a route, select an exit node, or change DNS.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Use the container’s name like a phone contact, not “localhost,” unless they truly share one network bubble.</div>
+ 
+</div></div></div><div class="cr-box cr-box-break"><div class="cr-box-head"><span class="cr-chip cr-chip-break">Break / fix</span><h3>Break/fix</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Change only one thing at a time so you know what caused the failure.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The workspace creation command reports permission denied.</td>
+<td>The learner cannot create directories beneath /opt or does not have the permitted privilege for the training host.</td>
+<td>Ask the lab administrator to pre-create /opt/lab-classroom/class68/ with ownership assigned to the learner. Do not redirect the exercise into unrelated system directories.</td>
+</tr>
+<tr>
+<td>python3 is not found.</td>
+<td>Python 3 is not installed or is not available through the current command search path.</td>
+<td>Use a classroom image that provides Python 3, or have the administrator provision it before the lab. Do not install additional software as part of this constrained exercise.</td>
+</tr>
+<tr>
+<td>A JSON validation command reports invalid syntax.</td>
+<td>A generated file was manually edited and now contains a missing comma, quote, bracket, or brace.</td>
+<td>Inspect the line and column reported by python3 -m json.tool. Correct only the affected file under /opt/lab-classroom/class68/, or rerun the generation step to restore all three JSON files.</td>
+</tr>
+<tr>
+<td>The assertion validator reports that an expected deny result is missing.</td>
+<td>The access test matrix was changed to contain only successful paths.</td>
+<td>Restore tests for unauthorized identities and unintended default-route access. A least-privilege design must verify both permissions and denials.</td>
+</tr>
+<tr>
+<td>A future live deployment can reach a Tailscale address but not the service.</td>
+<td>The encrypted network path exists, but the application is not listening on the destination address or port, its local policy rejects the client, or tailnet access policy does not allow the service.</td>
+<td>Check authorization, destination address, service listener, and application logs independently. Do not assume that device reachability proves application availability.</td>
+</tr>
+<tr>
+<td>A future live deployment works by address but not by hostname.</td>
+<td>Routing works but the client lacks the required tailnet or internal DNS resolution path.</td>
+<td>Verify the exact DNS name, resolver selection, MagicDNS state, and any internal zone dependency. Test name resolution separately from packet reachability.</td>
+</tr>
+<tr>
+<td>A future connection is relayed instead of direct.</td>
+<td>The peers could not establish a usable direct path because of NAT behavior, filtering, or current network conditions.</td>
+<td>Confirm that the connection is functional and encrypted, then review Tailscale connection diagnostics and network conditions. Do not weaken broad network protections merely to force a direct path.</td>
+</tr>
+<tr>
+<td>A future subnet route is advertised but clients cannot use it.</td>
+<td>The route is awaiting approval, the source identity lacks policy permission, the client has not accepted the route, or the subnet router cannot reach the destination.</td>
+<td>Check route advertisement, administrative approval, source authorization, client route acceptance, and router-to-destination reachability as separate stages.</td>
+</tr>
+<tr>
+<td>A future client reaches more of the LAN than intended.</td>
+<td>The advertised prefix or access policy is broader than the documented requirement.</td>
+<td>Withdraw or disable the broad route, restore the prior reviewed policy, and replace the route with the smallest prefixes that satisfy the requirement before retesting.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Security</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>principles</h4><p>Treat tailnet administration and the associated identity provider as privileged security systems.<br />
+Require strong multifactor authentication for administrators and protect account recovery paths.<br />
+Grant access by role, destination, and service instead of granting broad LAN reachability.<br />
+Use device tags for infrastructure roles only when tag ownership and assignment are controlled.<br />
+Advertise and approve the smallest practical subnet prefixes.<br />
+Keep management interfaces separate from ordinary user services in access policy.<br />
+Test expected denials after every policy change.<br />
+Review stale users, stale devices, reusable enrollment mechanisms, route approvals, and administrator assignments.<br />
+Maintain endpoint patching, disk protection, screen locking, and application authentication because an encrypted tunnel does not secure a compromised endpoint.<br />
+Retain an independent recovery path while changing remote-access configuration.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> If the app cannot write files, the user numbers (who owns the folder) are probably wrong.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threats</h4><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do this carefully, then check that it worked before moving on. (threats)</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>Compromised administrator identity</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Compromised administrator identity</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Use strong multifactor authentication, minimize administrators, monitor administrative changes, and maintain a documented recovery and revocation process.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Use strong multifactor authentication, minimize administrators, monitor administrative changes, and maintain a documented recovery and revocation process.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>Lost or stolen enrolled client</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Lost or stolen enrolled client</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Revoke the device promptly, protect local storage and sessions, review recent access, and rotate application credentials if exposure is plausible.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Revoke the device promptly, protect local storage and sessions, review recent access, and rotate application credentials if exposure is plausible.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>Overly broad subnet route</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Overly broad subnet route</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Advertise only necessary prefixes, require route approval, restrict route use by identity, and test inaccessible destinations.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Pause for a human yes/no before the automation changes anything important.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>Overly permissive policy</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Overly permissive policy</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Use named roles and infrastructure identities, document each allowed flow, and maintain negative test cases.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Use named roles and infrastructure identities, document each allowed flow, and maintain negative test cases.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>Compromised subnet router</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Compromised subnet router</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Dedicate and harden the node where practical, minimize local services, patch it, monitor it, and limit the networks and identities it connects.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Dedicate and harden the node where practical, minimize local services, patch it, monitor it, and limit the networks and identities it connects.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>False confidence from encryption</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: False confidence from encryption</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Continue using destination application authentication, authorization, updates, audit logs, and backups.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Continue using destination application authentication, authorization, updates, audit logs, and backups.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>threat</h4><p>Administrative lockout during migration</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Administrative lockout during migration</div>
+ 
+</div></div><div class="cr-prose-block"><h4>mitigation</h4><p>Keep the previous access path active until allowed flows, denied flows, DNS, route behavior, and rollback have been verified.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Use the container’s name like a phone contact, not “localhost,” unless they truly share one network bubble.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>logging_guidance</h4><p>Correlate identity-provider events, tailnet administrative changes, device state, route approvals, connection diagnostics, destination host logs, and application audit logs. Avoid placing reusable credentials, authentication keys, or sensitive full network inventories in classroom artifacts.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Correlate identity-provider events, tailnet administrative changes, device state, route approvals, connection diagnostics, destination host logs, and applica…</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Rollback</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>lab_rollback</h4><p>Remove only the four known files created by the lab, then remove the class directory if it is empty.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Remove only the four known files created by the lab, then remove the class directory if it is empty.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>lab_command</h4><p>python3 - &lt;&lt;'PY'<br />
+from pathlib import Path<br />
+root = Path('/opt/lab-classroom/class68')<br />
+for name in ('architecture.json', 'access-tests.json', 'rollout.json', 'review.txt'):<br />
+    path = root / name<br />
+    if path.exists() and path.is_file():<br />
+        path.unlink()<br />
+try:<br />
+    root.rmdir()<br />
+except OSError:<br />
+    print('Directory retained because it is not empty:', root)<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: python3 - &lt;&lt;&#x27;PY&#x27;
+from pathlib import Path
+root = Path(&#x27;/opt/lab-classroom/class68&#x27;)
+for name in (&#x27;architecture.json&#x27;, &#x27;access-tests.json&#x27;, &#x27;rollout.json&#x27;, &#x27;r…</div>
+ 
+</div></div><div class="cr-prose-block"><h4>live_deployment_strategy</h4><p>Preserve the independent management path.<br />
+Disable or withdraw an unexpectedly broad advertised route.<br />
+Revert to the last reviewed access policy.<br />
+Revoke an incorrectly enrolled or compromised device.<br />
+Stop client use of an unintended exit node.<br />
+Restore the previous DNS design if naming changes caused disruption.<br />
+Retest a known local path before ending the maintenance window.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Use the container’s name like a phone contact, not “localhost,” unless they truly share one network bubble.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>rollback_limit</h4><p>The lab rollback removes only classroom artifacts. It cannot undo live tailnet changes because the lab does not make any.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The lab rollback removes only classroom artifacts.</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="lesson.html">← Lesson</a><a href="homework.html">Homework →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>
