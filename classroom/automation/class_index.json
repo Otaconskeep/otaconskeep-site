@@ -137,7 +137,25 @@
     },
     "57": {
       "redirect": "12-media-servers/topics/02-plex-installation-and-library-design/lesson.html"
+    },
+    "58": {
+      "redirect": "12-media-servers/topics/03-jellyfin-installation-and-library-design/lesson.html"
+    },
+    "59": {
+      "redirect": "12-media-servers/topics/04-plex-versus-jellyfin-and-safe-migration/lesson.html"
+    },
+    "60": {
+      "redirect": "12-media-servers/topics/05-hardware-transcoding-and-verification/lesson.html"
+    },
+    "61": {
+      "redirect": "12-media-servers/topics/06-bazarr-and-subtitle-automation/lesson.html"
+    },
+    "62": {
+      "redirect": "12-media-servers/topics/07-arr-stack-health-monitoring/lesson.html"
+    },
+    "63": {
+      "redirect": "12-media-servers/topics/08-notifications-for-downloads-failures-and-request/lesson.html"
     }
   },
-  "updated_at": "2026-09-25T11:55:00Z"
+  "updated_at": "2026-10-03T08:04:40Z"
 }
