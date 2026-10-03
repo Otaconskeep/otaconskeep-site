@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07-arr-stack-health-monitoring: Lab · Classroom</title>
+<meta name="description" content="07-arr-stack-health-monitoring: Lab">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/12-media-servers/topics/07-arr-stack-health-monitoring/lab.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M12 LAB<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M12 LAB<small>lab</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-lab">Hands-on</span> 07-arr-stack-health-monitoring: Lab</h1>
+ <p class="lede">Guided practice + break/fix + lab gate.</p>
+ <div class="cr-osbar" role="group" aria-label="Command host">
+ <span>Show commands for:</span>
+ <button type="button" class="win" data-os="win" aria-pressed="false">Windows</button>
+ <button type="button" class="lin" data-os="lin" aria-pressed="true">Linux / macOS</button>
+</div>
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Requests &amp; Media Servers<br />
+<strong>Activity type:</strong> Lab (Practice)<br />
+<strong>Lab risk:</strong> low<br />
+<strong>Objective:</strong> Distinguish reachability, authentication, readiness, application health, dependency health, and workflow freshness</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Before you start</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Basic familiarity with Sonarr, Radarr, or another application in the ARR ecosystem</li>
+<li>Ability to run shell commands and Python 3 on a Linux host</li>
+<li>Basic understanding of JSON, HTTP status codes, and scheduled monitoring</li>
+<li>Awareness of Prometheus-style metric names and labels is helpful but not required</li>
+<li>Write access to /opt/lab-classroom/class62/</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: - Basic familiarity with Sonarr, Radarr, or another application in the ARR ecosystem
+- Ability to run shell commands and Python 3 on a Linux host
+- Basic und…</div>
+ 
+</div></div></div><div class="cr-box cr-box-lab" id="lab"><div class="cr-box-head"><span class="cr-chip cr-chip-lab">Hands-on</span><h3>Guided lab</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do these steps in order, one time, without skipping. Each step should leave proof you can show later.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> If a step fails, stop and use Break/fix instead of inventing a new path.</div>
+</div><div class="cr-lab-path"><h4>goal</h4><p>Classify simulated Sonarr and Radarr instances, produce a JSON report, and export low-cardinality Prometheus-style metrics.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Classify simulated Sonarr and Radarr instances, produce a JSON report, and export low-cardinality Prometheus-style metrics.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>scope</h4><p>All files created, changed, or removed by this lab are confined to /opt/lab-classroom/class62/. The lab does not contact real ARR instances and does not require real API keys.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: All files created, changed, or removed by this lab are confined to /opt/lab-classroom/class62/.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>steps</h4><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do this carefully, then check that it worked before moving on. (steps)</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>1</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 1</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create the isolated lab directory.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create the isolated lab directory.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>mkdir -p /opt/lab-classroom/class62/</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: mkdir -p /opt/lab-classroom/class62/</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>2</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 2</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create a fixture containing one healthy instance and one degraded instance.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create a fixture containing one healthy instance and one degraded instance.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cat &gt; /opt/lab-classroom/class62/fixtures.json &lt;&lt;'EOF'<br />
+{<br />
+  "instances": [<br />
+    {<br />
+      "app": "sonarr",<br />
+      "instance": "tv-main",<br />
+      "reachable": true,<br />
+      "authenticated": true,<br />
+      "health": [],<br />
+      "queue_depth": 0,<br />
+      "last_success_age_seconds": 120<br />
+    },<br />
+    {<br />
+      "app": "radarr",<br />
+      "instance": "movies-main",<br />
+      "reachable": true,<br />
+      "authenticated": true,<br />
+      "health": [<br />
+        {<br />
+          "type": "warning",<br />
+          "message": "Download client has been unavailable"<br />
+        }<br />
+      ],<br />
+      "queue_depth": 31,<br />
+      "last_success_age_seconds": 5400<br />
+    }<br />
+  ]<br />
+}<br />
+EOF</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>3</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 3</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create the classifier. The policy marks transport, authentication, and explicit application errors as critical. Application warnings, queue depths of 25 or more, and successful-work ages of one hour or more produce warning status.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create the classifier.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cat &gt; /opt/lab-classroom/class62/arr_health_check.py &lt;&lt;'PY'<br />
+import json<br />
+from pathlib import Path</p>
+<p>BASE = Path('/opt/lab-classroom/class62')<br />
+SOURCE = BASE / 'fixtures.json'<br />
+REPORT = BASE / 'health-report.json'<br />
+METRICS = BASE / 'arr-health.prom'</p>
+<p>rank = {'ok': 0, 'warning': 1, 'critical': 2}<br />
+state_number = {'critical': 0, 'warning': 1, 'ok': 2}</p>
+<p>def classify(item):<br />
+    states = ['ok']<br />
+    reasons = []</p>
+<pre><code>if not item.get('reachable', False):
+    states.append('critical')
+    reasons.append('instance is unreachable')
+elif not item.get('authenticated', False):
+    states.append('critical')
+    reasons.append('API authentication failed')
+
+for check in item.get('health', []):
+    check_type = str(check.get('type', '')).lower()
+    if check_type in {'error', 'critical'}:
+        states.append('critical')
+        reasons.append(str(check.get('message', 'application health error')))
+    elif check_type == 'warning':
+        states.append('warning')
+        reasons.append(str(check.get('message', 'application health warning')))
+
+if int(item.get('queue_depth', 0)) &gt;= 25:
+    states.append('warning')
+    reasons.append('queue depth is at least 25')
+
+if int(item.get('last_success_age_seconds', 0)) &gt;= 3600:
+    states.append('warning')
+    reasons.append('last successful work is at least one hour old')
+
+status = max(states, key=rank.get)
+return status, reasons
+</code></pre>
+<p>data = json.loads(SOURCE.read_text(encoding='utf-8'))<br />
+results = []<br />
+metric_lines = [<br />
+    '# HELP arr_monitor_up Whether the monitor reached and authenticated to the instance.',<br />
+    '# TYPE arr_monitor_up gauge',<br />
+    '# HELP arr_monitor_health_state Normalized state: 0 critical, 1 warning, 2 ok.',<br />
+    '# TYPE arr_monitor_health_state gauge',<br />
+    '# HELP arr_monitor_queue_depth Number of queued items reported by the fixture.',<br />
+    '# TYPE arr_monitor_queue_depth gauge',<br />
+    '# HELP arr_monitor_last_success_age_seconds Age of the last successful work event.',<br />
+    '# TYPE arr_monitor_last_success_age_seconds gauge'<br />
+]</p>
+<p>for item in data['instances']:<br />
+    status, reasons = classify(item)<br />
+    app = item['app']<br />
+    instance = item['instance']<br />
+    labels = f'app="{app}",instance="{instance}"'<br />
+    up = 1 if item.get('reachable') and item.get('authenticated') else 0<br />
+    result = {<br />
+        'app': app,<br />
+        'instance': instance,<br />
+        'status': status,<br />
+        'reasons': reasons,<br />
+        'queue_depth': int(item.get('queue_depth', 0)),<br />
+        'last_success_age_seconds': int(item.get('last_success_age_seconds', 0))<br />
+    }<br />
+    results.append(result)<br />
+    metric_lines.extend([<br />
+        f'arr_monitor_up{{{labels}}} {up}',<br />
+        f'arr_monitor_health_state{{{labels}}} {state_number[status]}',<br />
+        f'arr_monitor_queue_depth{{{labels}}} {result["queue_depth"]}',<br />
+        f'arr_monitor_last_success_age_seconds{{{labels}}} {result["last_success_age_seconds"]}'<br />
+    ])</p>
+<p>REPORT.write_text(json.dumps({'results': results}, indent=2) + '\n', encoding='utf-8')<br />
+METRICS.write_text('\n'.join(metric_lines) + '\n', encoding='utf-8')<br />
+print(f'wrote {REPORT}')<br />
+print(f'wrote {METRICS}')<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>4</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 4</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Run the classifier without creating Python bytecode files.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run the classifier without creating Python bytecode files.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>python3 -B /opt/lab-classroom/class62/arr_health_check.py</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: python3 -B /opt/lab-classroom/class62/arr_health_check.py</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>5</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 5</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Inspect the normalized report and exported metrics.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Inspect the normalized report and exported metrics.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cat /opt/lab-classroom/class62/health-report.json &amp;&amp; printf '\n--- metrics ---\n' &amp;&amp; cat /opt/lab-classroom/class62/arr-health.prom</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>6</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 6</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Simulate an authentication failure by changing only the laboratory fixture, then rerun the classifier.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Simulate an authentication failure by changing only the laboratory fixture, then rerun the classifier.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>python3 -B -c "import json; from pathlib import Path; p=Path('/opt/lab-classroom/class62/fixtures.json'); d=json.loads(p.read_text()); d['instances'][0]['authenticated']=False; p.write_text(json.dumps(d, indent=2)+'\n')" &amp;&amp; python3 -B /opt/lab-classroom/class62/arr_health_check.py</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: python3 -B -c &quot;import json; from pathlib import Path; p=Path(&#x27;/opt/lab-classroom/class62/fixtures.json&#x27;); d=json.loads(p.read_text()); d[&#x27;instances&#x27;][0][&#x27;aut…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>7</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 7</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Confirm that the simulated Sonarr instance is now critical and has an up value of zero.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Confirm that the simulated Sonarr instance is now critical and has an up value of zero.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>grep -E '"status": "critical"|arr_monitor_up{app="sonarr",instance="tv-main"} 0' /opt/lab-classroom/class62/health-report.json /opt/lab-classroom/class62/arr-health.prom</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-lab-path"><h4>production_adaptation</h4><p>Replace fixture loading with application-specific API requests using documented endpoints for the installed release.<br />
+Apply connection and total-request timeouts so a failed instance cannot stall the entire collection cycle.<br />
+Store credentials in a protected secret mechanism rather than source code, command history, metrics, or dashboard variables.<br />
+Validate the returned application identity before accepting the data.<br />
+Add queue age, failed task count, storage availability, and dependency status only when each signal has an operational response.<br />
+Test alert firing and recovery during an approved maintenance window before enabling notifications.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> The request app is the friendly front desk. Family uses it instead of the admin tools.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Expected results</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>The initial report classifies sonarr/tv-main as ok.</li>
+<li>The initial report classifies radarr/movies-main as warning because it has an application warning, a queue depth of 31, and stale successful work.</li>
+<li>The initial metric for sonarr/tv-main health state is 2.</li>
+<li>The initial metric for radarr/movies-main health state is 1.</li>
+<li>After the authentication-failure simulation, sonarr/tv-main is classified as critical.</li>
+<li>After the authentication-failure simulation, arr_monitor_up for sonarr/tv-main is 0.</li>
+<li>All generated files remain under /opt/lab-classroom/class62/.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Verification</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>[ ] Run: python3 -B /opt/lab-classroom/class62/arr_health_check.py</li>
+<li>[ ] Run: python3 -B -m json.tool /opt/lab-classroom/class62/health-report.json</li>
+<li>[ ] Run: grep -F 'arr_monitor_health_state{app="radarr",instance="movies-main"} 1' /opt/lab-classroom/class62/arr-health.prom</li>
+<li>[ ] Run after the authentication-failure simulation: grep -F 'arr_monitor_up{app="sonarr",instance="tv-main"} 0' /opt/lab-classroom/class62/arr-health.prom</li>
+<li>[ ] Run: find /opt/lab-classroom/class62/ -maxdepth 1 -type f -printf '%f\n' | sort</li>
+<li>[ ] Confirm that the listed files are fixtures.json, arr_health_check.py, health-report.json, and arr-health.prom.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div></div><div class="cr-box cr-box-break"><div class="cr-box-head"><span class="cr-chip cr-chip-break">Break / fix</span><h3>Break/fix</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Change only one thing at a time so you know what caused the failure.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>python3 reports that the command is unavailable.</td>
+<td>Python 3 is not installed or is not present in the command search path.</td>
+<td>Install Python 3 using the host's approved package-management process, then rerun the lab. Do not replace the script with an unreviewed network-downloaded installer.</td>
+</tr>
+<tr>
+<td>Permission is denied while creating the lab directory or files.</td>
+<td>The current user does not have write permission to /opt/lab-classroom/.</td>
+<td>Have the lab administrator create /opt/lab-classroom/class62/ and assign it to the classroom user according to local policy. Do not broaden permissions globally.</td>
+</tr>
+<tr>
+<td>The script reports that fixtures.json does not exist.</td>
+<td>The fixture creation step was skipped, failed, or was saved under another path.</td>
+<td>Repeat the fixture step exactly and verify that /opt/lab-classroom/class62/fixtures.json exists.</td>
+</tr>
+<tr>
+<td>A JSON decoding error appears.</td>
+<td>The fixture was edited into invalid JSON, often because of a missing comma, quote, or brace.</td>
+<td>Validate the fixture with python3 -B -m json.tool /opt/lab-classroom/class62/fixtures.json and correct the location reported by the parser.</td>
+</tr>
+<tr>
+<td>A real ARR instance is reachable in a browser but a future production collector reports authentication failure.</td>
+<td>The API key is incorrect, the expected authentication header is not being used, or an intermediary is removing the header.</td>
+<td>Confirm the API requirements in the application's local API documentation, issue a dedicated monitoring credential where supported, and test the request path without printing the credential.</td>
+</tr>
+<tr>
+<td>Alerts appear during every scheduled restart.</td>
+<td>The alert evaluates a single failed collection without a pending period or maintenance suppression.</td>
+<td>Require the condition to persist across multiple collection intervals and define a maintenance process that does not hide unexpected long outages.</td>
+</tr>
+<tr>
+<td>The monitor is healthy but imports remain stalled.</td>
+<td>The monitor checks only basic reachability and does not evaluate queues, task freshness, storage, or download-client health.</td>
+<td>Add workflow-level signals and test a known degraded condition rather than treating an HTTP response as full service health.</td>
+</tr>
+<tr>
+<td>Metric storage grows unexpectedly.</td>
+<td>Unbounded values such as titles, release names, messages, or URLs were added as labels.</td>
+<td>Retain only bounded labels such as application and instance. Move detailed text to protected diagnostic logs.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Security</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>principles</h4><p>Treat ARR API keys as secrets because they commonly permit extensive application control, not merely health reads.<br />
+Use a dedicated monitoring credential with the least privilege available in the installed product.<br />
+Keep secrets out of source files, shell history, process arguments, metric labels, annotations, and dashboard URLs.<br />
+Limit monitoring-network access to only the required application endpoints.<br />
+Use encrypted transport when traffic crosses an untrusted network.<br />
+Set strict request timeouts and response-size limits in a production collector.<br />
+Validate response content and application identity instead of trusting a successful status code alone.<br />
+Protect exported metrics if they reveal hostnames, library structure, operational schedules, or internal topology.<br />
+Rotate a credential immediately if it appears in a report, screenshot, repository, or metric payload.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-prose-block"><h4>data_minimization</h4><p>Export state and counts rather than titles, release names, download paths, indexer queries, or full application messages. Detailed operational records should remain in access-controlled logs with an appropriate retention period.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An indexer is a search source. You only add ones you are allowed to use.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>secret_handling</h4><p>The classroom lab uses no real secret. A production implementation should obtain each credential from an approved secret store or protected runtime secret file and must redact credentials from exceptions and debug output.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The classroom lab uses no real secret.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Rollback</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>impact</h4><p>The lab is isolated and does not alter real ARR instances. Rollback removes only the four known classroom files and then removes the class directory if it is empty.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The lab is isolated and does not alter real ARR instances.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>command</h4><p>python3 -B -c "from pathlib import Path; b=Path('/opt/lab-classroom/class62'); names=('fixtures.json','arr_health_check.py','health-report.json','arr-health.prom'); [(b/n).unlink(missing_ok=True) for n in names]; b.rmdir()"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-prose-block"><h4>verification</h4><p>Run: test ! -e /opt/lab-classroom/class62/ &amp;&amp; echo 'class62 lab removed'</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run: test !</div>
+ 
+</div></div><div class="cr-prose-block"><h4>recovery</h4><p>If the files are needed again, repeat the lab creation steps. No production configuration or application data is involved.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: If the files are needed again, repeat the lab creation steps.</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="lesson.html">← Lesson</a><a href="homework.html">Homework →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>
