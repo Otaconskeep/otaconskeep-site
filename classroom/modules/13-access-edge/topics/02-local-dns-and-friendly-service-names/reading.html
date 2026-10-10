@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02-local-dns-and-friendly-service-names: Reading · Classroom</title>
+<meta name="description" content="02-local-dns-and-friendly-service-names: Reading">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/13-access-edge/topics/02-local-dns-and-friendly-service-names/reading.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M13 READING<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M13 READING<small>reading</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-learn">Instruction</span> 02-local-dns-and-friendly-service-names: Reading</h1>
+ <p class="lede">Learn: instruction, vocabulary, worked example.</p>
+ 
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Edge Access &amp; VPN<br />
+<strong>Activity type:</strong> Reading (Learn)<br />
+<strong>Objective:</strong> Explain the roles of DNS clients, recursive resolvers, authoritative data, caching, and search domains</p></div><div class="cr-box cr-box-vocab"><div class="cr-box-head"><span class="cr-chip cr-chip-words">Words</span><h3>Vocabulary</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This list is your pocket dictionary for the class. You do not need to memorize every word on day one.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Come back here when a later step uses a term you forgot.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DNS</td>
+<td>The Domain Name System, a distributed naming system that maps names to data such as IP addresses.</td>
+</tr>
+<tr>
+<td>stub resolver</td>
+<td>The client-side resolver library that sends DNS questions to a configured DNS server on behalf of applications.</td>
+</tr>
+<tr>
+<td>recursive resolver</td>
+<td>A DNS server that obtains answers on behalf of clients, often caching the results for later requests.</td>
+</tr>
+<tr>
+<td>authoritative data</td>
+<td>DNS information supplied by the source responsible for a namespace rather than learned from another resolver.</td>
+</tr>
+<tr>
+<td>A record</td>
+<td>A DNS record that maps a name to an IPv4 address.</td>
+</tr>
+<tr>
+<td>AAAA record</td>
+<td>A DNS record that maps a name to an IPv6 address.</td>
+</tr>
+<tr>
+<td>CNAME record</td>
+<td>A DNS record that makes one DNS name an alias of another DNS name.</td>
+</tr>
+<tr>
+<td>PTR record</td>
+<td>A reverse-DNS record that maps an address-oriented name back to a host name.</td>
+</tr>
+<tr>
+<td>FQDN</td>
+<td>A fully qualified domain name that identifies a name within the complete DNS hierarchy, such as nas.lab.home.arpa.</td>
+</tr>
+<tr>
+<td>TTL</td>
+<td>Time to live, the number of seconds for which a DNS answer may normally be cached.</td>
+</tr>
+<tr>
+<td>search domain</td>
+<td>A suffix that a client resolver may append to an unqualified name, allowing a short input such as nas to be attempted as nas.lab.home.arpa.</td>
+</tr>
+<tr>
+<td>split-horizon DNS</td>
+<td>A design in which the answer for a name depends on which resolver or network view receives the query.</td>
+</tr>
+<tr>
+<td>home.arpa</td>
+<td>The special-use DNS domain reserved by RFC 8375 for naming within residential home networks.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This list is your pocket dictionary for the class. You do not need to memorize every word on day one.</div>
+ 
+</div></div></div><div class="cr-box cr-box-learn"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Instruction</span><h3>Instruction</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This is the teaching core. One major concept (or a tight group). Read carefully.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Use What this means under dense blocks.</div>
+</div><div class="cr-prose-block"><p>Humans prefer names such as nas.lab.home.arpa, while network connections ultimately use addresses. DNS provides the controlled mapping between those forms. A client application normally asks the operating system's stub resolver for an address. The stub resolver sends a query to a configured DNS server, which can answer from local data, answer from cache, or obtain an answer from elsewhere. An A record returns an IPv4 address, an AAAA record returns an IPv6 address, and a PTR record supports reverse lookup. These are independent records: creating an A record does not automatically prove that a service is running, create a reverse record, or make the destination reachable.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An IP address is how devices find each other on a network. The mask tells which part is the ‘street’ and which part is the ‘house number.’</div>
+ 
+</div></div><div class="cr-prose-block"><p>For a home environment, stable service names reduce dependence on memorized addresses and make later address changes less disruptive. A bookmark can target grafana.lab.home.arpa while DNS controls which address currently hosts Grafana. Names should describe stable roles rather than temporary implementation details when practical. The home.arpa namespace is specifically reserved for residential private use. Avoid treating .local as a general unicast DNS suffix because .local is conventionally associated with multicast DNS and can produce confusing differences between clients. Inventing a suffix that resembles a public top-level domain can also create collisions or information leakage.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Multicast (Class D) sends to a group of listeners. Do not use it as a normal host address.</div>
+ 
+</div></div><div class="cr-prose-block"><p>DNS does not include a port number in an A record. DNS can map dashboard.lab.home.arpa to an address, but the user may still need a URL such as https://dashboard.lab.home.arpa:8443 unless a reverse proxy or a service-specific discovery mechanism handles the port. DNS also does not replace certificate validation. An HTTPS certificate must contain the name the client uses.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Use the container’s name like a phone contact, not “localhost,” unless they truly share one network bubble.</div>
+ 
+</div></div><div class="cr-prose-block"><p>This lab runs dnsmasq only on the loopback address and the nonstandard UDP/TCP port 1053. It deliberately does not edit the machine's resolver settings or expose DNS to the LAN. The configuration supplies three local A records using documentation-only IPv4 addresses. Those addresses are suitable for a naming exercise but are not expected to host reachable applications. Querying the server explicitly with dig proves that the DNS data works. A production deployment would use actual stable addresses, listen only on intended interfaces, provide both UDP and TCP service on the standard DNS port, and distribute the resolver address through a controlled client or DHCP configuration. Production changes are intentionally outside this lab because all lab filesystem mutations must remain under /opt/lab-classroom/class65/.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An IP address is how devices find each other on a network. The mask tells which part is the ‘street’ and which part is the ‘house number.’</div>
+ 
+</div></div></div><div class="cr-box cr-box-diagram"><div class="cr-box-head"><span class="cr-chip cr-chip-map">Map</span><h3>Architecture</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This is the map of the system. Know which box does which job before you click around.</div>
+ 
+</div><h3>components</h3>
+<h3>name</h3>
+<p>dig client</p>
+<h3>role</h3>
+<p>Sends an explicit DNS query to 127.0.0.1 on port 1053 and displays the response.</p>
+<h3>name</h3>
+<p>isolated dnsmasq process</p>
+<h3>role</h3>
+<p>Listens only on loopback, returns configured local records, and does not consult upstream resolvers.</p>
+<h3>name</h3>
+<p>lab configuration</p>
+<h3>role</h3>
+<p>Stores the local namespace and host records in /opt/lab-classroom/class65/dnsmasq.conf.</p>
+<h3>name</h3>
+<p>lab.home.arpa namespace</p>
+<h3>role</h3>
+<p>Provides a clearly scoped naming area beneath the home.arpa special-use domain.</p>
+<h3>query_flow</h3>
+<p>The learner runs dig with an explicit server address and port.<br />
+dig sends a DNS question for an A record to 127.0.0.1:1053.<br />
+dnsmasq matches the question against a host-record entry.<br />
+dnsmasq returns the configured IPv4 address.<br />
+dig displays the answer without changing the host's normal DNS path.</p>
+<h3>records</h3>
+<h3>nas.lab.home.arpa</h3>
+<p>192.0.2.10</p>
+<h3>dashboard.lab.home.arpa</h3>
+<p>192.0.2.20</p>
+<h3>git.lab.home.arpa</h3>
+<p>192.0.2.30</p>
+<h3>scope_note</h3>
+<p>192.0.2.0/24 is reserved for documentation. The records demonstrate DNS behavior and do not imply that an application exists at any returned address.</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Required reading</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>RFC 1034, Domain Names—Concepts and Facilities: https://www.rfc-editor.org/rfc/rfc1034</li>
+<li>RFC 1035, Domain Names—Implementation and Specification: https://www.rfc-editor.org/rfc/rfc1035</li>
+<li>RFC 8375, Special-Use Domain home.arpa: https://www.rfc-editor.org/rfc/rfc8375</li>
+<li>dnsmasq manual page, especially --host-record, --local, --no-resolv, --listen-address, and --port</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A port is the door number you use in the browser to open the app.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>References</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>RFC 1034, Domain Names—Concepts and Facilities: https://www.rfc-editor.org/rfc/rfc1034</li>
+<li>RFC 1035, Domain Names—Implementation and Specification: https://www.rfc-editor.org/rfc/rfc1035</li>
+<li>RFC 6762, Multicast DNS: https://www.rfc-editor.org/rfc/rfc6762</li>
+<li>RFC 8375, Special-Use Domain home.arpa: https://www.rfc-editor.org/rfc/rfc8375</li>
+<li>RFC 5737, IPv4 Address Blocks Reserved for Documentation: https://www.rfc-editor.org/rfc/rfc5737</li>
+<li>dnsmasq project documentation: https://thekelleys.org.uk/dnsmasq/doc.html</li>
+<li>BIND 9 dig manual: https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An IP address is how devices find each other on a network. The mask tells which part is the ‘street’ and which part is the ‘house number.’</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="/classroom/modules/13-access-edge/">← Module hub</a><a href="lesson.html">Lesson →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>

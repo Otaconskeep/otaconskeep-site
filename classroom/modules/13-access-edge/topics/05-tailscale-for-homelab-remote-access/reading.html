@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05-tailscale-for-homelab-remote-access: Reading · Classroom</title>
+<meta name="description" content="05-tailscale-for-homelab-remote-access: Reading">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/13-access-edge/topics/05-tailscale-for-homelab-remote-access/reading.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M13 READING<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M13 READING<small>reading</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-learn">Instruction</span> 05-tailscale-for-homelab-remote-access: Reading</h1>
+ <p class="lede">Learn: instruction, vocabulary, worked example.</p>
+ 
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Edge Access &amp; VPN<br />
+<strong>Activity type:</strong> Reading (Learn)<br />
+<strong>Objective:</strong> Explain the roles of the Tailscale coordination service, node identity, WireGuard tunnels, and DERP relays</p></div><div class="cr-box cr-box-vocab"><div class="cr-box-head"><span class="cr-chip cr-chip-words">Words</span><h3>Vocabulary</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This list is your pocket dictionary for the class. You do not need to memorize every word on day one.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Come back here when a later step uses a term you forgot.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tailnet</td>
+<td>The private Tailscale network associated with an organization or identity domain.</td>
+</tr>
+<tr>
+<td>Coordination service</td>
+<td>The service that authenticates nodes and distributes the information required for authorized peers to discover and establish encrypted connections. It is not normally in the data path.</td>
+</tr>
+<tr>
+<td>WireGuard</td>
+<td>The encrypted tunneling protocol used for Tailscale data traffic between nodes.</td>
+</tr>
+<tr>
+<td>DERP</td>
+<td>A Tailscale relay system used when two peers cannot establish a direct path. Relayed traffic remains end-to-end encrypted.</td>
+</tr>
+<tr>
+<td>Direct connection</td>
+<td>A peer-to-peer data path established between two Tailscale nodes without carrying application traffic through a DERP relay.</td>
+</tr>
+<tr>
+<td>Subnet router</td>
+<td>A Tailscale node that advertises reachability to one or more non-Tailscale IP subnets.</td>
+</tr>
+<tr>
+<td>Exit node</td>
+<td>A Tailscale node selected to carry a client's general internet-bound traffic, similar to a full-tunnel VPN gateway.</td>
+</tr>
+<tr>
+<td>MagicDNS</td>
+<td>Tailscale-provided naming that allows devices to be addressed by tailnet DNS names instead of only Tailscale IP addresses.</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>A non-human identity label assigned to a device or service role and governed by tag ownership rules.</td>
+</tr>
+<tr>
+<td>Grant</td>
+<td>A tailnet policy rule expressing which sources may reach which destinations and, where supported, what application-level capabilities are allowed.</td>
+</tr>
+<tr>
+<td>Route approval</td>
+<td>An administrative control that determines whether a route advertised by a node is accepted for use by the tailnet.</td>
+</tr>
+<tr>
+<td>Key expiry</td>
+<td>A control that requires a node to reauthenticate after its node key reaches the configured expiration point.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This list is your pocket dictionary for the class. You do not need to memorize every word on day one.</div>
+ 
+</div></div></div><div class="cr-box cr-box-learn"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Instruction</span><h3>Instruction</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This is the teaching core. One major concept (or a tight group). Read carefully.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Use What this means under dense blocks.</div>
+</div><div class="cr-prose-block"><p>Traditional remote access often begins by publishing a management port, forwarding traffic through a residential router, or placing a broad remote-access server in front of the entire home network. Each approach can work, but it increases the importance of patching, credential protection, perimeter configuration, and careful routing. Tailscale takes an identity-aware overlay approach. Each enrolled node receives a tailnet identity and encrypted addressing. The coordination service helps authenticated nodes learn public keys, endpoints, policy, and network-map information. Application traffic normally travels directly between peers over WireGuard when network address translation and path conditions permit. If a direct path cannot be established, traffic can traverse a DERP relay while remaining encrypted between the endpoints.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A port is the door number you use in the browser to open the app.</div>
+ 
+</div></div><div class="cr-prose-block"><p>A Tailscale IP does not automatically mean every device may access every service. Authorization is controlled by the tailnet policy, device posture features where available, identity groups, tags, and administrative approval settings. Human-owned clients are commonly represented by user identities, while durable infrastructure should use carefully governed tags. A useful design separates administrators, ordinary users, infrastructure nodes, and temporary devices. For example, an administrator group might reach a hypervisor management interface, while a media-user group may reach only a media service. Avoid creating one broad rule simply because every system belongs to the same homelab.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A hypervisor creates and runs virtual machines. Type 2 sits on your OS; Type 1 sits on the hardware.</div>
+ 
+</div></div><div class="cr-prose-block"><p>A subnet router extends access to devices that cannot run Tailscale, such as an appliance or isolated management interface. This convenience also expands the trust boundary: the router becomes a transit point, the advertised prefixes must not overlap unexpectedly with remote networks, and both route approval and policy authorization must be considered. An exit node has a different purpose. It carries general client traffic rather than merely providing access to a selected private subnet. Selecting an exit node can affect latency, DNS behavior, internet geolocation, and the operator's responsibility for traffic leaving that node.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Pause for a human yes/no before the automation changes anything important.</div>
+ 
+</div></div><div class="cr-prose-block"><p>Operational verification should separate three questions. First, is the device authenticated and present in the intended tailnet? Second, does policy authorize the attempted source, destination, and service? Third, can the peers establish a usable path? A failed connection is not always an authentication failure. It may be a policy denial, an unapproved route, a service listening only on a different interface, an overlapping subnet, or a path that has fallen back to a relay. Tailscale status and ping diagnostics can help distinguish these layers, but sensitive inventory information should not be pasted into public tickets. This class deliberately does not enroll a device, advertise routes, select an exit node, or change host networking. Learners instead inspect existing state read-only and create a design that can be reviewed before any production deployment.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Ping asks “are you reachable?” with a small echo packet. First tool when something seems offline.</div>
+ 
+</div></div></div><div class="cr-box cr-box-diagram"><div class="cr-box-head"><span class="cr-chip cr-chip-map">Map</span><h3>Architecture</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This is the map of the system. Know which box does which job before you click around.</div>
+ 
+</div><h3>components</h3>
+<p>Remote client: an administrator-controlled laptop, phone, or tablet enrolled in the tailnet<br />
+Coordination service: authenticates identities and distributes peer, key, endpoint, and policy information<br />
+Homelab Tailscale node: a server that runs Tailscale and exposes only specifically authorized services<br />
+DERP relay: an encrypted fallback data path when a direct peer-to-peer path cannot be established<br />
+Optional subnet router: a node that forwards authorized traffic toward selected non-Tailscale networks<br />
+Optional exit node: a node that forwards a client's general internet traffic when explicitly selected<br />
+Tailnet policy: the authorization layer governing source-to-destination access</p>
+<h3>normal_flow</h3>
+<p>The client and homelab node authenticate independently and receive tailnet network information.<br />
+Policy determines whether the source identity may reach the destination and service.<br />
+The peers attempt to discover a direct network path.<br />
+If direct connectivity succeeds, encrypted application traffic travels peer to peer.<br />
+If direct connectivity fails, encrypted traffic can use a DERP relay.<br />
+The destination service still applies its own application authentication and authorization.</p>
+<h3>trust_boundaries</h3>
+<p>Identity provider and tailnet administrator accounts<br />
+Endpoint operating systems and local credential stores<br />
+Tag ownership and tailnet policy administration<br />
+Subnet-router forwarding boundary<br />
+Exit-node internet egress boundary<br />
+The application authentication boundary behind the encrypted network path</p>
+<h3>design_principle</h3>
+<p>Use Tailscale as a private connectivity and authorization layer, not as a replacement for endpoint patching, application authentication, logging, backups, or service-specific authorization.</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Required reading</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Tailscale documentation: How Tailscale works — https://tailscale.com/kb/1151/what-is-tailscale</li>
+<li>Tailscale documentation: Connection types — https://tailscale.com/kb/1257/connection-types</li>
+<li>Tailscale documentation: Access control — https://tailscale.com/kb/1018/acls</li>
+<li>Tailscale documentation: Subnet routers — https://tailscale.com/kb/1019/subnets</li>
+<li>Tailscale documentation: Device approval — https://tailscale.com/kb/1099/device-approval</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Pause for a human yes/no before the automation changes anything important.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>References</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Tailscale documentation: What is Tailscale? — https://tailscale.com/kb/1151/what-is-tailscale</li>
+<li>Tailscale documentation: How Tailscale works — https://tailscale.com/blog/how-tailscale-works</li>
+<li>Tailscale documentation: Connection types — https://tailscale.com/kb/1257/connection-types</li>
+<li>Tailscale documentation: DERP servers — https://tailscale.com/kb/1232/derp-servers</li>
+<li>Tailscale documentation: Access control policies — https://tailscale.com/kb/1018/acls</li>
+<li>Tailscale documentation: Grants syntax — https://tailscale.com/kb/1324/grants</li>
+<li>Tailscale documentation: Subnet routers — https://tailscale.com/kb/1019/subnets</li>
+<li>Tailscale documentation: Exit nodes — https://tailscale.com/kb/1103/exit-nodes</li>
+<li>Tailscale documentation: MagicDNS — https://tailscale.com/kb/1081/magicdns</li>
+<li>Tailscale documentation: Device approval — https://tailscale.com/kb/1099/device-approval</li>
+<li>Tailscale documentation: Auth keys — https://tailscale.com/kb/1085/auth-keys</li>
+<li>WireGuard protocol overview — https://www.wireguard.com/protocol/</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Pause for a human yes/no before the automation changes anything important.</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="/classroom/modules/13-access-edge/">← Module hub</a><a href="lesson.html">Lesson →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>

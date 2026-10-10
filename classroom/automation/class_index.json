@@ -137,7 +137,25 @@
     },
     "57": {
       "redirect": "12-media-servers/topics/02-plex-installation-and-library-design/lesson.html"
+    },
+    "64": {
+      "redirect": "13-access-edge/topics/01-reverse-proxy-fundamentals/lesson.html"
+    },
+    "65": {
+      "redirect": "13-access-edge/topics/02-local-dns-and-friendly-service-names/lesson.html"
+    },
+    "66": {
+      "redirect": "13-access-edge/topics/03-tls-certificates-and-https/lesson.html"
+    },
+    "67": {
+      "redirect": "13-access-edge/topics/04-authentication-and-access-control/lesson.html"
+    },
+    "68": {
+      "redirect": "13-access-edge/topics/05-tailscale-for-homelab-remote-access/lesson.html"
+    },
+    "69": {
+      "redirect": "13-access-edge/topics/06-wireguard-fundamentals-and-deployment/lesson.html"
     }
   },
-  "updated_at": "2026-09-25T11:55:00Z"
+  "updated_at": "2026-10-10T08:01:41Z"
 }
