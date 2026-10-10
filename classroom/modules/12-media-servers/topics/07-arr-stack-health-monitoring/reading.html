@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07-arr-stack-health-monitoring: Reading · Classroom</title>
+<meta name="description" content="07-arr-stack-health-monitoring: Reading">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/12-media-servers/topics/07-arr-stack-health-monitoring/reading.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M12 READING<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M12 READING<small>reading</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-learn">Instruction</span> 07-arr-stack-health-monitoring: Reading</h1>
+ <p class="lede">Learn: instruction, vocabulary, worked example.</p>
+ 
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Requests &amp; Media Servers<br />
+<strong>Activity type:</strong> Reading (Learn)<br />
+<strong>Objective:</strong> Distinguish host reachability, HTTP availability, API authentication, application health, and queue state.</p></div><div class="cr-box cr-box-vocab"><div class="cr-box-head"><span class="cr-chip cr-chip-words">Words</span><h3>Vocabulary</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This list is your pocket dictionary for the class. You do not need to memorize every word on day one.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Come back here when a later step uses a term you forgot.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ARR application</td>
+<td>An informal label for media automation applications such as Sonarr, Radarr, Prowlarr, Lidarr, and Readarr. These applications are independently deployed services rather than one monolithic stack.</td>
+</tr>
+<tr>
+<td>Liveness</td>
+<td>Evidence that a process or endpoint is responding. Liveness alone does not prove that the application can complete its intended work.</td>
+</tr>
+<tr>
+<td>Readiness</td>
+<td>Evidence that a service is sufficiently initialized and connected to required dependencies to accept useful work.</td>
+</tr>
+<tr>
+<td>Application health event</td>
+<td>A warning or error reported by the application about conditions such as unavailable indexers, inaccessible download clients, missing root folders, or update problems.</td>
+</tr>
+<tr>
+<td>API key</td>
+<td>A shared secret used by ARR applications to authorize API requests, commonly supplied through the X-Api-Key HTTP header.</td>
+</tr>
+<tr>
+<td>Queue</td>
+<td>The set of downloads or imports currently tracked by an application. A nonzero queue is normally workload information, not automatically an incident.</td>
+</tr>
+<tr>
+<td>Synthetic check</td>
+<td>A request generated by monitoring software to verify that a service endpoint behaves as expected.</td>
+</tr>
+<tr>
+<td>Cardinality</td>
+<td>The number of unique metric label combinations. Exporting unbounded titles, download identifiers, or URLs as labels can make a monitoring system expensive and difficult to operate.</td>
+</tr>
+<tr>
+<td>Degraded</td>
+<td>A state in which the API is reachable but the application reports one or more health warnings or errors.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This list is your pocket dictionary for the class. You do not need to memorize every word on day one.</div>
+ 
+</div></div></div><div class="cr-box cr-box-learn"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Instruction</span><h3>Instruction</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This is the teaching core. One major concept (or a tight group). Read carefully.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Use What this means under dense blocks.</div>
+</div><div class="cr-prose-block"><p>Effective ARR monitoring is layered. A successful network connection proves only that something accepted the connection. A successful HTTP response proves that an endpoint answered, but it may still be an authentication page, reverse-proxy response, or incomplete application. A successful system-status request confirms that the expected API is available. The health endpoint then exposes problems detected by the application itself, such as an indexer, download client, root folder, or update issue. Queue information adds workload context, but it must be interpreted carefully: a queue containing items can be completely normal. Alerting only because the queue count is greater than zero creates noise and trains operators to ignore alarms.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An indexer is a search source. You only add ones you are allowed to use.</div>
+ 
+</div></div><div class="cr-prose-block"><p>A useful state model is healthy, degraded, and unavailable. Healthy means the API status request succeeded and the application returned no active health events. Degraded means the API is available but one or more health events exist. Unavailable means the status request could not be completed because of a connection failure, timeout, authentication rejection, unexpected HTTP response, or invalid response body. Production monitoring may subdivide unavailable into transport, authorization, server, and parsing failures, but the top-level state should remain understandable during an incident.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div><div class="cr-prose-block"><p>Health monitoring should preserve diagnostic evidence without leaking secrets. Record the instance name, observation time, state, HTTP or parsing error category, health-event type, and queue count when available. Do not log the API key. Avoid exporting media titles, release names, full download paths, or indexer URLs as metric labels because they may contain private information and create unbounded cardinality. Polling intervals and alert delays must be selected from the operator's service objectives and environment; there is no universal interval that is correct for every homelab. Use repeated observations before paging when brief restarts are expected, and route persistent application warnings differently from total API loss.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An API key is a password apps use to talk to each other. Keep it private.</div>
+ 
+</div></div><div class="cr-prose-block"><p>The lab deliberately models three conditions. Sonarr is reachable with no health events. Radarr is reachable but reports an indexer warning, so it is degraded. Prowlarr returns an HTTP service error, so it is unavailable. The monitor queries system status first, queries health only after status succeeds, and records queue size as context. This ordering prevents a failed dependency request from being mistaken for a healthy application. The resulting report is machine-readable and can later be transformed into metrics, dashboard panels, notifications, or service-level reports.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An indexer is a search source. You only add ones you are allowed to use.</div>
+ 
+</div></div></div><div class="cr-box cr-box-diagram"><div class="cr-box-head"><span class="cr-chip cr-chip-map">Map</span><h3>Architecture</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> This is the map of the system. Know which box does which job before you click around.</div>
+ 
+</div><h3>components</h3>
+<h3>name</h3>
+<p>Mock ARR API</p>
+<h3>role</h3>
+<p>A Python HTTP service bound to 127.0.0.1:8620. It presents isolated Sonarr, Radarr, and Prowlarr URL prefixes and validates a lab-only API key.</p>
+<h3>name</h3>
+<p>Health collector</p>
+<h3>role</h3>
+<p>A Python program that requests system status, application health, and queue data and then assigns a state.</p>
+<h3>name</h3>
+<p>JSON report</p>
+<h3>role</h3>
+<p>A local artifact at /opt/lab-classroom/class62/report.json containing observations without the API key.</p>
+<h3>name</h3>
+<p>Future observability integration</p>
+<h3>role</h3>
+<p>A metrics collector, dashboard, or notification service that can consume equivalent observations in production.</p>
+<h3>request_flow</h3>
+<p>The collector sends an authenticated request to each instance's system-status endpoint.<br />
+If system status fails, the instance is classified as unavailable and dependent checks are skipped.<br />
+If system status succeeds, the collector requests health events and queue data.<br />
+An instance with health events is classified as degraded; an instance without health events is classified as healthy.<br />
+The collector writes one structured report inside the class workspace.</p>
+<h3>state_model</h3>
+<h3>healthy</h3>
+<p>System status is available and the health-event list is empty.</p>
+<h3>degraded</h3>
+<p>System status is available and one or more application health events are present.</p>
+<h3>unavailable</h3>
+<p>System status cannot be successfully requested or decoded.</p>
+<h3>scope</h3>
+<p>All files created or modified by the lab are contained in /opt/lab-classroom/class62/. The mock service listens only on the loopback interface.</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Required reading</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Servarr Wiki, Sonarr System and Health Checks: https://wiki.servarr.com/sonarr/system</li>
+<li>Servarr Wiki, Radarr System and Health Checks: https://wiki.servarr.com/radarr/system</li>
+<li>Servarr Wiki, Prowlarr System and Health Checks: https://wiki.servarr.com/prowlarr/system</li>
+<li>Prometheus instrumentation practices, especially online serving systems and failure reporting: https://prometheus.io/docs/practices/instrumentation/</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> A health check asks “are you really ready?” not just “did the process start?”</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>References</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Servarr Wiki, Sonarr System: https://wiki.servarr.com/sonarr/system</li>
+<li>Servarr Wiki, Radarr System: https://wiki.servarr.com/radarr/system</li>
+<li>Servarr Wiki, Prowlarr System: https://wiki.servarr.com/prowlarr/system</li>
+<li>Prometheus, Instrumentation Practices: https://prometheus.io/docs/practices/instrumentation/</li>
+<li>Prometheus, Metric and Label Naming: https://prometheus.io/docs/practices/naming/</li>
+<li>OWASP, Secrets Management Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html</li>
+<li>Python documentation, urllib.request: https://docs.python.org/3/library/urllib.request.html</li>
+<li>Python documentation, http.server: https://docs.python.org/3/library/http.server.html</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> The request app is the friendly front desk. Family uses it instead of the admin tools.</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="/classroom/modules/12-media-servers/">← Module hub</a><a href="lesson.html">Lesson →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>

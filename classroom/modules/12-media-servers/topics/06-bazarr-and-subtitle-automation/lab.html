@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06-bazarr-and-subtitle-automation: Lab · Classroom</title>
+<meta name="description" content="06-bazarr-and-subtitle-automation: Lab">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/12-media-servers/topics/06-bazarr-and-subtitle-automation/lab.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M12 LAB<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M12 LAB<small>lab</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-lab">Hands-on</span> 06-bazarr-and-subtitle-automation: Lab</h1>
+ <p class="lede">Guided practice + break/fix + lab gate.</p>
+ <div class="cr-osbar" role="group" aria-label="Command host">
+ <span>Show commands for:</span>
+ <button type="button" class="win" data-os="win" aria-pressed="false">Windows</button>
+ <button type="button" class="lin" data-os="lin" aria-pressed="true">Linux / macOS</button>
+</div>
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Requests &amp; Media Servers<br />
+<strong>Activity type:</strong> Lab (Practice)<br />
+<strong>Lab risk:</strong> low<br />
+<strong>Objective:</strong> Explain why Bazarr depends on Sonarr and Radarr metadata instead of acting as a general-purpose filesystem scanner.</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Before you start</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>Basic familiarity with Sonarr and Radarr libraries</li>
+<li>Understanding of container bind mounts or equivalent filesystem mappings</li>
+<li>Ability to read JSON and run basic shell commands</li>
+<li>A conceptual understanding of media files, subtitle sidecar files, and language codes</li>
+<li>Python 3 for the isolated validation lab</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: - Basic familiarity with Sonarr and Radarr libraries
+- Understanding of container bind mounts or equivalent filesystem mappings
+- Ability to read JSON and ru…</div>
+ 
+</div></div></div><div class="cr-box cr-box-lab" id="lab"><div class="cr-box-head"><span class="cr-chip cr-chip-lab">Hands-on</span><h3>Guided lab</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do these steps in order, one time, without skipping. Each step should leave proof you can show later.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> If a step fails, stop and use Break/fix instead of inventing a new path.</div>
+</div><div class="cr-lab-path"><h4>name</h4><p>Validate a Bazarr policy and manager path model</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Validate a Bazarr policy and manager path model</div>
+ 
+</div></div><div class="cr-lab-path"><h4>scope</h4><p>All created files remain under /opt/lab-classroom/class61/. No production manager, provider, or media library is contacted.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: All created files remain under /opt/lab-classroom/class61/.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>steps</h4><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do this carefully, then check that it worked before moving on. (steps)</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>1</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 1</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create the isolated class directory.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create the isolated class directory.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>mkdir -p /opt/lab-classroom/class61</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: mkdir -p /opt/lab-classroom/class61</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>2</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 2</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create a portable policy model. This is a teaching artifact, not a Bazarr import file.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create a portable policy model.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cat &gt; /opt/lab-classroom/class61/policy.json &lt;&lt;'EOF'<br />
+{<br />
+  "managers": {<br />
+    "sonarr": {<br />
+      "base_url": "http://sonarr:8989",<br />
+      "media_root": "/media/tv"<br />
+    },<br />
+    "radarr": {<br />
+      "base_url": "http://radarr:7878",<br />
+      "media_root": "/media/movies"<br />
+    }<br />
+  },<br />
+  "profiles": {<br />
+    "series-default": {<br />
+      "languages": ["en"],<br />
+      "forced": "allowed",<br />
+      "hearing_impaired": "preferred"<br />
+    },<br />
+    "movies-default": {<br />
+      "languages": ["en", "es"],<br />
+      "forced": "allowed",<br />
+      "hearing_impaired": "allowed"<br />
+    }<br />
+  },<br />
+  "providers_configured": false,<br />
+  "embedded_subtitles_may_satisfy_profile": true,<br />
+  "secrets_in_document": false<br />
+}<br />
+EOF</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: cat &gt; /opt/lab-classroom/class61/policy.json &lt;&lt;&#x27;EOF&#x27;
+{
+  &quot;managers&quot;: {
+    &quot;sonarr&quot;: {
+      &quot;base_url&quot;: &quot;http://sonarr:8989&quot;,
+      &quot;media_root&quot;: &quot;/media/tv…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>3</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 3</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create a simulated inventory representing paths reported by Sonarr and Radarr.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create a simulated inventory representing paths reported by Sonarr and Radarr.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cat &gt; /opt/lab-classroom/class61/inventory.json &lt;&lt;'EOF'<br />
+{<br />
+  "items": [<br />
+    {<br />
+      "manager": "sonarr",<br />
+      "title": "North Harbor",<br />
+      "path": "/media/tv/North Harbor/Season 01/North Harbor - S01E01.mkv",<br />
+      "profile": "series-default"<br />
+    },<br />
+    {<br />
+      "manager": "radarr",<br />
+      "title": "The Quiet Circuit",<br />
+      "path": "/media/movies/The Quiet Circuit (2024)/The Quiet Circuit (2024).mkv",<br />
+      "profile": "movies-default"<br />
+    }<br />
+  ]<br />
+}<br />
+EOF</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: cat &gt; /opt/lab-classroom/class61/inventory.json &lt;&lt;&#x27;EOF&#x27;
+{
+  &quot;items&quot;: [
+    {
+      &quot;manager&quot;: &quot;sonarr&quot;,
+      &quot;title&quot;: &quot;North Harbor&quot;,
+      &quot;path&quot;: &quot;/media/…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>4</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 4</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Create a validator that checks policy completeness, path consistency, profile references, and secret hygiene.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create a validator that checks policy completeness, path consistency, profile references, and secret hygiene.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cat &gt; /opt/lab-classroom/class61/validate_lab.py &lt;&lt;'PY'<br />
+import json<br />
+from pathlib import Path, PurePosixPath</p>
+<p>base = Path('/opt/lab-classroom/class61')<br />
+policy = json.loads((base / 'policy.json').read_text(encoding='utf-8'))<br />
+inventory = json.loads((base / 'inventory.json').read_text(encoding='utf-8'))</p>
+<p>assert set(policy['managers']) == {'sonarr', 'radarr'}, 'Both managers must be modeled'<br />
+assert policy['providers_configured'] is False, 'The isolated lab must not enable providers'<br />
+assert policy['secrets_in_document'] is False, 'Portable policy documents must not contain secrets'<br />
+assert policy['profiles'], 'At least one language profile is required'</p>
+<p>for profile_name, profile in policy['profiles'].items():<br />
+    assert profile['languages'], f'{profile_name} has no desired languages'<br />
+    assert len(profile['languages']) == len(set(profile['languages'])), f'{profile_name} repeats a language'<br />
+    assert profile['forced'] in {'required', 'allowed', 'ignored'}, f'{profile_name} has an invalid forced policy'<br />
+    assert profile['hearing_impaired'] in {'required', 'preferred', 'allowed', 'ignored'}, f'{profile_name} has an invalid accessibility policy'</p>
+<p>for item in inventory['items']:<br />
+    manager_name = item['manager']<br />
+    assert manager_name in policy['managers'], f'Unknown manager: {manager_name}'<br />
+    assert item['profile'] in policy['profiles'], f"Unknown profile: {item['profile']}"<br />
+    media_root = PurePosixPath(policy['managers'][manager_name]['media_root'])<br />
+    media_path = PurePosixPath(item['path'])<br />
+    assert media_path.is_absolute(), f"Path is not absolute: {media_path}"<br />
+    assert media_path != media_root, f"Item path must identify a file: {media_path}"<br />
+    assert media_root in media_path.parents, f"{media_path} is outside {media_root}"<br />
+    assert '..' not in media_path.parts, f"Path traversal component found in {media_path}"</p>
+<p>print('PASS: manager definitions are complete')<br />
+print('PASS: language profiles are explicit')<br />
+print('PASS: inventory paths match manager roots')<br />
+print('PASS: the design document declares no embedded secrets')<br />
+print('PASS: provider access remains disabled in the isolated lab')<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: cat &gt; /opt/lab-classroom/class61/validate_lab.py &lt;&lt;&#x27;PY&#x27;
+import json
+from pathlib import Path, PurePosixPath
+
+base = Path(&#x27;/opt/lab-classroom/class61&#x27;)
+policy…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>5</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 5</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Run the validator.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run the validator.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>cd /opt/lab-classroom/class61 &amp;&amp; python3 validate_lab.py</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: cd /opt/lab-classroom/class61 &amp;&amp; python3 validate_lab.py</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>6</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 6</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Inspect the resulting files and confirm that no artifact was created outside the class directory.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Inspect the resulting files and confirm that no artifact was created outside the class directory.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>find /opt/lab-classroom/class61 -maxdepth 1 -type f -printf '%f\n' | sort</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: find /opt/lab-classroom/class61 -maxdepth 1 -type f -printf &#x27;%f\n&#x27; | sort</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>7</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 7</div>
+ 
+</div></div><div class="cr-lab-path"><h4>instruction</h4><p>Review policy.json and identify which settings must be translated manually into the Bazarr web interface during a future deployment.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Review policy.json and identify which settings must be translated manually into the Bazarr web interface during a future deployment.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>command</h4><p>python3 -m json.tool /opt/lab-classroom/class61/policy.json</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: python3 -m json.tool /opt/lab-classroom/class61/policy.json</div>
+ 
+</div></div><div class="cr-lab-path"><h4>production_translation</h4><p>Add Sonarr and Radarr using their reachable URLs and separately supplied API keys.<br />
+Confirm connection tests before assigning language profiles.<br />
+Mount or otherwise expose the actual series and movie roots to Bazarr.<br />
+Create path mappings only where manager-reported paths differ from Bazarr-visible paths.<br />
+Create language profiles that reflect the tested policy.<br />
+Configure one reviewed provider at a time.<br />
+Test manual searches on a small, representative media sample before enabling automatic searches.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Add Sonarr and Radarr using their reachable URLs and separately supplied API keys.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Expected results</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>The directory /opt/lab-classroom/class61/ contains policy.json, inventory.json, and validate_lab.py.</li>
+<li>The validator prints five lines beginning with PASS.</li>
+<li>The series item is accepted because its file path is below /media/tv.</li>
+<li>The movie item is accepted because its file path is below /media/movies.</li>
+<li>Both inventory entries reference defined language profiles.</li>
+<li>No provider connection, manager connection, credential, subtitle download, or media-library write occurs.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: - The directory /opt/lab-classroom/class61/ contains policy.json, inventory.json, and validate_lab.py.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Verification</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>[ ] Run: cd /opt/lab-classroom/class61 &amp;&amp; python3 validate_lab.py</li>
+<li>[ ] Run: python3 -m json.tool /opt/lab-classroom/class61/policy.json</li>
+<li>[ ] Run: python3 -m json.tool /opt/lab-classroom/class61/inventory.json</li>
+<li>[ ] Run: find /opt/lab-classroom/class61 -maxdepth 1 -type f -printf '%f\n' | sort</li>
+<li>[ ] Confirm that policy.json declares providers_configured as false.</li>
+<li>[ ] Confirm that each simulated item path begins below the media root associated with its manager.</li>
+<li>[ ] Confirm that no API key, provider password, session token, or cookie was added to either JSON document.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> An API key is a password apps use to talk to each other. Keep it private.</div>
+ 
+</div></div></div><div class="cr-box cr-box-break"><div class="cr-box-head"><span class="cr-chip cr-chip-break">Break / fix</span><h3>Break/fix</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Change only one thing at a time so you know what caused the failure.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The validator reports that an item is outside its manager root.</td>
+<td>The inventory path and configured media root use different namespaces or the item was assigned to the wrong manager.</td>
+<td>Make the simulated path begin below the correct manager root. In a real deployment, align mounts or add a precise Bazarr path mapping.</td>
+</tr>
+<tr>
+<td>The validator reports an unknown profile.</td>
+<td>An inventory item references a profile name not defined in policy.json.</td>
+<td>Correct the profile name or define a complete profile with languages, forced-subtitle behavior, and hearing-impaired behavior.</td>
+</tr>
+<tr>
+<td>Python reports that a JSON document cannot be decoded.</td>
+<td>The JSON was edited with a missing comma, unmatched quote, or trailing comma.</td>
+<td>Use python3 -m json.tool on the affected file, correct the location reported by the parser, and rerun the validator.</td>
+</tr>
+<tr>
+<td>Bazarr can connect to Sonarr or Radarr but reports media files as unavailable.</td>
+<td>The manager API is reachable, but Bazarr does not have the same filesystem view or a correct path mapping.</td>
+<td>Compare the exact manager-reported path with the path visible to Bazarr. Align the media mounts or configure a narrowly scoped prefix mapping.</td>
+</tr>
+<tr>
+<td>Bazarr finds subtitles but cannot save them.</td>
+<td>Bazarr can read the media but lacks permission to create sidecar files in the media directory.</td>
+<td>Verify the runtime identity, directory ownership, access-control rules, and mount write mode. Grant only the access required to create and manage subtitle files.</td>
+</tr>
+<tr>
+<td>Downloaded subtitles belong to the wrong release or drift out of synchronization.</td>
+<td>Candidate matching was too permissive, the release metadata was incomplete, or the subtitle was timed for a different cut.</td>
+<td>Raise matching requirements, prefer candidates with compatible release metadata, review provider settings, and test synchronization behavior before broad automation.</td>
+</tr>
+<tr>
+<td>A desired language remains marked as missing even though the media has an embedded subtitle stream.</td>
+<td>Embedded subtitles are not configured to satisfy the profile, the stream language metadata is absent, or the requested variant differs.</td>
+<td>Inspect the media stream metadata and Bazarr's embedded-subtitle policy. Decide whether embedded tracks should satisfy the requirement or whether an external sidecar is required.</td>
+</tr>
+<tr>
+<td>Provider searches fail while manager synchronization still works.</td>
+<td>The provider has separate authentication, availability, quota, or account requirements.</td>
+<td>Review the provider status and terms, verify its credentials through the Bazarr interface, and avoid repeatedly retrying a provider that is rejecting requests.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Security</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>principles</h4><p>Treat Sonarr and Radarr API keys as secrets because they permit authenticated manager access.<br />
+Treat provider usernames, passwords, tokens, cookies, and session data as secrets.<br />
+Restrict access to Bazarr's configuration directory and backups.<br />
+Do not commit exported configuration containing credentials to a source repository.<br />
+Expose the Bazarr interface only to trusted clients or place it behind a properly authenticated gateway.<br />
+Prefer isolated application networks for manager API traffic.<br />
+Use encrypted transport when traffic crosses an untrusted network.<br />
+Grant Bazarr read access to media and only the write access needed for subtitle sidecars.<br />
+Review provider terms and request limits before enabling automation.<br />
+Do not assume that a downloaded subtitle is correct merely because its language matches.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Home Assistant watches sensors and runs if-this-then-that rules for your house.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>secret_handling</h4><p>The lab intentionally contains no credentials. In production, enter secrets through the protected application interface or an appropriate secret-management mechanism. Redact URLs containing tokens, provider account details, and API keys from screenshots and support bundles.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The lab intentionally contains no credentials.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>filesystem_guidance</h4><p>A subtitle-writing service can alter files visible to playback clients. Separate configuration backups from media backups, keep media roots narrowly scoped, and test with a small library subset before granting write access to an entire collection.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: A subtitle-writing service can alter files visible to playback clients.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>external_service_considerations</h4><p>Provider searches disclose at least some title or release metadata to external services. Provider accounts may be rate-limited or suspended for abusive automation. Configure conservative search behavior and honor provider rules.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Home Assistant watches sensors and runs if-this-then-that rules for your house.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Rollback</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>strategy</h4><p>In a real deployment, first disable automatic subtitle searches and provider access.<br />
+Preserve the Bazarr configuration and logs until the reason for rollback is understood.<br />
+Do not automatically delete existing subtitle files; they may predate Bazarr or have been manually curated.<br />
+Restore configuration from a known backup if a policy change caused the problem.<br />
+Review subtitle sidecars individually before any media-library cleanup.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Make a safety copy first so a mistake does not erase your work.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>lab_cleanup_command</h4><p>python3 - &lt;&lt;'PY'<br />
+from pathlib import Path</p>
+<p>target = Path('/opt/lab-classroom/class61')<br />
+expected = Path('/opt/lab-classroom/class61')<br />
+assert target.resolve() == expected.resolve(), 'Unexpected cleanup target'<br />
+if target.exists():<br />
+    for child in target.iterdir():<br />
+        if child.is_file() or child.is_symlink():<br />
+            child.unlink()<br />
+        else:<br />
+            raise RuntimeError(f'Unexpected nested entry: {child}')<br />
+    target.rmdir()<br />
+print('Lab artifacts removed')<br />
+PY</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: python3 - &lt;&lt;&#x27;PY&#x27;
+from pathlib import Path
+
+target = Path(&#x27;/opt/lab-classroom/class61&#x27;)
+expected = Path(&#x27;/opt/lab-classroom/class61&#x27;)
+assert target.resolve() …</div>
+ 
+</div></div><div class="cr-prose-block"><h4>rollback_verification</h4><p>Confirm that /opt/lab-classroom/class61/ no longer exists while neighboring classroom directories remain unchanged.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Confirm that /opt/lab-classroom/class61/ no longer exists while neighboring classroom directories remain unchanged.</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="lesson.html">← Lesson</a><a href="homework.html">Homework →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>

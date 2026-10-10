@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05-hardware-transcoding-and-verification: Lab · Classroom</title>
+<meta name="description" content="05-hardware-transcoding-and-verification: Lab">
+<link rel="canonical" href="https://otaconskeep.github.io/classroom/modules/12-media-servers/topics/05-hardware-transcoding-and-verification/lab.html">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/classroom/classroom.css?v=20260922b">
+</head>
+<body>
+
+<div class="filebar">
+ <div class="wrap">
+ <span>CLASSROOM // HOMELAB ACADEMY</span>
+ <span>M12 LAB<span class="blink"></span></span>
+ </div>
+</div>
+
+<nav class="topnav">
+ <div class="wrap">
+ <a class="brand" href="/">Otaconskeep</a>
+ <button class="navtoggle" aria-label="Toggle navigation" aria-expanded="false">MENU</button>
+ <div class="navlinks">
+ <a href="/">Home</a>
+ <a href="/otacon/">Otacon</a>
+ <a href="/keepdesk/">Keep Desk</a>
+ <a href="/keeproute/">KeepRoute</a>
+ <a href="/expansion/">Expansion</a>
+ <a href="/ai9/">AI9</a>
+ <a href="/classroom/" aria-current="page">Classroom</a>
+ <a href="/engineering/">Engineering</a>
+ <a href="/faq/">FAQ</a>
+ <a href="/about/">About</a>
+ <a href="https://github.com/Otaconskeep" target="_blank" rel="noopener">GitHub</a>
+ <a class="discord" href="https://discord.gg/cZDeqECzX" target="_blank" rel="noopener">Discord</a>
+ </div>
+ </div>
+</nav>
+<nav class="cr-subnav" aria-label="Classroom">
+ <div class="wrap">
+ <a href="/classroom/">Academy</a>
+ <a href="/classroom/modules/00-pick-your-lab/">Build your own lab</a>
+ <a href="/classroom/modules/">Modules</a>
+ <a href="/classroom/methodology.html">Method</a>
+ <a href="/classroom/syllabus.html">Syllabus</a>
+ <a href="/classroom/workbook.html">Workbook</a>
+ <a href="/classroom/final-exam.html">Capstone</a>
+ <a href="/classroom/references/">References</a>
+ <a href="/classroom/glossary.html">Glossary</a>
+ </div>
+</nav>
+
+<div class="wrap">
+ <section class="hero flush">
+ <div class="stamp">M12 LAB<small>lab</small></div>
+ <p class="eyebrow" style="margin-top:18px;">Homelab Academy / Modules</p>
+ <h1 class="display" style="font-size:clamp(1.6rem,4.5vw,2.5rem);"><span class="cr-chip cr-chip-lab">Hands-on</span> 05-hardware-transcoding-and-verification: Lab</h1>
+ <p class="lede">Guided practice + break/fix + lab gate.</p>
+ <div class="cr-osbar" role="group" aria-label="Command host">
+ <span>Show commands for:</span>
+ <button type="button" class="win" data-os="win" aria-pressed="false">Windows</button>
+ <button type="button" class="lin" data-os="lin" aria-pressed="true">Linux / macOS</button>
+</div>
+ </section>
+</div>
+<div class="wrap">
+ 
+ <div class="cr-box"><h3>Overview</h3><p><strong>Module:</strong> Requests &amp; Media Servers<br />
+<strong>Activity type:</strong> Lab (Practice)<br />
+<strong>Lab risk:</strong> medium<br />
+<strong>Objective:</strong> Distinguish decoding, filtering, encoding, and container muxing as separate stages of a transcoding pipeline.</p></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Before you start</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>A Linux homelab host or virtual machine with FFmpeg and FFprobe installed.</li>
+<li>A supported Intel, AMD, or NVIDIA GPU exposed to the operating system.</li>
+<li>Permission to read the relevant GPU device and monitoring interfaces.</li>
+<li>The directory /opt/lab-classroom/class60/ must already exist and be writable by the learner.</li>
+<li>Basic familiarity with codecs, containers, shell pipelines, and media server terminology.</li>
+<li>At least 1 GB of free space beneath /opt/lab-classroom/class60/.</li>
+<li>No production media library is required or used.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> If the app cannot write files, the user numbers (who owns the folder) are probably wrong.</div>
+ 
+</div></div></div><div class="cr-box cr-box-lab" id="lab"><div class="cr-box-head"><span class="cr-chip cr-chip-lab">Hands-on</span><h3>Guided lab</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do these steps in order, one time, without skipping. Each step should leave proof you can show later.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> If a step fails, stop and use Break/fix instead of inventing a new path.</div>
+</div><div class="cr-lab-path"><h4>scope</h4><p>All created directories, media files, logs, cache files, configuration files, and temporary files remain beneath /opt/lab-classroom/class60/. Device and system inspection commands are read-only.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: All created directories, media files, logs, cache files, configuration files, and temporary files remain beneath /opt/lab-classroom/class60/.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>shell_assumption</h4><p>Run the commands in Bash. Select exactly one hardware encoding branch that matches the installed GPU.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run the commands in Bash.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>steps</h4><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Do this carefully, then check that it worked before moving on. (steps)</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>1</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 1</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Prepare an isolated workspace</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Prepare an isolated workspace</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>export LAB=/opt/lab-classroom/class60<br />
+mkdir -p "$LAB/input" "$LAB/output" "$LAB/logs" "$LAB/cache" "$LAB/config" "$LAB/tmp"<br />
+export HOME="$LAB"<br />
+export XDG_CACHE_HOME="$LAB/cache"<br />
+export XDG_CONFIG_HOME="$LAB/config"<br />
+export TMPDIR="$LAB/tmp"<br />
+printf 'Workspace: %s\n' "$LAB" | tee "$LAB/logs/workspace.txt"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: export LAB=/opt/lab-classroom/class60
+mkdir -p &quot;$LAB/input&quot; &quot;$LAB/output&quot; &quot;$LAB/logs&quot; &quot;$LAB/cache&quot; &quot;$LAB/config&quot; &quot;$LAB/tmp&quot;
+export HOME=&quot;$LAB&quot;
+export XDG_CAC…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>Stop if LAB does not print exactly /opt/lab-classroom/class60. These environment variables direct normal per-user caches and temporary artifacts into the class workspace.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Stop if LAB does not print exactly /opt/lab-classroom/class60.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>2</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 2</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Record FFmpeg capabilities and device visibility</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Record FFmpeg capabilities and device visibility</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>ffmpeg -version &gt; "$LAB/logs/ffmpeg-version.txt" 2&gt;&amp;1<br />
+ffmpeg -hide_banner -encoders &gt; "$LAB/logs/ffmpeg-encoders.txt" 2&gt;&amp;1<br />
+grep -E 'h264_(vaapi|nvenc|qsv)|hevc_(vaapi|nvenc|qsv)|av1_(vaapi|nvenc|qsv)' "$LAB/logs/ffmpeg-encoders.txt" | tee "$LAB/logs/hardware-encoder-candidates.txt"<br />
+if test -d /dev/dri; then ls -l /dev/dri | tee "$LAB/logs/dri-devices.txt"; else printf 'No /dev/dri directory is visible.\n' | tee "$LAB/logs/dri-devices.txt"; fi<br />
+if command -v nvidia-smi &gt;/dev/null 2&gt;&1; then nvidia-smi | tee "$LAB/logs/nvidia-smi.txt"; else printf 'nvidia-smi is not available.\n' | tee "$LAB/logs/nvidia-smi.txt"; fi</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: ffmpeg -version &gt; &quot;$LAB/logs/ffmpeg-version.txt&quot; 2&gt;&amp;1
+ffmpeg -hide_banner -encoders &gt; &quot;$LAB/logs/ffmpeg-encoders.txt&quot; 2&gt;&amp;1
+grep -E &#x27;h264_(vaapi|nvenc|qsv)|he…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>The encoder list describes the FFmpeg build. Device listings describe exposure. Neither item alone proves that a transcode will work.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The encoder list describes the FFmpeg build.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>3</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 3</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Create a reproducible source</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Create a reproducible source</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>set -o pipefail; ffmpeg -hide_banner -y -f lavfi -i 'testsrc2=size=1280x720:rate=30' -f lavfi -i 'sine=frequency=1000:sample_rate=48000' -t 30 -map 0:v:0 -map 1:a:0 -c:v libx264 -preset veryfast -pix_fmt yuv420p -c:a aac -b:a 128k "$LAB/input/source.mp4" 2&gt;&amp;1 | tee "$LAB/logs/source-create.txt"<br />
+ffprobe -v error -show_format -show_streams -of json "$LAB/input/source.mp4" &gt; "$LAB/logs/source-probe.json"<br />
+sha256sum "$LAB/input/source.mp4" &gt; "$LAB/logs/source-sha256.txt"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: set -o pipefail; ffmpeg -hide_banner -y -f lavfi -i &#x27;testsrc2=size=1280x720:rate=30&#x27; -f lavfi -i &#x27;sine=frequency=1000:sample_rate=48000&#x27; -t 30 -map 0:v:0 -ma…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>The source is deliberately encoded in software. It exists only to supply a known H.264/AAC input to the hardware branch.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: The source is deliberately encoded in software.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>4</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 4</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Optionally start vendor monitoring in a second terminal</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Optionally start vendor monitoring in a second terminal</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>export LAB=/opt/lab-classroom/class60; if command -v intel_gpu_top &gt;/dev/null 2&gt;&1; then timeout 35s intel_gpu_top -J -s 1000 -o "$LAB/logs/intel-gpu-top.json"; else printf 'intel_gpu_top is unavailable.\n' | tee "$LAB/logs/intel-monitor-unavailable.txt"; fi<br />
+export LAB=/opt/lab-classroom/class60; if command -v nvidia-smi &gt;/dev/null 2&gt;&1; then nvidia-smi dmon -s u -d 1 -c 35 | tee "$LAB/logs/nvidia-dmon.txt"; else printf 'nvidia-smi is unavailable.\n' | tee "$LAB/logs/nvidia-monitor-unavailable.txt"; fi<br />
+export LAB=/opt/lab-classroom/class60; for sample in $(seq 1 35); do printf '%s ' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"; cat /sys/class/drm/card*/device/gpu_busy_percent 2&gt;/dev/null || printf 'gpu_busy_percent unavailable'; printf '\n'; sleep 1; done | tee "$LAB/logs/drm-gpu-busy.txt"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: export LAB=/opt/lab-classroom/class60; if command -v intel_gpu_top &gt;/dev/null 2&gt;&amp;1; then timeout 35s intel_gpu_top -J -s 1000 -o &quot;$LAB/logs/intel-gpu-top.jso…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>Run only the monitor appropriate to the host. A missing monitoring utility does not itself prove that acceleration is unavailable. Monitoring should overlap the selected transcode.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run only the monitor appropriate to the host.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>5</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 5</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Run the Intel or AMD VA-API branch</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run the Intel or AMD VA-API branch</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>export LAB=/opt/lab-classroom/class60; export HOME="$LAB" XDG_CACHE_HOME="$LAB/cache" XDG_CONFIG_HOME="$LAB/config" TMPDIR="$LAB/tmp"; set -o pipefail; ffmpeg -hide_banner -y -vaapi_device /dev/dri/renderD128 -i "$LAB/input/source.mp4" -map 0:v:0 -map 0:a:0 -vf 'format=nv12,hwupload' -c:v h264_vaapi -b:v 4M -c:a copy "$LAB/output/vaapi-hardware.mp4" 2&gt;&amp;1 | tee "$LAB/logs/vaapi-transcode.txt"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: export LAB=/opt/lab-classroom/class60; export HOME=&quot;$LAB&quot; XDG_CACHE_HOME=&quot;$LAB/cache&quot; XDG_CONFIG_HOME=&quot;$LAB/config&quot; TMPDIR=&quot;$LAB/tmp&quot;; set -o pipefail; ffmpe…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>Use this branch only when a compatible VA-API render node and the h264_vaapi encoder are available. The format and hwupload filters prepare system-memory frames for the hardware encoder.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Use this branch only when a compatible VA-API render node and the h264_vaapi encoder are available.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>6</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 6</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Run the NVIDIA NVENC branch</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Run the NVIDIA NVENC branch</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>export LAB=/opt/lab-classroom/class60; export HOME="$LAB" XDG_CACHE_HOME="$LAB/cache" XDG_CONFIG_HOME="$LAB/config" TMPDIR="$LAB/tmp"; set -o pipefail; ffmpeg -hide_banner -y -i "$LAB/input/source.mp4" -map 0:v:0 -map 0:a:0 -c:v h264_nvenc -b:v 4M -c:a copy "$LAB/output/nvenc-hardware.mp4" 2&gt;&amp;1 | tee "$LAB/logs/nvenc-transcode.txt"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: export LAB=/opt/lab-classroom/class60; export HOME=&quot;$LAB&quot; XDG_CACHE_HOME=&quot;$LAB/cache&quot; XDG_CONFIG_HOME=&quot;$LAB/config&quot; TMPDIR=&quot;$LAB/tmp&quot;; set -o pipefail; ffmpe…</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>Use this branch only when h264_nvenc is listed and an NVIDIA device is available. This command verifies hardware encoding; it does not claim hardware decoding because no hardware decoder was explicitly selected.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Use this branch only when h264_nvenc is listed and an NVIDIA device is available.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>step</h4><p>7</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: 7</div>
+ 
+</div></div><div class="cr-lab-path"><h4>title</h4><p>Validate the selected output</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Validate the selected output</div>
+ 
+</div></div><div class="cr-lab-path"><h4>commands</h4><p>export LAB=/opt/lab-classroom/class60; if test -s "$LAB/output/vaapi-hardware.mp4"; then OUTPUT="$LAB/output/vaapi-hardware.mp4"; elif test -s "$LAB/output/nvenc-hardware.mp4"; then OUTPUT="$LAB/output/nvenc-hardware.mp4"; else printf 'No non-empty hardware output was found.\n'; exit 1; fi; printf '%s\n' "$OUTPUT" | tee "$LAB/logs/selected-output.txt"; ffprobe -v error -show_format -show_streams -of json "$OUTPUT" &gt; "$LAB/logs/output-probe.json"; ffmpeg -v error -i "$OUTPUT" -map 0:v:0 -f null -; sha256sum "$OUTPUT" &gt; "$LAB/logs/output-sha256.txt"<br />
+grep -E 'h264_vaapi|h264_nvenc' "$LAB/logs/vaapi-transcode.txt" "$LAB/logs/nvenc-transcode.txt" 2&gt;/dev/null | tee "$LAB/logs/hardware-encoder-log-evidence.txt"<br />
+grep -E '"codec_name": "h264"|"codec_type": "video"|"codec_type": "audio"' "$LAB/logs/output-probe.json" | tee "$LAB/logs/output-stream-summary.txt"</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Logs are the app’s diary. Read the newest lines when something breaks.</div>
+ 
+</div></div><div class="cr-lab-path"><h4>notes</h4><p>A complete decode to FFmpeg's null muxer checks the whole video stream without creating another media file. The output probe verifies stream structure, while the original transcode log identifies the encoder implementation.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Logs are the app’s diary. Read the newest lines when something breaks.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Expected results</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>The workspace contains input, output, logs, cache, config, and tmp subdirectories beneath /opt/lab-classroom/class60/.</li>
+<li>The generated source.mp4 is non-empty and FFprobe reports one H.264 video stream and one audio stream.</li>
+<li>At least one relevant hardware encoder name appears in hardware-encoder-candidates.txt when the installed FFmpeg build supports the local platform.</li>
+<li>The selected hardware command exits successfully and creates either vaapi-hardware.mp4 or nvenc-hardware.mp4.</li>
+<li>The selected transcode log names h264_vaapi or h264_nvenc rather than libx264.</li>
+<li>FFprobe reports an H.264 video stream in the selected output.</li>
+<li>The complete output decode command produces no error message and exits successfully.</li>
+<li>When a compatible monitoring interface is available, its log shows activity overlapping the transcode; no universal utilization percentage or frame-rate target is assumed.</li>
+<li>The source and output SHA-256 records exist for artifact identification, but different hashes alone are not proof of hardware acceleration.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Logs are the app’s diary. Read the newest lines when something breaks.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Verification</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><ul>
+<li>[ ] Confirm the workspace boundary with: printf '%s\n' "$LAB". It must equal /opt/lab-classroom/class60.</li>
+<li>[ ] Confirm the source exists with: test -s /opt/lab-classroom/class60/input/source.mp4.</li>
+<li>[ ] Review /opt/lab-classroom/class60/logs/hardware-encoder-candidates.txt and verify that the encoder used by the selected branch was listed before the test.</li>
+<li>[ ] For VA-API, verify that /dev/dri/renderD128 was visible and that the transcode log contains h264_vaapi.</li>
+<li>[ ] For NVIDIA, verify that nvidia-smi identified a device and that the transcode log contains h264_nvenc.</li>
+<li>[ ] Confirm that /opt/lab-classroom/class60/logs/output-probe.json identifies an H.264 video stream and contains no FFprobe-generated error.</li>
+<li>[ ] Repeat the full decode check against the selected output; a zero exit status demonstrates that FFmpeg could read the entire video stream.</li>
+<li>[ ] Correlate the transcode time window with intel-gpu-top.json, nvidia-dmon.txt, or drm-gpu-busy.txt when an applicable monitor is available.</li>
+<li>[ ] Do not treat low CPU usage, output-file existence, device-node existence, or a changed checksum as sufficient standalone proof.</li>
+<li>[ ] Record which stages were accelerated. The NVENC command in this lab proves hardware encoding but intentionally does not prove hardware decoding.</li>
+</ul><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Logs are the app’s diary. Read the newest lines when something breaks.</div>
+ 
+</div></div></div><div class="cr-box cr-box-break"><div class="cr-box-head"><span class="cr-chip cr-chip-break">Break / fix</span><h3>Break/fix</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  <button type="button" class="cr-btn" data-cr="more" aria-expanded="false">More detail</button>
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ <div class="cr-panel more" hidden><strong>More detail:</strong> Change only one thing at a time so you know what caused the failure.</div>
+</div><div class="cr-prose-block"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No hardware encoder candidates appear in the FFmpeg encoder list.</td>
+<td>The installed FFmpeg build lacks the required VA-API or NVENC integration.</td>
+<td>Use a distribution or application build that explicitly includes the needed encoder. Re-run the capability inventory before attempting the transcode.</td>
+</tr>
+<tr>
+<td>The VA-API command reports that /dev/dri/renderD128 cannot be opened.</td>
+<td>The render node is absent, the wrong render-node number was selected, the driver is not active, or the learner lacks access.</td>
+<td>Inspect the read-only /dev/dri listing, identify the correct render node, and have the system administrator grant narrowly scoped device access through the platform's normal GPU-access mechanism.</td>
+</tr>
+<tr>
+<td>The VA-API command reports an unsupported profile, entry point, or pixel format.</td>
+<td>The GPU generation or userspace driver does not support the requested H.264 encoding mode or input surface format.</td>
+<td>Confirm codec support for the exact GPU generation and driver, retain the nv12 conversion, and test a codec and profile that the hardware documentation lists as encodable.</td>
+</tr>
+<tr>
+<td>The NVENC command reports that no capable device is found.</td>
+<td>The GPU is not exposed, the NVIDIA driver is unavailable, or the device does not provide the requested encoding capability.</td>
+<td>Confirm that nvidia-smi identifies the device and review the GPU's encode support in NVIDIA's official compatibility information.</td>
+</tr>
+<tr>
+<td>FFmpeg recognizes h264_nvenc but reports a driver or library version error.</td>
+<td>The FFmpeg build, NVIDIA userspace libraries, and installed driver are incompatible.</td>
+<td>Align the FFmpeg package and NVIDIA driver stack using supported versions from the operating-system or application vendor.</td>
+</tr>
+<tr>
+<td>The hardware output exists but is zero bytes or incomplete.</td>
+<td>The encoder initialized but failed during frame processing, or a piped command failure was overlooked.</td>
+<td>Review the complete vendor transcode log, ensure pipefail was enabled, remove only the failed output inside the class workspace during rollback, and rerun after correcting the reported cause.</td>
+</tr>
+<tr>
+<td>FFprobe accepts the output, but the full decode check fails.</td>
+<td>The container metadata is readable while one or more encoded packets are corrupt or incomplete.</td>
+<td>Treat the job as failed. Review the transcode log for device resets, storage errors, unsupported parameters, or premature termination.</td>
+</tr>
+<tr>
+<td>GPU monitoring shows no obvious activity even though the hardware encoder command succeeded.</td>
+<td>The sampling interval missed a short job, the monitor reports a different engine, or the monitoring interface is unsupported.</td>
+<td>Start monitoring before the transcode, use a longer representative input within the workspace, and consult vendor documentation for the field corresponding to video encode activity.</td>
+</tr>
+<tr>
+<td>The command succeeds on the host but fails inside a media-server container.</td>
+<td>The container lacks the required device node, compatible userspace library, or device access.</td>
+<td>Compare encoder inventory and device visibility inside and outside the container. Expose only the required GPU device and compatible libraries through the container platform's documented mechanism.</td>
+</tr>
+<tr>
+<td>CPU utilization remains noticeable during a successful hardware encode.</td>
+<td>Demuxing, software decoding, audio processing, frame conversion, copying, or muxing still uses the CPU.</td>
+<td>Identify each pipeline stage before optimizing. Do not classify the encode as a failure solely because CPU work remains.</td>
+</tr>
+</tbody>
+</table><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> You break one thing on purpose so you learn how it fails. Then you put it back. This builds real troubleshooting skill.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Security</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>principles</h4><p>Grant GPU access only to the account or service that performs transcoding.<br />
+Prefer render-node access over broader privileged execution when the platform supports it.<br />
+Do not expose unrelated host devices to a media-server container.<br />
+Treat media files as untrusted input because demuxers, decoders, subtitle parsers, and metadata readers process complex binary formats.<br />
+Keep media applications and GPU drivers maintained with vendor-supported security updates.<br />
+Avoid placing credentials, production media, or private metadata in the class workspace.<br />
+Retain logs only as long as needed because real-world application logs can disclose file names, media metadata, account names, and device details.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Grant GPU access only to the account or service that performs transcoding.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>least_privilege</h4><p>This lab does not require changing device permissions or running the transcoder as a broadly privileged service. If the learner cannot access the device, an administrator should use the platform's normal narrowly scoped GPU-access controls rather than weakening access globally.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: This lab does not require changing device permissions or running the transcoder as a broadly privileged service.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>validation_note</h4><p>Successful hardware encoding confirms functionality, not isolation. Container device exposure and host driver trust remain separate security decisions.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Successful hardware encoding confirms functionality, not isolation.</div>
+ 
+</div></div></div><div class="cr-box"><div class="cr-box-head"><span class="cr-chip cr-chip-learn">Learn</span><h3>Rollback</h3></div><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Read this block, then try the next action. If you feel stuck, tap What this means.</div>
+ 
+</div><div class="cr-prose-block"><h4>goal</h4><p>Return the class workspace to its pre-lab state without changing GPU drivers, device permissions, application packages, or production media.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Return the class workspace to its pre-lab state without changing GPU drivers, device permissions, application packages, or production media.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>procedure</h4><p>Stop any FFmpeg or monitoring process started specifically for this class.<br />
+Review /opt/lab-classroom/class60/logs/selected-output.txt if evidence must be retained.<br />
+Delete only the generated files and subdirectories beneath /opt/lab-classroom/class60/ using the classroom platform's approved file-management method.<br />
+Leave /dev/dri, system driver files, application configuration, and production libraries unchanged.<br />
+Unset LAB, HOME, XDG_CACHE_HOME, XDG_CONFIG_HOME, and TMPDIR in the current shell, or close the laboratory shell session.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> Big idea: Stop any FFmpeg or monitoring process started specifically for this class.</div>
+ 
+</div></div><div class="cr-prose-block"><h4>post_rollback_verification</h4><p>Confirm that no class FFmpeg process remains and that no intended production service was stopped or reconfigured. The laboratory makes no persistent driver, package, permission, boot, or service changes.</p><div class="cr-help">
+ <div class="cr-actions">
+  <button type="button" class="cr-btn mean" data-cr="mean" aria-expanded="false">What this means</button>
+  
+ </div>
+ <div class="cr-panel mean" hidden><strong>In plain words:</strong> If the app cannot write files, the user numbers (who owns the folder) are probably wrong.</div>
+ 
+</div></div></div>
+ <div class="cr-pager"><a href="lesson.html">← Lesson</a><a href="homework.html">Homework →</a></div>
+</div>
+
+<footer class="sitefoot">
+ <div class="wrap">
+ <span>Otaconskeep Classroom · Homelab Academy</span>
+ <span><a href="https://github.com/Otaconskeep/Classroom">GitHub</a> · <a href="/classroom/pack/">Source pack</a></span>
+ </div>
+</footer>
+<script src="/classroom/classroom.js?v=20260922b"></script>
+</body></html>
