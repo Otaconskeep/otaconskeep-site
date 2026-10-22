@@ -32,29 +32,9 @@ class CurriculumTests(unittest.TestCase):
         batch = next_core_batch(self.cfg)
         self.assertEqual(len(batch), 6)
         ids = [b["class_id"] for b in batch]
-        if all(n in existing for n in range(52, 58)):
-            # After Classes 52–57 publish, next protected batch is 58–63.
-            self.assertEqual(ids, [58, 59, 60, 61, 62, 63])
-        elif all(n in existing for n in range(46, 52)):
-            # After Classes 46–51 publish, next protected batch is 52–57.
-            self.assertEqual(ids, [52, 53, 54, 55, 56, 57])
-        elif all(n in existing for n in range(34, 46)):
-            # After Classes 40–45 publish, next protected batch is 46–51.
-            self.assertEqual(ids, [46, 47, 48, 49, 50, 51])
-        elif all(n in existing for n in range(34, 40)):
-            # After Classes 34–39 publish, next protected batch is 40–45.
-            self.assertEqual(ids, [40, 41, 42, 43, 44, 45])
-        elif all(n in existing for n in range(28, 34)):
-            # After Classes 28–33 publish, next protected batch is 34–39.
-            self.assertEqual(ids, [34, 35, 36, 37, 38, 39])
-        elif all(n in existing for n in range(22, 28)):
-            # After Classes 22–27 publish, next protected batch is 28–33.
-            self.assertEqual(ids, [28, 29, 30, 31, 32, 33])
-        elif all(n in existing for n in range(16, 22)):
-            # After Classes 16–21 publish, next protected batch is 22–27.
-            self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
-        else:
-            self.assertEqual(ids, [16, 17, 18, 19, 20, 21])
+        start = next(n for n in range(1, 124) if n not in existing)
+        self.assertEqual(ids, list(range(start, start + 6)))
+        if start == 16:
             self.assertEqual(batch[0]["title"], "Linux Filesystem and Navigation")
             self.assertEqual(batch[1]["title"], "Shell Pipes and Redirection")
 

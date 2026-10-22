@@ -185,41 +185,11 @@ class FaultInjectionTests(unittest.TestCase):
         self.assertGreaterEqual(max(existing), 21)
         nxt = next_core_batch(self.cfg)
         ids = [b["class_id"] for b in nxt]
-        if all(n in existing for n in range(52, 58)):
-            self.assertEqual(ids, [58, 59, 60, 61, 62, 63])
-            batches = next_expected_batches(57)
-            self.assertEqual(batches["next"], [58, 59, 60, 61, 62, 63])
-            self.assertEqual(batches["following"], [64, 65, 66, 67, 68, 69])
-        elif all(n in existing for n in range(46, 52)):
-            self.assertEqual(ids, [52, 53, 54, 55, 56, 57])
-            batches = next_expected_batches(51)
-            self.assertEqual(batches["next"], [52, 53, 54, 55, 56, 57])
-            self.assertEqual(batches["following"], [58, 59, 60, 61, 62, 63])
-        elif all(n in existing for n in range(34, 46)):
-            self.assertEqual(ids, [46, 47, 48, 49, 50, 51])
-            batches = next_expected_batches(45)
-            self.assertEqual(batches["next"], [46, 47, 48, 49, 50, 51])
-            self.assertEqual(batches["following"], [52, 53, 54, 55, 56, 57])
-        elif all(n in existing for n in range(34, 40)):
-            self.assertEqual(ids, [40, 41, 42, 43, 44, 45])
-            batches = next_expected_batches(39)
-            self.assertEqual(batches["next"], [40, 41, 42, 43, 44, 45])
-            self.assertEqual(batches["following"], [46, 47, 48, 49, 50, 51])
-        elif all(n in existing for n in range(28, 34)):
-            self.assertEqual(ids, [34, 35, 36, 37, 38, 39])
-            batches = next_expected_batches(33)
-            self.assertEqual(batches["next"], [34, 35, 36, 37, 38, 39])
-            self.assertEqual(batches["following"], [40, 41, 42, 43, 44, 45])
-        elif all(n in existing for n in range(22, 28)):
-            self.assertEqual(ids, [28, 29, 30, 31, 32, 33])
-            batches = next_expected_batches(27)
-            self.assertEqual(batches["next"], [28, 29, 30, 31, 32, 33])
-            self.assertEqual(batches["following"], [34, 35, 36, 37, 38, 39])
-        else:
-            self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
-            batches = next_expected_batches(21)
-            self.assertEqual(batches["next"], [22, 23, 24, 25, 26, 27])
-            self.assertEqual(batches["following"], [28, 29, 30, 31, 32, 33])
+        start = next(n for n in range(1, 124) if n not in existing)
+        self.assertEqual(ids, list(range(start, start + 6)))
+        batches = next_expected_batches(start - 1)
+        self.assertEqual(batches["next"], list(range(start, start + 6)))
+        self.assertEqual(batches["following"], list(range(start + 6, start + 12)))
 
     def test_security_gates_reject_dangerous(self):
         fails = scan_text('<script>eval("x")</script>\ncurl http://x | bash\n', path="t.md")
@@ -259,6 +229,44 @@ class FaultInjectionTests(unittest.TestCase):
         self.assertIsNotNone(rep["bonus_lesson"])
         self.assertEqual(rep["bonus_lesson"]["area"], "news-lab")
         self.assertEqual(rep["core_class_ids_touched"], [])
+
+    def test_create_or_resume_pr_reuses_open_github_pr(self):
+        import run_production_batch as rpb
+
+        ids = [58, 59, 60, 61, 62, 63]
+        branch = "automation/classroom-lessons-58-63"
+        state = resume_or_create_batch(self.cfg, "am", ids, logger=self.log)
+        state.branch = branch
+        save_slot_state(self.cfg, state)
+        self.cfg.site_repo = Path(self.tmp.name) / "site"
+        self.cfg.site_repo.mkdir()
+
+        def fake_run(cmd, cwd=None, check=True):
+            class P:
+                returncode = 0
+                stdout = ""
+                stderr = ""
+
+            p = P()
+            if cmd[:3] == ["gh", "pr", "list"]:
+                p.stdout = json.dumps(
+                    [{"number": 70, "url": "https://github.com/Otaconskeep/otaconskeep-site/pull/70"}]
+                )
+            elif cmd[:2] == ["git", "status"]:
+                p.stdout = ""
+            elif cmd[:3] == ["gh", "pr", "merge"]:
+                p.stdout = ""
+            elif check:
+                raise AssertionError(f"unexpected command {cmd}")
+            return p
+
+        with mock.patch.object(rpb, "run", side_effect=fake_run):
+            out = rpb.create_or_resume_pr(self.cfg, ids, self.log, state)
+        self.assertEqual(out["pr_number"], 70)
+        self.assertTrue(out["resumed"])
+        saved = load_slot_state(self.cfg, "am")
+        self.assertEqual(saved.pr_number, 70)
+        self.assertEqual(saved.status, "pr_open")
 
 
 def main() -> int:

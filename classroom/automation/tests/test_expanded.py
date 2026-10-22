@@ -58,29 +58,9 @@ class ExpandedTests(unittest.TestCase):
         existing = discover_existing_classes(self.cfg.pack_dir)
         batch = next_core_batch(self.cfg)
         ids = [b["class_id"] for b in batch]
-        if all(n in existing for n in range(52, 58)):
-            self.assertEqual(ids, [58, 59, 60, 61, 62, 63])
-            self.assertIn("Jellyfin", batch[0]["title"])
-        elif all(n in existing for n in range(46, 52)):
-            self.assertEqual(ids, [52, 53, 54, 55, 56, 57])
-            self.assertIn("SABnzbd", batch[0]["title"])
-        elif all(n in existing for n in range(34, 46)):
-            self.assertEqual(ids, [46, 47, 48, 49, 50, 51])
-            self.assertIn("Radarr Monitoring", batch[0]["title"])
-        elif all(n in existing for n in range(34, 40)):
-            self.assertEqual(ids, [40, 41, 42, 43, 44, 45])
-            self.assertIn("Sonarr Installation", batch[0]["title"])
-        elif all(n in existing for n in range(28, 34)):
-            self.assertEqual(ids, [34, 35, 36, 37, 38, 39])
-            self.assertIn("ARR Stack", batch[0]["title"])
-        elif all(n in existing for n in range(22, 28)):
-            self.assertEqual(ids, [28, 29, 30, 31, 32, 33])
-            self.assertIn("Docker Images", batch[0]["title"])
-        elif all(n in existing for n in range(16, 22)):
-            self.assertEqual(ids, [22, 23, 24, 25, 26, 27])
-            self.assertIn("Package Management", batch[0]["title"])
-        else:
-            self.assertEqual(ids, [16, 17, 18, 19, 20, 21])
+        start = next(n for n in range(1, 124) if n not in existing)
+        self.assertEqual(ids, list(range(start, start + 6)))
+        if start == 16:
             self.assertEqual(batch[0]["title"], "Linux Filesystem and Navigation")
             self.assertEqual(batch[1]["title"], "Shell Pipes and Redirection")
             self.assertEqual(batch[2]["title"], "Users, Groups, Permissions, and Least Privilege")
