@@ -138,24 +138,24 @@
     "57": {
       "redirect": "12-media-servers/topics/02-plex-installation-and-library-design/lesson.html"
     },
-    "64": {
-      "redirect": "13-access-edge/topics/01-reverse-proxy-fundamentals/lesson.html"
+    "58": {
+      "redirect": "12-media-servers/topics/03-jellyfin-installation-and-library-design/lesson.html"
     },
-    "65": {
-      "redirect": "13-access-edge/topics/02-local-dns-and-friendly-service-names/lesson.html"
+    "59": {
+      "redirect": "12-media-servers/topics/04-plex-versus-jellyfin-and-safe-migration/lesson.html"
     },
-    "66": {
-      "redirect": "13-access-edge/topics/03-tls-certificates-and-https/lesson.html"
+    "60": {
+      "redirect": "12-media-servers/topics/05-hardware-transcoding-and-verification/lesson.html"
     },
-    "67": {
-      "redirect": "13-access-edge/topics/04-authentication-and-access-control/lesson.html"
+    "61": {
+      "redirect": "12-media-servers/topics/06-bazarr-and-subtitle-automation/lesson.html"
     },
-    "68": {
-      "redirect": "13-access-edge/topics/05-tailscale-for-homelab-remote-access/lesson.html"
+    "62": {
+      "redirect": "12-media-servers/topics/07-arr-stack-health-monitoring/lesson.html"
     },
-    "69": {
-      "redirect": "13-access-edge/topics/06-wireguard-fundamentals-and-deployment/lesson.html"
+    "63": {
+      "redirect": "12-media-servers/topics/08-notifications-for-downloads-failures-and-request/lesson.html"
     }
   },
-  "updated_at": "2026-10-22T10:41:24Z"
+  "updated_at": "2026-10-22T08:19:50Z"
 }

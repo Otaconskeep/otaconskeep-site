@@ -52,7 +52,15 @@ def run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> subproce
     env["GIT_AUTHOR_EMAIL"] = GIT_AUTHOR_EMAIL
     env["GIT_COMMITTER_NAME"] = GIT_AUTHOR_NAME
     env["GIT_COMMITTER_EMAIL"] = GIT_AUTHOR_EMAIL
-    return subprocess.run(cmd, cwd=str(cwd) if cwd else None, text=True, capture_output=True, check=check, env=env)
+    proc = subprocess.run(
+        cmd, cwd=str(cwd) if cwd else None, text=True, capture_output=True, check=False, env=env
+    )
+    if check and proc.returncode != 0:
+        err = (proc.stderr or proc.stdout or "").strip()
+        if err:
+            print(err[-4000:], file=sys.stderr)
+        raise subprocess.CalledProcessError(proc.returncode, cmd, output=proc.stdout, stderr=proc.stderr)
+    return proc
 
 
 def activation_ok(cfg) -> tuple[bool, dict]:
@@ -170,12 +178,43 @@ def prepare_lesson_branch(cfg, class_ids: list[int], logger: JsonLogger, state) 
     return branch
 
 
+def lookup_open_pr(site: Path, branch: str) -> dict | None:
+    """Return the open GitHub PR for ``branch`` if one already exists."""
+    listed = run(
+        ["gh", "pr", "list", "--base", "main", "--head", branch, "--state", "open", "--json", "number,url"],
+        cwd=site,
+        check=False,
+    )
+    if listed.returncode != 0:
+        err = (listed.stderr or listed.stdout or "").strip()
+        if err:
+            print(err[-2000:], file=sys.stderr)
+        return None
+    try:
+        rows = json.loads(listed.stdout or "[]")
+    except json.JSONDecodeError:
+        return None
+    if not rows:
+        return None
+    row = rows[0]
+    try:
+        num = int(row["number"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    url = str(row.get("url") or "").strip()
+    if not url:
+        return None
+    return {"pr_number": num, "pr_url": url, "branch": branch, "resumed": True}
+
+
 def create_or_resume_pr(cfg, class_ids: list[int], logger: JsonLogger, state) -> dict:
     site = Path(cfg.site_repo)
     branch = state.branch or f"automation/classroom-lessons-{class_ids[0]}-{class_ids[-1]}"
     if state.status == "pr_open" and state.pr_number:
         logger.event("resume_pr", pr=state.pr_number, branch=state.branch)
         return {"pr_number": state.pr_number, "pr_url": state.pr_url, "branch": state.branch, "resumed": True}
+
+    existing = lookup_open_pr(site, branch)
 
     paths = [
         "classroom/pack/classes",
@@ -190,12 +229,23 @@ def create_or_resume_pr(cfg, class_ids: list[int], logger: JsonLogger, state) ->
             run(["git", "add", "-A", p], cwd=site, check=False)
 
     st = run(["git", "status", "--porcelain"], cwd=site, check=False)
-    if not st.stdout.strip():
+    if st.stdout.strip():
+        msg = f"Publish Homelab Academy Classes {class_ids[0]}–{class_ids[-1]}."
+        run(["git", "commit", "-m", msg], cwd=site)
+        run(["git", "push", "-u", "origin", "HEAD", "--force-with-lease"], cwd=site)
+    elif existing:
+        logger.event("resume_existing_pr_no_new_commits", pr=existing["pr_number"], branch=branch)
+        mark_pr_open(cfg, state, branch=branch, pr_number=existing["pr_number"], pr_url=existing["pr_url"])
+        run(["gh", "pr", "merge", str(existing["pr_number"]), "--auto", "--merge"], cwd=site, check=False)
+        return existing
+    else:
         raise RuntimeError("no lesson files staged for PR")
 
-    msg = f"Publish Homelab Academy Classes {class_ids[0]}–{class_ids[-1]}."
-    run(["git", "commit", "-m", msg], cwd=site)
-    run(["git", "push", "-u", "origin", "HEAD", "--force-with-lease"], cwd=site)
+    if existing:
+        mark_pr_open(cfg, state, branch=branch, pr_number=existing["pr_number"], pr_url=existing["pr_url"])
+        run(["gh", "pr", "merge", str(existing["pr_number"]), "--auto", "--merge"], cwd=site, check=False)
+        logger.event("resume_existing_pr", pr_number=existing["pr_number"], pr_url=existing["pr_url"], branch=branch)
+        return existing
 
     body = f"""## Summary
 - Controlled production canary: Classes {class_ids[0]}–{class_ids[-1]}
@@ -223,7 +273,19 @@ def create_or_resume_pr(cfg, class_ids: list[int], logger: JsonLogger, state) ->
             body,
         ],
         cwd=site,
+        check=False,
     )
+    if pr.returncode != 0:
+        err = (pr.stderr or pr.stdout or "").strip()
+        if err:
+            print(err[-4000:], file=sys.stderr)
+        raced = lookup_open_pr(site, branch)
+        if raced:
+            mark_pr_open(cfg, state, branch=branch, pr_number=raced["pr_number"], pr_url=raced["pr_url"])
+            run(["gh", "pr", "merge", str(raced["pr_number"]), "--auto", "--merge"], cwd=site, check=False)
+            logger.event("resume_existing_pr_after_create_error", pr_number=raced["pr_number"], branch=branch)
+            return raced
+        raise RuntimeError(f"gh pr create failed for {branch}: {err[-500:]}")
     url = pr.stdout.strip().splitlines()[-1].strip()
     num = int(url.rstrip("/").split("/")[-1])
     mark_pr_open(cfg, state, branch=branch, pr_number=num, pr_url=url)
