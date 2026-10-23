@@ -359,7 +359,7 @@ from datetime import datetime, timezone<br />
 from pathlib import Path</p>
 <p>ROOT = Path('/opt/lab-classroom/class54')<br />
 LOG = ROOT / 'logs' / 'mock-indexer.log'<br />
-CAPS = b'''<?xml version="1.0" encoding="UTF-8"?><br />
+CAPS = b'''&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br />
 <caps><br />
   <server version="1.0" title="Class 54 Teaching Indexer" /><br />
   <limits max="100" default="25" /><br />
@@ -382,7 +382,7 @@ CAPS = b'''<?xml version="1.0" encoding="UTF-8"?><br />
 <p>def search_xml(query):<br />
     safe_query = ''.join(ch for ch in query if ch.isalnum() or ch in ' ._-')[:80] or 'Class 54 Test'<br />
     published = datetime.now(timezone.utc).strftime('%a, %d %b %Y %H:%M:%S +0000')<br />
-    return f'''<?xml version="1.0" encoding="UTF-8"?><br />
+    return f'''&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br />
 <rss version="2.0" xmlns:torznab="http://torznab.com/schemas/2015/feed"><br />
   <channel><br />
     <title>Class 54 Teaching Indexer</title><br />
