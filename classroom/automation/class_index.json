@@ -173,7 +173,25 @@
     },
     "75": {
       "redirect": "14-security-backup/topics/06-disaster-recovery-drills/lesson.html"
+    },
+    "76": {
+      "redirect": "14-security-backup/topics/07-smart-disk-health-and-failure-warning/lesson.html"
+    },
+    "77": {
+      "redirect": "14-security-backup/topics/08-ups-monitoring-and-safe-shutdown/lesson.html"
+    },
+    "78": {
+      "redirect": "14-security-backup/topics/09-power-efficiency-and-thermal-management/lesson.html"
+    },
+    "79": {
+      "redirect": "15-compose-ops/topics/01-docker-networking/lesson.html"
+    },
+    "80": {
+      "redirect": "15-compose-ops/topics/02-reusable-docker-compose-stack-patterns/lesson.html"
+    },
+    "81": {
+      "redirect": "15-compose-ops/topics/03-image-version-pinning-and-controlled-updates/lesson.html"
     }
   },
-  "updated_at": "2026-10-23T11:07:17Z"
+  "updated_at": "2026-10-24T08:38:04Z"
 }
